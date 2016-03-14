@@ -7,7 +7,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		MySqlSchemaParser schemaParser = new MySqlSchemaParser();
 		String DBName= "bg";
-		schemaParser.FindTablesInDB(DBName);
+		schemaParser.findTablesInDB(DBName);
 		System.out.println(schemaParser.TablesInDB);
 		
 	}

@@ -9,14 +9,14 @@ public class Combiner
 	public static HashMap<String,HashMap> PKValuesMap = new HashMap();
 	public static HashMap<String,HashMap> FKValuesMap = new HashMap();
 	
-	public void AddDML(DML dml)
+	public void addDML(DML dml)
 	{
 		// ToDo
 		// 1.add to PKValuesMap
 		// 2. add to FKValuesMap
 	}
 	
-	public List<DML> GetRLFDMLs( DML dml)
+	public List<DML> getRLFDMLs( DML dml)
 	{
 		List<DML> ListOfAffectedDMls = new ArrayList<>();
 		return ListOfAffectedDMls;
