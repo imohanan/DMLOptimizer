@@ -1,8 +1,7 @@
 package model;
-import java.lang.annotation.Retention;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import main.MySqlSchemaParser;
 
@@ -29,10 +28,9 @@ public abstract class DML {
 		if (IsTableLevelFence)
 			return true;
 		//IF THE DML DIDN'T SPECIFY A RECORD BY PRIMARY KEY
-		Vector<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);
-		for(int idx = 0; idx < PKAttributes.size(); idx++)
+		List<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);
+		for(String attribute: PKAttributes)
 		{
-			String attribute = PKAttributes.get(idx).toString();
 			String mapValue = DMLGetAttributeValues.get(attribute);
 			if(mapValue == null)
 			{
