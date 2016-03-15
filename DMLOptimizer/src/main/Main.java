@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import util.Util;
-
 public class Main {
 
 	
@@ -23,27 +21,24 @@ public class Main {
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
-		    	
-		    	String[] DMLsArray = Util.SplitDMLStrings(line);
-		    	for(String singleDMLLine: DMLsArray)
-		    	{
-		    		DML dml = new DML(singleDMLLine);
-			    	if (dml.IsTableLevelFence)
-			        {
-			        	//TODO
-			        	System.out.println("Table Level Fence found");
-			        }
-			        else if (dml.IsRecordLevelFence)
-			        {
-			        	//TODO
-			        	System.out.println("Record Level Fence found");
-			        }
-			        else
-			        {
-			        	dml.SetPrimaryKeyValue();
-			        	dml.toDMLString();
-			        }
-		    	}
+		        
+		    	DML dml = new DML(line);
+		        
+		    	if (dml.IsTableLevelFence)
+		        {
+		        	//TODO
+		        	System.out.println("Table Level Fence found");
+		        }
+		        else if (dml.IsRecordLevelFence)
+		        {
+		        	//TODO
+		        	System.out.println("Record Level Fence found");
+		        }
+		        else
+		        {
+		        	dml.SetPrimaryKeyValue();
+		        	dml.toDMLString();
+		        }
 		        
 		    }
 		} catch (IOException x) {

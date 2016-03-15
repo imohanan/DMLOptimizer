@@ -97,7 +97,7 @@ public class DML {
 	public void SetPrimaryKeyValue()
 	{
 		PKValue = "";
-		Vector PKAttributes = MySqlSchemaParser.TablePKs.get(table);
+		Vector<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);
 		if (type == DMLType.DELETE || type == DMLType.UPDATE)
 		{
 			for(int idx=0; idx < PKAttributes.size(); idx++)
@@ -121,7 +121,7 @@ public class DML {
 		//IF THE DML DIDN'T SPECIFY A RECORD BY PRIMARY KEY
 		if(type == DMLType.INSERT)
 			return false;
-		Vector PKAttributes = MySqlSchemaParser.TablePKs.get(table);
+		Vector<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);
 		for(int idx = 0; idx < PKAttributes.size(); idx++)
 		{
 			String attribute = PKAttributes.get(idx).toString();
@@ -144,7 +144,7 @@ public class DML {
 		// IF ANY ADDITIONAL ATTRIBUTES ARE PRESENT THEN TABLE LEVEL FENCE
 		if(type == DMLType.INSERT)
 			return false;
-		if (DMLGetAttributeValues.size() >  MySqlSchemaParser.TablePKs.get(table).size())
+		if (DMLGetAttributeValues.size() >  MySqlSchemaParser.TablePkeys.get(table).size())
 		{
 			IsRecordLevelFence = true;
 			return true;
@@ -208,4 +208,3 @@ public class DML {
 	}
 	
 }
-
