@@ -23,8 +23,8 @@ public class MySqlSchemaParser {
 	public static List<String> TablesInDB = new LinkedList<String>();
 	public static Connection db_conn = null;
 
-	public static void init_Schema(String db) {
-		setupConnection(db);
+	public static void init_Schema(String username,String password, String db) {
+		setupConnection( username, password, db);
 		TablesInDB=getAllTables(db);
 		for (String table: TablesInDB){
 			TableAttrs.put(table,getAttributes(table));
@@ -33,7 +33,7 @@ public class MySqlSchemaParser {
 		}
 	}
 
-	public static void setupConnection(String db) {
+	public static void setupConnection(String username,String password, String db) {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -47,7 +47,7 @@ public class MySqlSchemaParser {
 
 		try {
 			db_conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/" + db, "root", "password");
+					"jdbc:mysql://localhost:3306/" + db, username, password);
 
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
