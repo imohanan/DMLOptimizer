@@ -1,5 +1,9 @@
 package util;
 
+import java.util.List;
+
+import model.DML;
+
 public class Util {
 
 	public static String[] SplitDMLStrings(String dmlString)
@@ -23,5 +27,15 @@ public class Util {
 		}
 		
 		return NewDMLs;
+	}
+
+	public static void BatchAndPush() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void BatchAndPush(List<DML> listOfAffectedDMLs) {
+		// TODO Auto-generated method stub
+		
 	}
 }
