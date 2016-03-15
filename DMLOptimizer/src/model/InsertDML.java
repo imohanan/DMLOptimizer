@@ -1,8 +1,7 @@
 package model;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import main.MySqlSchemaParser;
 
@@ -37,10 +36,10 @@ public class InsertDML extends DML{
 	@Override
 	public void SetPrimaryKeyValue() {
 		PKValue = "";
-		Vector<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);	
-		for(int idx=0; idx < PKAttributes.size(); idx++)
+		List<String> PKAttributes = MySqlSchemaParser.TablePkeys.get(table);	
+		for(String attribute: PKAttributes)
 		{
-			PKValue += DMLSetAttributeValues.get(PKAttributes.get(idx)) + ";";
+			PKValue += DMLSetAttributeValues.get(attribute) + ";";
 		}
 		
 	}

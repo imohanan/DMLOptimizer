@@ -21,7 +21,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		// 1. Init
-		MySqlSchemaParser schemaParser = new MySqlSchemaParser();
+		MySqlSchemaParser.init_Schema("bg");;
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line
