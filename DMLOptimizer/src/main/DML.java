@@ -21,17 +21,18 @@ public class DML {
 	
 	public DML(String inputString)
 	{
-		inputString = inputString.replace(';', ' ');
-		inputString = inputString.trim();
 		/*
 		 * 1. set DML string
 		 * 2. Set type
 		 * 3. set table
-		 * 4. set attributes Values
-		 * 5. use Schema to set PrimaryKey 
+		 * 4. set attributes Values 
 		 */
+		// 1. set DML string
 		DMLString = inputString;
+		inputString = inputString.replace(';', ' ');
+		inputString = inputString.trim();
 		
+		// 2. Set type
 		String[] words = inputString.split(" ");
 		if (words[0].equals("INSERT"))
 			type = DMLType.INSERT;
@@ -40,6 +41,7 @@ public class DML {
 		else if(words[0].equals("UPDATE"))
 			type = DMLType.UPDATE;
 		
+		// 3. set table
 		if (type == DMLType.INSERT)
 			table = words[2];
 		else if (type == DMLType.UPDATE)
@@ -47,6 +49,7 @@ public class DML {
 		else if (type == DMLType.DELETE)
 			table = words[2];
 		
+		// 4. set attributes Values
 		if (type == DMLType.INSERT)
 		{
 			String values = words[4].replace('(', ' ');
@@ -62,7 +65,16 @@ public class DML {
 		{
 			String[] clauses = inputString.split(" WHERE ");
 			//TODO add the SET attributes SET PendCount=PendCount+1?? Should be record level fence?????
-			String[] attVals = clauses[1].split(" AND | OR ");
+			
+			String[] setClauses = clauses[0].split(" SET ");
+			String[] setAttValues = setClauses[1].split(",");
+			for(String setAttVal: setAttValues)
+			{
+				String[] elements = setAttVal.trim().split("=");
+				DMLSetAttributeValues.put(elements[0], elements[1].toString());
+			}
+			
+			String[] attVals = clauses[1].split(" AND ");
 			for(String attVal: attVals)
 			{
 				String[] elements = attVal.split("=");
@@ -81,6 +93,26 @@ public class DML {
 		}
 	}
 	
+	
+	public void SetPrimaryKeyValue()
+	{
+		PKValue = "";
+		Vector PKAttributes = MySqlSchemaParser.TablePKs.get(table);
+		if (type == DMLType.DELETE || type == DMLType.UPDATE)
+		{
+			for(int idx=0; idx < PKAttributes.size(); idx++)
+			{
+				PKValue += DMLGetAttributeValues.get(PKAttributes.get(idx)) + ";";
+			}
+		}
+		else if (type == DMLType.INSERT)
+		{
+			for(int idx=0; idx < PKAttributes.size(); idx++)
+			{
+				PKValue += DMLSetAttributeValues.get(PKAttributes.get(idx)) + ";";
+			}
+		}
+	}
 	
 	public Boolean isTableLevelFence()
 	{
@@ -119,7 +151,7 @@ public class DML {
 		}
 		return false;
 	}
-	
+	 
 	
 	public void changeValues(HashMap<String, String> newAttributes, DMLType newType)
 	{
@@ -131,17 +163,48 @@ public class DML {
 		}
 	}
 	
+	
 	public void toDMLString()
 	{
 		if(type == DMLType.INSERT)
-			//TODO
-			System.out.println(type);
+		{
+			String attributes = "(";
+			String values = "(";
+			for(Map.Entry<String, String> entry :DMLSetAttributeValues.entrySet())
+			{
+				attributes = attributes + entry.getKey() + ",";
+				values = values + entry.getValue() + ",";
+			}
+			attributes = attributes.substring(0, attributes.length() - 1) + ")";
+			values = values.substring(0, values.length() - 1) + ")";
+			DMLString = "INSERT INTO " + table + attributes + " VALUES " + values + ";";
+		}
 		else if(type == DMLType.DELETE)
-			//TODO
-			System.out.println(type);
+		{
+			String whereClause = "";
+			for(Map.Entry<String, String> entry: DMLGetAttributeValues.entrySet() )
+			{
+				whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " AND ";
+			}
+			whereClause = whereClause.substring(0, whereClause.length() - 5);
+			DMLString = "DELETE FROM " + table + " WHERE " + whereClause + ";";
+		}
 		else if(type == DMLType.UPDATE)
-			//TODO
-			System.out.println(type);
+		{
+			String setClause = "";
+			String whereClause = "";
+			for(Map.Entry<String, String> entry :DMLSetAttributeValues.entrySet())
+			{
+				setClause = setClause + entry.getKey() +"=" + entry.getValue()+ ",";
+			}
+			setClause = setClause.substring(0, setClause.length() - 1);
+			for(Map.Entry<String, String> entry: DMLGetAttributeValues.entrySet() )
+			{
+				whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " AND ";
+			}
+			whereClause = whereClause.substring(0, whereClause.length() - 5);
+			DMLString = "UPDATE " + table + " SET " + setClause + " WHERE " + whereClause + ";";
+		}
 	}
 	
 }
