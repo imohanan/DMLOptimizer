@@ -19,8 +19,8 @@ public class Combiner
 	
 	public List<DML> getRLFDMLs( DML dml)
 	{
-		List<DML> ListOfAffectedDMls = new ArrayList<>();
-		return ListOfAffectedDMls;
+		List<DML> listOfAffectedDMls = new ArrayList<>();
+		return listOfAffectedDMls;
 		
 	}
 }
