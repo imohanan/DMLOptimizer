@@ -159,7 +159,7 @@ public class MySqlSchemaParser {
 			java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
 			rs = metadata.getColumns(null, null, tableName, null);
 			while (rs.next()) {
-				result.add(rs.getString("COLUMN_NAME"));
+				result.add(rs.getString("COLUMN_NAME").toLowerCase());
 				if (verbose)
 					System.out.println(rs.getString("COLUMN_NAME"));
 			}
@@ -193,7 +193,7 @@ public class MySqlSchemaParser {
 			java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
 			rs = metadata.getPrimaryKeys(null, null, tableName);
 			while (rs.next()) {
-				result.add(rs.getString("COLUMN_NAME"));
+				result.add(rs.getString("COLUMN_NAME").toLowerCase());
 				if (verbose)
 					System.out.println(rs.getString("COLUMN_NAME"));
 			}
@@ -275,8 +275,8 @@ public class MySqlSchemaParser {
 					currentFK.addFk_cols(rs.getString("FKCOLUMN_NAME"));
 					currentFK.addPk_cols(rs.getString("PKCOLUMN_NAME"));
 				} else {
-					pk_cols.add(rs.getString("PKCOLUMN_NAME"));
-					fk_cols.add(rs.getString("FKCOLUMN_NAME"));
+					pk_cols.add(rs.getString("PKCOLUMN_NAME").toLowerCase());
+					fk_cols.add(rs.getString("FKCOLUMN_NAME").toLowerCase());
 					currentFK = new Fkey(rs.getString("FK_NAME"),
 							rs.getString("PKTABLE_NAME"),
 							rs.getString("FKTABLE_NAME"), pk_cols, fk_cols,
