@@ -62,12 +62,35 @@ public class Combiner
 	
 	public static void ApplyOptimizerRules(DML dml)
 	{
+		HashMap<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
+		List<DML> recordDMLs = tableHashMap.get(dml.PKValue);
+		
+		if(OptimizerRules.checkInsertUpdateRule(dml, recordDMLs))
+		{
+			
+		}
+		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
+		{
+			
+		}
+		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
+		{
+			
+		}
+		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
+		{
+			
+		}
+		else if(OptimizerRules.checkDeleteInsertRule(dml, recordDMLs))
+		{
+			
+		}
 		
 	}
 
 	public static List<DML> GetRecordLevelDMLs(DML dml) {
 		// TODO Auto-generated method stub
-		List<DML> listOfAffectedDMls = new ArrayList<>();
+		List<DML> listOfAffectedDMls = new LinkedList<>();
 		return listOfAffectedDMls;
 	}
 
