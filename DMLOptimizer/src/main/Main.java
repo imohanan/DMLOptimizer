@@ -22,7 +22,7 @@ public class Main {
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
-		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);;
+		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line
@@ -32,8 +32,8 @@ public class Main {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	
-		    	String[] splitDMLLines = Util.SplitDMLStrings(line);
-		    	for(String dmlLine: splitDMLLines)
+		    	String[] ORSplitDMLs = Util.splitDMLsByOR(line);
+		    	for(String dmlLine: ORSplitDMLs)
 		    	{
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
@@ -44,6 +44,7 @@ public class Main {
 		    		else
 		    			dml = new UpdateDML(dmlLine);
 		    		
+		    		DMLQueue.AddDML(dml);
 			    	/*if (dml.isTableLevelFence())
 			        {
 			        	System.out.println("Table Level Fence found");
@@ -61,8 +62,7 @@ public class Main {
 			        }
 			        else
 			        {*/
-			        	DMLQueue.AddDML(dml);
-			        	Combiner.addDML(dml);
+		    			Combiner.addDML(dml);
 			        	Combiner.ApplyOptimizerRules(dml);
 			        //}
 		    	}	        

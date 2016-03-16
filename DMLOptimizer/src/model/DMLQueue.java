@@ -2,8 +2,25 @@ package model;
 
 public class DMLQueue {
 	
-	public static DML DMLQueueHead;
-	public static DML DMLQueueTail;
+
+	private static DML DMLQueueHead;
+	private static DML DMLQueueTail;
+
+	public static DML getDMLQueueHead() {
+		return DMLQueueHead;
+	}
+
+	public static void setDMLQueueHead(DML dMLQueueHead) {
+		DMLQueueHead = dMLQueueHead;
+	}
+
+	public static DML getDMLQueueTail() {
+		return DMLQueueTail;
+	}
+
+	public static void setDMLQueueTail(DML dMLQueueTail) {
+		DMLQueueTail = dMLQueueTail;
+	}
 	
 	public static void AddDML(DML dml) {
 		if (DMLQueueTail == null || DMLQueueHead == null)

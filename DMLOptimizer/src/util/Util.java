@@ -1,12 +1,19 @@
 package util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
+import main.Combiner;
+import main.MySqlSchemaParser;
 import model.DML;
+import model.DMLQueue;
+
+import com.mysql.jdbc.Statement;
 
 public class Util {
 
-	public static String[] SplitDMLStrings(String dmlString)
+	public static String[] splitDMLsByOR(String dmlString)
 	{
 		dmlString = dmlString.replace(";", " ");
 		dmlString = dmlString.trim();
@@ -29,13 +36,47 @@ public class Util {
 		return NewDMLs;
 	}
 
-	public static void BatchAndPush() {
+	public static void BatchAndPush() throws SQLException {//For TableLevelFence
 		// TODO Auto-generated method stub
+		Combiner.PKValuesMap.clear();
+		Combiner.FKValuesMap.clear();
+		DML dml=DMLQueue.getDMLQueueHead();
+		while(dml!=null&&dml.NextNode!=null){
+			if(checkBatchingRules(dml,dml.NextNode)){
+				//Remove dml and next from DMLQUEUE
+				DML batchRs=batch(dml,dml.NextNode);
+				//Add dml to the head of DMLQueue
+				dml=DMLQueue.getDMLQueueHead();
+			}
+			else{
+				//Remove DML from DMLQueue
+			String dmlstr=dml.DMLString;
+			Statement stmt = (Statement) MySqlSchemaParser.db_conn.createStatement();
+			stmt.execute(dmlstr);
+			dml=DMLQueue.getDMLQueueHead();
+			}
+		}
+		if(dml!=null){//queueIsEmpty()
+			//Remove DML from DMLQueue
+			String dmlstr=dml.DMLString;
+			Statement stmt = (Statement) MySqlSchemaParser.db_conn.createStatement();
+			stmt.execute(dmlstr);
+		}
 		
+		
+	}
+
+	private static boolean checkBatchingRules(DML dml, DML nextNode) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public static void BatchAndPush(List<DML> listOfAffectedDMLs) {
 		// TODO Auto-generated method stub
+		
+	}
+	public static DML batch(DML dml1,DML dml2){
+		return dml2;
 		
 	}
 }

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 import model.DML;
 import model.FKValue;
@@ -11,8 +11,8 @@ import model.FKValue;
 public class Combiner 
 {
 
-	public static HashMap<String,HashMap> PKValuesMap = new HashMap();
-	public static HashMap<String,HashMap> FKValuesMap = new HashMap();
+	public static Map<String,Map<String, List<DML>>> PKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
+	public static Map<String,Map<String, List<DML>>> FKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
 	
 	public static void addDML(DML dml)
 	{
@@ -21,7 +21,7 @@ public class Combiner
     	
 		// 1.add to PKValuesMap 
     	// 1a. get table
-    	HashMap<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
+    	Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
     	if (tableHashMap == null)
     	{
     		PKValuesMap.put(dml.table, new HashMap<String, List<DML>>() );
@@ -41,7 +41,7 @@ public class Combiner
 		for(FKValue fkValue: dml.FKValues)
 		{
 			// 2a. get table
-			HashMap<String, List<DML>> fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
+			Map<String, List<DML>> fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
 			if (fkTableHashMap == null)
 			{
 				FKValuesMap.put(fkValue.Referenced_Table, new HashMap<String, List<DML>>());

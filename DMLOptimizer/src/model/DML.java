@@ -11,8 +11,8 @@ public abstract class DML {
 	public String DMLString;
 	public String table;
 	public DMLType type;
-	public HashMap<String,String> DMLGetAttributeValues = new HashMap(); 
-	public HashMap<String,String> DMLSetAttributeValues = new HashMap(); 
+	public Map<String,String> DMLGetAttributeValues = new HashMap<String,String>(); 
+	public Map<String,String> DMLSetAttributeValues = new HashMap<String,String>(); 
 	public String PKValue;
 	public List<FKValue> FKValues = new LinkedList<FKValue>();
 	public Boolean IsRecordLevelFence = false;
