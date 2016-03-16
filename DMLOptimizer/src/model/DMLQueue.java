@@ -67,5 +67,20 @@ public class DMLQueue {
 		dml.PrevNode = null;
 	}
 	
-
+	
+	public static void AddToHead(DML dml)
+	{
+		
+	}
+	
+	
+	public static DML RemoveFromHead(DML dml)
+	{
+		return null;
+	}
+	
+	public static Boolean IsQueueEmpty()
+	{
+		return false;
+	}
 }
