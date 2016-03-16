@@ -32,14 +32,15 @@ public class Main {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	
+		    	line = line.toLowerCase();
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
-		    		if (words[0].equalsIgnoreCase("INSERT"))
+		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
-		    		else if (words[0].equalsIgnoreCase("DELETE"))
+		    		else if (words[0].equalsIgnoreCase("delete"))
 		    			dml = new DeleteDML(dmlLine);
 		    		else
 		    			dml = new UpdateDML(dmlLine);
