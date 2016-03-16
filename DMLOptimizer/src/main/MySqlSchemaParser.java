@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import model.Fkey;
 
@@ -31,6 +30,7 @@ public class MySqlSchemaParser {
 			TablePkeys.put(table, getPkey(table));
 			TableFkeys.put(table, getFKey(table));
 		}
+		fillImpactedTables();
 	}
 
 	public static void setupConnection(String username,String password, String db) {
@@ -305,19 +305,25 @@ public class MySqlSchemaParser {
 		return fkeys;
 	}
 	
-	public static List<String> getImpactedTables(String tableName){
-		List<String> result=new LinkedList<String>();
+	public static void fillImpactedTables(){
 		Iterator it = TableFkeys.entrySet().iterator();
 		 while (it.hasNext()) {
 			 List<Fkey> fkeys=new LinkedList<Fkey>();
 		        Map.Entry pair = (Map.Entry)it.next();
 		        fkeys=(List<Fkey>) pair.getValue();
 		        for(Fkey fk:fkeys){
-		        	if(ImpactedTables.get(fk.getPk_table())!=null){
-		        		
+		        	if(ImpactedTables.get(fk.getPk_table())==null){
+		        		List<String> fk_tbl=new LinkedList<String>();
+		        		fk_tbl.add(fk.getFk_table());
+		        		ImpactedTables.put(fk.getPk_table(),fk_tbl);
+		        	}
+		        	else{
+		        		List<String> fklist=ImpactedTables.get(fk.getPk_table());
+		        		fklist.add(fk.getFk_table());
+		        		ImpactedTables.remove(fk.getPk_table());
+		        		ImpactedTables.put(fk.getPk_table(),fklist);
 		        	}
 		        }
 		    }
-		return result;
 	}
 }
