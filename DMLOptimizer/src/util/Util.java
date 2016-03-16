@@ -41,7 +41,7 @@ public class Util {
 		Combiner.PKValuesMap.clear();
 		Combiner.FKValuesMap.clear();
 		DML currDML=DMLQueue.getDMLQueueHead();
-		while(!DMLQueue.IsQueueEmpty()&&currDML.NextNode!=null){
+		while(!DMLQueue.IsEmpty()&&currDML.NextNode!=null){
 			if(checkBatchingRules(currDML,currDML.NextNode)){
 				//Remove dml and next from DMLQUEUE
 				currDML=DMLQueue.RemoveDMLfromHead();
@@ -60,7 +60,7 @@ public class Util {
 			currDML=DMLQueue.getDMLQueueHead();
 			}
 		}
-		if(!DMLQueue.IsQueueEmpty()){//queueIsEmpty()
+		if(!DMLQueue.IsEmpty()){//queueIsEmpty()
 			//Remove DML from DMLQueue
 			currDML=DMLQueue.RemoveDMLfromHead();
 			String dmlstr=currDML.DMLString;

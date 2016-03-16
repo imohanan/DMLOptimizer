@@ -76,7 +76,7 @@ public class DMLQueue {
 	}
 	
 	
-	public static Boolean IsQueueEmpty()
+	public static Boolean IsEmpty()
 	{
 		if (DMLQueueTail == null)
 			return true;
