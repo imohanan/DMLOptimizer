@@ -78,6 +78,8 @@ public class DMLQueue {
 	
 	public static Boolean IsQueueEmpty()
 	{
+		if (DMLQueueTail == null)
+			return true;
 		return false;
 	}
 }
