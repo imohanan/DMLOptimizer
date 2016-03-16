@@ -36,9 +36,9 @@ public class Main {
 		    	{
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
-		    		if (words[0].equals("INSERT"))
+		    		if (words[0].equalsIgnoreCase("INSERT"))
 		    			dml = new InsertDML(dmlLine);
-		    		else if (words[0].equals("DELETE"))
+		    		else if (words[0].equalsIgnoreCase("DELETE"))
 		    			dml = new DeleteDML(dmlLine);
 		    		else
 		    			dml = new UpdateDML(dmlLine);
