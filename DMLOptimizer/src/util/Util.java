@@ -40,25 +40,30 @@ public class Util {
 		// TODO Auto-generated method stub
 		Combiner.PKValuesMap.clear();
 		Combiner.FKValuesMap.clear();
-		DML dml=DMLQueue.getDMLQueueHead();
-		while(dml!=null&&dml.NextNode!=null){
-			if(checkBatchingRules(dml,dml.NextNode)){
+		DML currDML=DMLQueue.getDMLQueueHead();
+		while(!DMLQueue.IsQueueEmpty()&&currDML.NextNode!=null){
+			if(checkBatchingRules(currDML,currDML.NextNode)){
 				//Remove dml and next from DMLQUEUE
-				DML batchRs=batch(dml,dml.NextNode);
+				currDML=DMLQueue.RemoveDMLfromHead();
+				DML nextDML=DMLQueue.RemoveDMLfromHead();
+				DML batchRs=batch(currDML,nextDML);
 				//Add dml to the head of DMLQueue
-				dml=DMLQueue.getDMLQueueHead();
+				DMLQueue.AddToHead(batchRs);
+				currDML=DMLQueue.getDMLQueueHead();
 			}
 			else{
 				//Remove DML from DMLQueue
-			String dmlstr=dml.DMLString;
+				currDML=DMLQueue.RemoveDMLfromHead();
+			String dmlstr=currDML.DMLString;
 			Statement stmt = (Statement) MySqlSchemaParser.db_conn.createStatement();
 			stmt.execute(dmlstr);
-			dml=DMLQueue.getDMLQueueHead();
+			currDML=DMLQueue.getDMLQueueHead();
 			}
 		}
-		if(dml!=null){//queueIsEmpty()
+		if(!DMLQueue.IsQueueEmpty()){//queueIsEmpty()
 			//Remove DML from DMLQueue
-			String dmlstr=dml.DMLString;
+			currDML=DMLQueue.RemoveDMLfromHead();
+			String dmlstr=currDML.DMLString;
 			Statement stmt = (Statement) MySqlSchemaParser.db_conn.createStatement();
 			stmt.execute(dmlstr);
 		}
