@@ -59,10 +59,10 @@ public abstract class DML {
 	}
 	 
 	
-	public void changeValues(HashMap<String, String> newAttributes, DMLType newType)
+	public void changeValues(Map<String, String> dMLSetAttributeValues2, DMLType newType)
 	{
 		type = newType;
-		for (Map.Entry<String, String> entry : newAttributes.entrySet()) {
+		for (Map.Entry<String, String> entry : dMLSetAttributeValues2.entrySet()) {
 		    String key = entry.getKey();
 		    String value = entry.getValue().toString();
 		    DMLSetAttributeValues.put(key, value);

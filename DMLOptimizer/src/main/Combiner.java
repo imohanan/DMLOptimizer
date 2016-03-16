@@ -60,16 +60,43 @@ public class Combiner
 	}
 	
 	
-	public static void ApplyOptimizerRules(DML dml)
+	public static void applyOptimizerRules(DML dml)
 	{
+		Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
+		List<DML> recordDMLs = tableHashMap.get(dml.PKValue);
+		
+		// NO DMLs to reduce against
+		if(recordDMLs.size() == 1)
+			return;
+		
+		if(OptimizerRules.checkInsertUpdateRule(dml, recordDMLs))
+		{
+			OptimizerRules.applyInsertUpdateRule(dml, recordDMLs);
+		}
+		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
+		{
+			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs);
+		}
+		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
+		{
+			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs);
+		}
+		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
+		{
+			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs);
+		}
+		else if(OptimizerRules.checkDeleteInsertRule(dml, recordDMLs))
+		{
+			OptimizerRules.applyDeleteInsertRule(dml, recordDMLs);
+		}
 		
 	}
 
-	public static List<DML> GetRecordLevelDMLs(DML dml) {
+	/*public static List<DML> getRecordLevelDMLs(DML dml) {
 		// TODO Auto-generated method stub
-		List<DML> listOfAffectedDMls = new ArrayList<>();
+		List<DML> listOfAffectedDMls = new LinkedList<>();
 		return listOfAffectedDMls;
-	}
+	}*/
 
 	public static void removeDML(DML affectedDML) {
 		// TODO Auto-generated method stub
