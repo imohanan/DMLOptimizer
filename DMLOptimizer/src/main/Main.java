@@ -43,7 +43,7 @@ public class Main {
 		    		else
 		    			dml = new UpdateDML(dmlLine);
 		    		
-			    	if (dml.isTableLevelFence())
+			    	/*if (dml.isTableLevelFence())
 			        {
 			        	System.out.println("Table Level Fence found");
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
@@ -59,12 +59,11 @@ public class Main {
 			        	Util.BatchAndPush(ListOfAffectedDMLs);
 			        }
 			        else
-			        {
+			        {*/
 			        	DMLQueue.AddDML(dml);
 			        	Combiner.addDML(dml);
-			        	dml.SetPrimaryKeyValue();
-			        	dml.toDMLString();
-			        }
+			        	Combiner.ApplyOptimizerRules(dml);
+			        //}
 		    	}	        
 		    }
 		    Util.BatchAndPush();
