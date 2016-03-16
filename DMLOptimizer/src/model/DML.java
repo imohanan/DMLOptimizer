@@ -17,6 +17,8 @@ public abstract class DML {
 	public List<FKValue> FKValues = new LinkedList<FKValue>();
 	public Boolean IsRecordLevelFence = false;
 	public Boolean IsTableLevelFence = false;
+	public DML NextNode = null;
+	public DML PrevNode = null;
 	
 	public void SetPrimaryKeyValue()
 	{
@@ -72,7 +74,7 @@ public abstract class DML {
 	{
 	}
 	
-	public void GetForeignKeyValues()
+	public void SetForeignKeyValues()
 	{
 		List<Fkey> FKeys= MySqlSchemaParser.TableFkeys.get(table);
 		for(Fkey fk: FKeys)

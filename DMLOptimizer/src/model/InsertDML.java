@@ -70,5 +70,33 @@ public class InsertDML extends DML{
 		values = values.substring(0, values.length() - 1) + ")";
 		DMLString = "INSERT INTO " + table + attributes + " VALUES " + values + ";";
 	}
+	
+	@Override
+	public void SetForeignKeyValues()
+	{
+		List<Fkey> FKeys= MySqlSchemaParser.TableFkeys.get(table);
+		for(Fkey fk: FKeys)
+		{
+			String fk_table = fk.getFk_table();
+			List<String> columns = fk.getFk_cols();
+			String keyValue = "";
+			Boolean keyFound = true;
+			for(String col: columns)
+			{
+				String val = DMLSetAttributeValues.get(col);
+				if (val == null)
+				{
+					keyFound = false;
+					break;
+				}
+				keyValue = keyValue + val +";";
+			}
+			if (keyFound == true)
+			{
+				FKValue fKValue = new FKValue(keyValue,fk_table);
+				FKValues.add(fKValue);
+			}
+		}
+	}
 
 }
