@@ -6,24 +6,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.sound.midi.SysexMessage;
 
 import model.Fkey;
 
 public class MySqlSchemaParser {
 	public static boolean verbose = false;
-	public static Map<String, List<String>> TableAttrs = new HashMap();
-	public static Map<String, List<String>> TablePkeys = new HashMap();
-	public static Map<String, List<Fkey>> TableFkeys = new HashMap();
-	public static Map<String, List<String>> ImpactedTables = new HashMap();
+	public static Map<String, List<String>> TableAttrs = new HashMap<String, List<String>>();
+	public static Map<String, List<String>> TablePkeys = new HashMap<String, List<String>>();
+	public static Map<String, List<Fkey>> TableFkeys = new HashMap<String, List<Fkey>>();
+	public static Map<String, Set<String>> ImpactedTables = new HashMap<String, Set<String>>();
 	public static List<String> TablesInDB = new LinkedList<String>();
 	public static Connection db_conn = null;
 
-	public static void init_Schema(String username,String password, String db) {
+	public static void init_Schema(String username,String password, String db) throws SQLException {
 		setupConnection( username, password, db);
+		
 		TablesInDB=getAllTables(db);
 		for (String table: TablesInDB){
 			TableAttrs.put(table,getAttributes(table));
@@ -31,6 +37,8 @@ public class MySqlSchemaParser {
 			TableFkeys.put(table, getFKey(table));
 		}
 		fillImpactedTables();
+		if (verbose)printImpactedTables();
+		
 	}
 
 	public static void setupConnection(String username,String password, String db) {
@@ -47,7 +55,7 @@ public class MySqlSchemaParser {
 
 		try {
 			db_conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/" + db, username, password);
+					"jdbc:mysql://localhost:3306/", username, password);
 
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check output console");
@@ -56,9 +64,24 @@ public class MySqlSchemaParser {
 		}
 
 		if (db_conn != null) {
-			System.out.println("You made it, take control your database now!");
+			try {
+				if(doesDBExist(db)){
+					db_conn.close();
+					db_conn = DriverManager.getConnection(
+							"jdbc:mysql://localhost:3306/"+db, username, password);
+				System.out.println("You made it, take control your database now!");
+				}
+				else{System.out.println("Failed to make connection! Check if database "+db+" exists.");
+				System.exit(-1);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Failed to make connection! Check if database "+db+" exists.");
+				System.exit(-1);
+			}
 		} else {
 			System.out.println("Failed to make connection!");
+			System.exit(-1);
 		}
 
 	}
@@ -113,7 +136,7 @@ public class MySqlSchemaParser {
 		ResultSet rs = null;
 		String qry = "show tables from " + dbName;
 		try {
-			System.out.println(qry);
+			if (verbose)System.out.println(qry);
 			stmt = db_conn.createStatement();
 			rs = stmt.executeQuery(qry);
 			while (rs.next()) {
@@ -212,9 +235,9 @@ public class MySqlSchemaParser {
 			}
 
 		}
-		if (result.isEmpty()) {
-			System.out.println("No Primary Key Founded For " + tableName);
-		}
+//		if (result.isEmpty()) {
+//			System.out.println("No Primary Key Found For " + tableName);
+//		}
 		return result;
 
 	}
@@ -269,7 +292,6 @@ public class MySqlSchemaParser {
 				Fkey currentFK;
 				List<String> pk_cols = new LinkedList<String>();
 				List<String> fk_cols = new LinkedList<String>();
-				System.out.println(rs.getString("FK_NAME"));
 				currentFK = fkMap.get(rs.getString("FK_NAME"));
 				if (currentFK != null) {
 					currentFK.addFk_cols(rs.getString("FKCOLUMN_NAME"));
@@ -305,25 +327,49 @@ public class MySqlSchemaParser {
 		return fkeys;
 	}
 	
+	
 	public static void fillImpactedTables(){
-		Iterator it = TableFkeys.entrySet().iterator();
+		Iterator<Entry<String, List<Fkey>>> it = TableFkeys.entrySet().iterator();
 		 while (it.hasNext()) {
 			 List<Fkey> fkeys=new LinkedList<Fkey>();
-		        Map.Entry pair = (Map.Entry)it.next();
+		        Map.Entry<String,List<Fkey>> pair = (Map.Entry<String,List<Fkey>>)it.next();
 		        fkeys=(List<Fkey>) pair.getValue();
 		        for(Fkey fk:fkeys){
 		        	if(ImpactedTables.get(fk.getPk_table())==null){
-		        		List<String> fk_tbl=new LinkedList<String>();
+		        		Set<String> fk_tbl=new HashSet<String>();
 		        		fk_tbl.add(fk.getFk_table());
 		        		ImpactedTables.put(fk.getPk_table(),fk_tbl);
 		        	}
 		        	else{
-		        		List<String> fklist=ImpactedTables.get(fk.getPk_table());
+		        		Set<String> fklist=ImpactedTables.get(fk.getPk_table());
 		        		fklist.add(fk.getFk_table());
 		        		ImpactedTables.remove(fk.getPk_table());
 		        		ImpactedTables.put(fk.getPk_table(),fklist);
 		        	}
 		        }
 		    }
+	}
+	public static void printImpactedTables(){
+		Iterator<Entry<String, Set<String>>> it=ImpactedTables.entrySet().iterator();
+		while(it.hasNext()){
+			Set<String> impacteds=new HashSet<String>();
+			Map.Entry<String, Set<String>> pair=(Map.Entry<String,Set<String>>)it.next();
+			impacteds=pair.getValue();
+			System.out.print("Primary Table: "+pair.getKey()+" Foreign Tables: ");
+			for(String table:impacteds){
+				System.out.print(" "+table+",");
+			}
+			System.out.println("\n");
+			
+		}
+	}
+	
+	public static boolean doesDBExist(String db) throws SQLException{
+		ResultSet rs=db_conn.getMetaData().getCatalogs();
+		while (rs.next()){
+			if (rs.getString(1).equalsIgnoreCase(db))
+				return true;
+		}
+		return false;
 	}
 }

@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 
 import model.DML;
@@ -18,7 +19,7 @@ public class Main {
 
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);;
