@@ -43,12 +43,12 @@ public class Main {
 		    		else
 		    			dml = new UpdateDML(dmlLine);
 		    		
-			    	if (dml.IsTableLevelFence)
+			    	if (dml.isTableLevelFence())
 			        {
 			        	System.out.println("Table Level Fence found");
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
-			        else if (dml.IsRecordLevelFence)
+			        else if (dml.isRecordLevelFence())
 			        {
 			        	System.out.println("Record Level Fence found");
 			        	List<DML> ListOfAffectedDMLs = Combiner.GetRecordLevelDMLs(dml);
