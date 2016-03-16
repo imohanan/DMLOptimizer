@@ -63,7 +63,7 @@ public class Main {
 			        {*/
 			        	DMLQueue.AddDML(dml);
 			        	Combiner.addDML(dml);
-			        	Combiner.ApplyOptimizerRules(dml);
+			        	Combiner.applyOptimizerRules(dml);
 			        //}
 		    	}	        
 		    }
