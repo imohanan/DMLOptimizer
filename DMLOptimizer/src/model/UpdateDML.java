@@ -22,10 +22,10 @@ public class UpdateDML extends DML{
 		table = words[1];
 		
 		// 4. set attributes Values
-		String[] clauses = inputString.split(" WHERE ");
+		String[] clauses = inputString.split(" where ");
 		//TODO add the SET attributes SET PendCount=PendCount+1?? Should be record level fence?????
 		
-		String[] setClauses = clauses[0].split(" SET ");
+		String[] setClauses = clauses[0].split(" set ");
 		String[] setAttValues = setClauses[1].split(",");
 		for(String setAttVal: setAttValues)
 		{
@@ -33,7 +33,7 @@ public class UpdateDML extends DML{
 			DMLSetAttributeValues.put(elements[0], elements[1].toString());
 		}
 		
-		String[] attVals = clauses[1].split(" AND ");
+		String[] attVals = clauses[1].split(" and ");
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
@@ -64,10 +64,11 @@ public class UpdateDML extends DML{
 		setClause = setClause.substring(0, setClause.length() - 1);
 		for(Map.Entry<String, String> entry: DMLGetAttributeValues.entrySet() )
 		{
-			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " AND ";
+			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " and ";
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
-		DMLString = "UPDATE " + table + " SET " + setClause + " WHERE " + whereClause + ";";
+		DMLString = "update " + table + " set " + setClause + " where " + whereClause + ";";
 	}
 
 }
+
