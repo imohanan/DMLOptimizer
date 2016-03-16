@@ -1,5 +1,6 @@
 package model;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,8 @@ public abstract class DML {
 	public DMLType type;
 	public HashMap<String,String> DMLGetAttributeValues = new HashMap(); 
 	public HashMap<String,String> DMLSetAttributeValues = new HashMap(); 
-	// public PK_Values;
-	// public FK_Values;
 	public String PKValue;
+	public List<FKValue> FKValues = new LinkedList<FKValue>();
 	public Boolean IsRecordLevelFence = false;
 	public Boolean IsTableLevelFence = false;
 	
@@ -72,4 +72,30 @@ public abstract class DML {
 	{
 	}
 	
+	public void GetForeignKeyValues()
+	{
+		List<Fkey> FKeys= MySqlSchemaParser.TableFkeys.get(table);
+		for(Fkey fk: FKeys)
+		{
+			String fk_table = fk.getFk_table();
+			List<String> columns = fk.getFk_cols();
+			String keyValue = "";
+			Boolean keyFound = true;
+			for(String col: columns)
+			{
+				String val = DMLGetAttributeValues.get(col);
+				if (val == null)
+				{
+					keyFound = false;
+					break;
+				}
+				keyValue = keyValue + val +";";
+			}
+			if (keyFound == true)
+			{
+				FKValue fKValue = new FKValue(keyValue,fk_table);
+				FKValues.add(fKValue);
+			}
+		}
+	}
 }
