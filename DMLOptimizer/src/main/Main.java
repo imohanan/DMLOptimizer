@@ -26,7 +26,7 @@ public class Main {
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line
-		Path filePath = Paths.get("./LogFiles/dmls_log.txt");
+		Path filePath = Paths.get(args[0]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
@@ -52,11 +52,7 @@ public class Main {
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	System.out.println("Record Level Fence found");
-			        	List<DML> ListOfAffectedDMLs = Combiner.GetRecordLevelDMLs(dml);
-			        	for(DML affectedDML: ListOfAffectedDMLs)
-			        	{
-			        		Combiner.removeDML(affectedDML);
-			        	}
+			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
 			        	Util.BatchAndPush(ListOfAffectedDMLs);
 			        }
 			        else

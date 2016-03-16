@@ -92,14 +92,30 @@ public class Combiner
 		
 	}
 
-	/*public static List<DML> getRecordLevelDMLs(DML dml) {
-		// TODO Auto-generated method stub
+	
+	public static List<DML> removeRecordDMLs(DML dml) {
+		// TODO FUTURE - handle cascade deletes
+		//remove all PKValuesMap DMLs
+		//remove all FKValuesMap DMLs for that PK
+		
 		List<DML> listOfAffectedDMls = new LinkedList<>();
 		return listOfAffectedDMls;
-	}*/
-
-	public static void removeDML(DML affectedDML) {
-		// TODO Auto-generated method stub
-		
 	}
+
+	
+	
+	public static void removeDML(DML dml) {
+		HashMap<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
+		List<DML> recordDMLs = tableMap.get(dml.PKValue);
+		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
+		
+		for(FKValue fkValue: dml.FKValues)
+		{
+			// 2a. get table
+			HashMap<String, List<DML>> fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
+			List<DML> fkRecordDMLs = fkTableHashMap.get(fkValue.FKValueString);
+			fkRecordDMLs.remove(dml); //TEST: test if this is reflected in FKValuesMap
+		}
+	}
+	
 }

@@ -9,7 +9,7 @@ public class InsertDML extends DML{
 
 	public InsertDML(String inputString) {
 		//1. set String
-		DMLString = inputString;
+		DMLString = inputString.toLowerCase();
 		// 2. Set Type
 		type = DMLType.INSERT;
 		
@@ -68,7 +68,7 @@ public class InsertDML extends DML{
 		}
 		attributes = attributes.substring(0, attributes.length() - 1) + ")";
 		values = values.substring(0, values.length() - 1) + ")";
-		DMLString = "INSERT INTO " + table + attributes + " VALUES " + values + ";";
+		DMLString = "insert into " + table + attributes + " values " + values + ";";
 	}
 	
 	@Override

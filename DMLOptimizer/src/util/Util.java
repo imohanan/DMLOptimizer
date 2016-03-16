@@ -10,19 +10,19 @@ public class Util {
 	{
 		dmlString = dmlString.replace(";", " ");
 		dmlString = dmlString.trim();
-		String[] parts = dmlString.split(" WHERE ");
+		String[] parts = dmlString.split(" where ");
 		if (parts.length == 1)
 			return new String[]{dmlString};
 		
 		String DMLPre = parts[0];
-		String[] DMLPosts = parts[1].split(" OR ");
+		String[] DMLPosts = parts[1].split(" or ");
 		
 		String NewDMLs[] = new String[DMLPosts.length];
 		
 		for(int idx = 0; idx < DMLPosts.length; idx++)
 		{
 			String whereClause = DMLPosts[idx];
-			String newDML = DMLPre.trim() + " WHERE " +  whereClause.trim() +";";
+			String newDML = DMLPre.trim() + " where " +  whereClause.trim() +";";
 			NewDMLs[idx] = newDML; 
 		}
 		

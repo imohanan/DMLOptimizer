@@ -94,8 +94,7 @@ public class OptimizerRules {
 				recordDML.changeValues(dml.DMLSetAttributeValues, DMLType.INSERT);
 				// 2. remove update obj from combiner and DMLQueue
 				Combiner.removeDML(dml);
-				DMLQueue.RemoveDML(dml);
-				
+				DMLQueue.RemoveDML(dml);			
 			}
 		}
 		
@@ -104,25 +103,29 @@ public class OptimizerRules {
 
 	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
 		// TODO Auto-generated method stub
+		System.out.println("applyInsertDeleteRule");
 		
 	}
 
 
 	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs) {
 		// TODO Auto-generated method stub
-		
+		// record level DMLs removal
+		// for each dML removed = remove from Queue
+		// reinsert the delete dml
+		System.out.println("applyUpdateDeleteRule");
 	}
 
 
 	public static void applyUpdateUpdateRule(DML dml, List<DML> recordDMLs) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("applyUpdateUpdateRule");
 	}
 
 
 	public static void applyDeleteInsertRule(DML dml, List<DML> recordDMLs) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("applyDeleteInsertRule");
 	}
 
 }

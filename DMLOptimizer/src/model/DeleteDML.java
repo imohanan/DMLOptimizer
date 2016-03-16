@@ -21,8 +21,8 @@ public class DeleteDML extends DML {
 		table = words[2];
 		
 		// 4. set attributes Values
-		String[] clauses = inputString.split(" WHERE ");
-		String[] attVals = clauses[1].split(" AND ");
+		String[] clauses = inputString.split(" where ");
+		String[] attVals = clauses[1].split(" and ");
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
@@ -47,10 +47,10 @@ public class DeleteDML extends DML {
 		String whereClause = "";
 		for(Map.Entry<String, String> entry: DMLGetAttributeValues.entrySet() )
 		{
-			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " AND ";
+			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " and ";
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
-		DMLString = "DELETE FROM " + table + " WHERE " + whereClause + ";";
+		DMLString = "delete from " + table + " where " + whereClause + ";";
 		
 	}
 
