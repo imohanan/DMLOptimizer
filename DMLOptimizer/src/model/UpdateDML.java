@@ -50,6 +50,7 @@ public class UpdateDML extends DML{
 		{
 			PKValue += DMLGetAttributeValues.get(attribute) + ";";
 		}
+		PKValue = PKValue.trim();
 	}
 
 

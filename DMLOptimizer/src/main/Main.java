@@ -26,7 +26,7 @@ public class Main {
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line
-		Path filePath = Paths.get(args[0]);
+		Path filePath = Paths.get(args[3]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
@@ -45,29 +45,33 @@ public class Main {
 		    		else
 		    			dml = new UpdateDML(dmlLine);
 		    		
-			    	/*if (dml.isTableLevelFence())
+		    		DMLQueue.AddDML(dml);
+			    	if (dml.isTableLevelFence())
 			        {
 			        	System.out.println("Table Level Fence found");
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
-			        else if (dml.isRecordLevelFence())
+			        /*else if (dml.isRecordLevelFence())
 			        {
 			        	System.out.println("Record Level Fence found");
 			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
 			        	Util.BatchAndPush(ListOfAffectedDMLs);
-			        }
+			        }*/
 			        else
-			        {*/
-			        	DMLQueue.AddDML(dml);
+			        {
 			        	Combiner.addDML(dml);
 			        	Combiner.applyOptimizerRules(dml);
-			        //}
+			        }
 		    	}	        
 		    }
 		    Util.BatchAndPush();
 		} 
 		catch (IOException x) {
 		    System.err.format("IOException: %s%n", x);
+		}
+		catch(Exception x)
+		{
+		    System.err.format("Exception: %s%n", x);
 		}
 	}
 }

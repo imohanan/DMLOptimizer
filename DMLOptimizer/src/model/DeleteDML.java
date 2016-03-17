@@ -39,6 +39,7 @@ public class DeleteDML extends DML {
 		{
 			PKValue += DMLGetAttributeValues.get(attribute) + ";";
 		}
+		PKValue = PKValue.trim();
 	}
 
 

@@ -41,7 +41,7 @@ public class InsertDML extends DML{
 		{
 			PKValue += DMLSetAttributeValues.get(attribute) + ";";
 		}
-		
+		PKValue = PKValue.trim();
 	}
 
 	

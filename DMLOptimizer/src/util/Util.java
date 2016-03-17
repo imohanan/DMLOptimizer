@@ -53,7 +53,7 @@ public class Util {
 			}
 			else{
 				//Remove DML from DMLQueue
-				currDML=DMLQueue.RemoveDMLfromHead();
+			currDML=DMLQueue.RemoveDMLfromHead();
 			String dmlstr=currDML.DMLString;
 			Statement stmt = (Statement) MySqlSchemaParser.db_conn.createStatement();
 			stmt.execute(dmlstr);
