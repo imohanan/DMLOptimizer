@@ -94,38 +94,78 @@ public class OptimizerRules {
 				recordDML.changeValues(dml.DMLSetAttributeValues, DMLType.INSERT);
 				// 2. remove update obj from combiner and DMLQueue
 				Combiner.removeDML(dml);
-				DMLQueue.RemoveDML(dml);			
+				DMLQueue.RemoveDML(dml);
+				return;
 			}
 		}
 		
 	}
 
 
-	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
-		// TODO Auto-generated method stub
-		System.out.println("applyInsertDeleteRule");
-		
+	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
+		for(DML fkDML: fkDMLs)
+		{
+			Combiner.removeDML(fkDML);
+			DMLQueue.RemoveDML(fkDML);
+		}
+		for(DML recordDML: recordDMLs)
+		{
+			Combiner.removeDML(recordDML);
+			DMLQueue.RemoveDML(recordDML);
+		}
 	}
 
 
-	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs) {
-		// TODO Auto-generated method stub
-		// record level DMLs removal
-		// for each dML removed = remove from Queue
-		// reinsert the delete dml
-		System.out.println("applyUpdateDeleteRule");
+	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
+		for(DML fkDML: fkDMLs)
+		{
+			Combiner.removeDML(fkDML);
+			DMLQueue.RemoveDML(fkDML);
+		}
+		for(DML recordDML: recordDMLs)
+		{
+			if (recordDML == dml)
+				continue;
+			Combiner.removeDML(recordDML);
+			DMLQueue.RemoveDML(recordDML);
+		}
 	}
 
 
 	public static void applyUpdateUpdateRule(DML dml, List<DML> recordDMLs) {
-		// TODO Auto-generated method stub
-		System.out.println("applyUpdateUpdateRule");
+		for(DML recordDML: recordDMLs)
+		{
+			if (recordDML == dml)
+				break;
+			if (recordDML.type == DMLType.UPDATE)
+			{
+				// 1. merge update values with old update values
+				recordDML.changeValues(dml.DMLSetAttributeValues, DMLType.UPDATE);
+				// 2. remove update obj from combiner and DMLQueue
+				Combiner.removeDML(dml);
+				DMLQueue.RemoveDML(dml);
+				return;
+			}
+		}
 	}
 
 
-	public static void applyDeleteInsertRule(DML dml, List<DML> recordDMLs) {
-		// TODO Auto-generated method stub
-		System.out.println("applyDeleteInsertRule");
+	public static void applyDeleteInsertRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
+		// DELETE MAY RESULT IN THE REMOVAL OF OTHER fkS IN db AND SHOULD BE EXECUTED
+		for(DML fkDML: fkDMLs)
+		{
+			Combiner.removeDML(fkDML);
+			DMLQueue.RemoveDML(dml);
+		}
+		
+		for(DML recordDML: recordDMLs)
+		{
+			if( recordDML.type != DMLType.DELETE && recordDML.type != DMLType.INSERT)
+			{
+				Combiner.removeDML(recordDML);
+				DMLQueue.RemoveDML(recordDML);
+			}
+		}
 	}
 
 }

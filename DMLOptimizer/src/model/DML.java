@@ -59,7 +59,7 @@ public abstract class DML {
 	}
 	 
 	
-	public void changeValues(Map<String, String> dMLSetAttributeValues2, DMLType newType)
+	public void changeValues(Map<String, String> dMLSetAttributeValues2,  DMLType newType)
 	{
 		type = newType;
 		for (Map.Entry<String, String> entry : dMLSetAttributeValues2.entrySet()) {
@@ -68,7 +68,6 @@ public abstract class DML {
 		    DMLSetAttributeValues.put(key, value);
 		}
 	}
-	
 	
 	public void toDMLString()
 	{

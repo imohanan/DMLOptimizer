@@ -65,6 +65,9 @@ public class Combiner
 		Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableHashMap.get(dml.PKValue);
 		
+		Map<String, List<DML>> fkHashMap = FKValuesMap.get(dml.table);
+		List<DML> fkDMLs = fkHashMap.get(dml.PKValue);
+		
 		// NO DMLs to reduce against
 		if(recordDMLs.size() == 1)
 			return;
@@ -75,31 +78,21 @@ public class Combiner
 		}
 		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs);
+			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs, fkDMLs);
 		}
 		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs);
+			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs, fkDMLs);
 		}
 		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs);
+			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs); 
 		}
 		else if(OptimizerRules.checkDeleteInsertRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyDeleteInsertRule(dml, recordDMLs);
+			OptimizerRules.applyDeleteInsertRule(dml, recordDMLs, fkDMLs);
 		}
 		
-	}
-
-	
-	public static List<DML> removeRecordDMLs(DML dml) {
-		// TODO FUTURE - handle cascade deletes
-		//remove all PKValuesMap DMLs
-		//remove all FKValuesMap DMLs for that PK
-		
-		List<DML> listOfAffectedDMls = new LinkedList<>();
-		return listOfAffectedDMls;
 	}
 
 	
