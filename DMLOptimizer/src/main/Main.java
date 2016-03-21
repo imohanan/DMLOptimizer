@@ -45,21 +45,26 @@ public class Main {
 		    		else
 		    			dml = new UpdateDML(dmlLine);
 		    		
+		    		dml.SetPrimaryKeyValue();
+		        	dml.SetForeignKeyValues();
 		    		DMLQueue.AddDML(dml);
+		    		
 			    	if (dml.isTableLevelFence())
 			        {
 			        	System.out.println("Table Level Fence found");
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
-			        /*else if (dml.isRecordLevelFence())
+			        else if (dml.isRecordLevelFence())
 			        {
 			        	System.out.println("Record Level Fence found");
+			    		Combiner.addDML(dml);
 			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
 			        	Util.BatchAndPush(ListOfAffectedDMLs);
-			        }*/
+			        }
 			        else
 			        {
-			        	Combiner.addDML(dml);
+
+			    		Combiner.addDML(dml);
 			        	Combiner.applyOptimizerRules(dml);
 			        }
 		    	}	        

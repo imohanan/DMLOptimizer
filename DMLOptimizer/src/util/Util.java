@@ -78,8 +78,9 @@ public class Util {
 
 	public static void BatchAndPush(List<DML> listOfAffectedDMLs) {
 		// TODO Auto-generated method stub
-		
+		// Needs to be removed from DML Queue too
 	}
+	
 	public static DML batch(DML dml1,DML dml2){
 		return dml2;
 		

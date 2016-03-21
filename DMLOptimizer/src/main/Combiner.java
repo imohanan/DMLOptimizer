@@ -16,8 +16,6 @@ public class Combiner
 	
 	public static void addDML(DML dml)
 	{
-		dml.SetPrimaryKeyValue();
-    	dml.SetForeignKeyValues();
     	
 		// 1.add to PKValuesMap 
     	// 1a. get table
@@ -109,6 +107,14 @@ public class Combiner
 			List<DML> fkRecordDMLs = fkTableHashMap.get(fkValue.FKValueString);
 			fkRecordDMLs.remove(dml); //TEST: test if this is reflected in FKValuesMap
 		}
+	}
+
+
+	public static List<DML> removeRecordDMLs(DML dml) {
+		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
+		List<DML> recordDMLs = tableMap.get(dml.PKValue);
+		tableMap.remove(dml.PKValue);
+		return recordDMLs;
 	}
 	
 }
