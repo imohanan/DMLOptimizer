@@ -113,8 +113,14 @@ public class Combiner
 	public static List<DML> removeRecordDMLs(DML dml) {
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
+		Map<String, List<DML>> FKtableMap = FKValuesMap.get(dml.table);
+		List<DML> FKrecordDMLs = FKtableMap.get(dml.PKValue);
+		
 		tableMap.remove(dml.PKValue);
-		return recordDMLs;
+		FKtableMap.remove(dml.PKValue);
+		
+		FKrecordDMLs.addAll(recordDMLs);
+		return FKrecordDMLs;
 	}
 	
 }
