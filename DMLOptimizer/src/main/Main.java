@@ -58,8 +58,9 @@ public class Main {
 			        {
 			        	System.out.println("Record Level Fence found");
 			    		Combiner.addDML(dml);
-			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
-			        	Util.BatchAndPush(ListOfAffectedDMLs);
+//			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
+//			        	Util.BatchAndPush(ListOfAffectedDMLs);
+			    		Util.BatchAndPush();
 			        }
 			        else
 			        {

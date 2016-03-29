@@ -2,7 +2,6 @@ package util;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import main.Combiner;
 import main.MySqlSchemaParser;
@@ -13,6 +12,9 @@ import model.DMLType;
 import com.mysql.jdbc.Statement;
 
 public class Util {
+	private static Statement statement=null;
+	private static DMLType currType = null;
+	private static String currTable = null;
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -38,80 +40,78 @@ public class Util {
 
 	public static void BatchAndPush() throws SQLException {// For
 															// TableLevelFence
-		// TODO Auto-generated method stub
 		Combiner.PKValuesMap.clear();
-		Combiner.FKValuesMap.clear();
-		DML currDML = DMLQueue.getDMLQueueHead();
-		while (!DMLQueue.IsEmpty() && currDML.NextNode != null) {
-			if (checkBatchingRules(currDML, currDML.NextNode)) {
-				currDML = DMLQueue.RemoveDMLfromHead();
-				DML nextDML = DMLQueue.RemoveDMLfromHead();
-				DML batchRs = batch(currDML, nextDML);
-				DMLQueue.AddToHead(batchRs);
-				currDML = DMLQueue.getDMLQueueHead();
-			} else {
-				currDML = DMLQueue.RemoveDMLfromHead();
-				pushToDBMS(currDML);
-			}
+		if (statement==null){
+		statement=  (Statement) MySqlSchemaParser.db_conn
+				.createStatement();}
+		if (!DMLQueue.IsEmpty()&& currTable==null && currType==null) {
+			DML currDML = DMLQueue.RemoveDMLfromHead();
+			currType = currDML.type;
+			currTable = currDML.table;
+			batch(currDML, currType, currTable);
 		}
-		if (!DMLQueue.IsEmpty()) {
-			currDML = DMLQueue.RemoveDMLfromHead();
-			pushToDBMS(currDML);
+		while (!DMLQueue.IsEmpty()) {
+			DML nextDML = DMLQueue.RemoveDMLfromHead();
+
+			batch(nextDML, currType, currTable);
+
 		}
 
 	}
 
-	public static void pushToDBMS(DML currDML) throws SQLException {
-		String dmlstr = currDML.DMLString;
-		Statement stmt = (Statement) MySqlSchemaParser.db_conn
-				.createStatement();
-		stmt.execute(dmlstr);
-	}
 
-	private static boolean checkBatchingRules(DML dml1, DML dml2) {
-		if ((dml1.type == DMLType.INSERT || dml1.type == DMLType.UPDATE)
-				&& (dml1.type == dml2.type) && (dml1.table == dml2.table)) {
+	private static boolean checkBatchingRules(DMLType dml1Type,String dml1Table,DMLType dml2Type, String dml2Table) {
+		if ((dml1Type == DMLType.INSERT || dml1Type == DMLType.UPDATE)
+				&& (dml1Type == dml2Type) && (dml1Table == dml2Table)) {
 			return true;
 		}
 		return false;
 	}
 
-	public static void BatchAndPush(List<DML> listOfAffectedDMLs)
-			throws SQLException {
-		while (!listOfAffectedDMLs.isEmpty()) {
-			DML curr = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
-			DML next = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
-			if (curr != null && next != null) {
-				if (checkBatchingRules(curr, next)) {
-					Combiner.PKValuesMap.remove(curr);
-					Combiner.FKValuesMap.remove(curr);
-					Combiner.PKValuesMap.remove(next);
-					Combiner.FKValuesMap.remove(next);
-					DML batchRs = batch(curr, next);
-					DMLQueue.AddToHead(batchRs);
-				} else {
-					Combiner.PKValuesMap.remove(curr);
-					Combiner.FKValuesMap.remove(curr);
-					pushToDBMS(curr);
-					DMLQueue.AddToHead(next);
-				}
-
-			} else {// next is empty
-				pushToDBMS(curr);
-			}
-		}
-	}
-
-	public static DML batch(DML dml1, DML dml2) {
-//		DML batched=null;
-//		if((dml1.type==DMLType.INSERT) && (dml2.type==DMLType.INSERT)){
-//			batched.type=DMLType.INSERT;
-//			batched.table=dml1.table;
-//			Map<String,String> dml1Vals=dml1.DMLGetAttributeValues;
-//			Map<String,String> dml2Vals=dml2.DMLGetAttributeValues;
-//			for ()
+//	public static void BatchAndPush(List<DML> listOfAffectedDMLs)
+//			throws SQLException {
+//		if (statement==null){
+//			 statement=(Statement) MySqlSchemaParser.db_conn
+//				.createStatement();
 //		}
-		return dml2;
+//		if (!listOfAffectedDMLs.isEmpty()&& currTable==null && currType==null) {
+//			DML currDML = DMLQueue.RemoveDMLfromHead();
+//			currType = currDML.type;
+//			currTable = currDML.table;
+//			batch(currDML, currType, currTable);
+//		}
+//		while (!listOfAffectedDMLs.isEmpty()) {
+//			DML curr = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
+//			DML next = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
+//			if (curr != null && next != null) {
+//				if (checkBatchingRules(curr, next)) {
+//					Combiner.PKValuesMap.remove(curr);
+//					Combiner.FKValuesMap.remove(curr);
+//					Combiner.PKValuesMap.remove(next);
+//					Combiner.FKValuesMap.remove(next);
+//					DML batchRs = batch(curr, next);
+//					DMLQueue.AddToHead(batchRs);
+//				} else {
+//					Combiner.PKValuesMap.remove(curr);
+//					Combiner.FKValuesMap.remove(curr);
+//					pushToDBMS(curr);
+//					DMLQueue.AddToHead(next);
+//				}
+//
+//			} else {// next is empty
+//				pushToDBMS(curr);
+//			}
+//		}
+//	}
+
+	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
+
+		if(checkBatchingRules(dml1.type,dml1.table,type,table)){
+			statement.addBatch(dml1.toString());
+		} else {
+			statement.executeBatch();
+			statement.addBatch(dml1.toString());
+		}
 
 	}
 }
