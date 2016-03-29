@@ -67,20 +67,6 @@ public class OptimizerRules {
 		return false;
 	}
 
-	
-	public static boolean checkDeleteInsertRule(DML dml, List<DML> recordDMLs) {
-		if (dml.type != DMLType.INSERT)
-			return false;
-		
-		for(DML recordDML: recordDMLs)
-		{
-			if (recordDML == dml)
-				break;
-			if (recordDML.type == DMLType.DELETE)
-				return true;
-		}
-		return false;
-	}
 
 
 	public static void applyInsertUpdateRule(DML dml, List<DML> recordDMLs) {
@@ -102,12 +88,7 @@ public class OptimizerRules {
 	}
 
 
-	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
-		for(DML fkDML: fkDMLs)
-		{
-			Combiner.removeDML(fkDML);
-			DMLQueue.RemoveDML(fkDML);
-		}
+	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
 			Combiner.removeDML(recordDML);
@@ -116,12 +97,7 @@ public class OptimizerRules {
 	}
 
 
-	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
-		for(DML fkDML: fkDMLs)
-		{
-			Combiner.removeDML(fkDML);
-			DMLQueue.RemoveDML(fkDML);
-		}
+	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
 			if (recordDML == dml)
@@ -149,23 +125,5 @@ public class OptimizerRules {
 		}
 	}
 
-
-	public static void applyDeleteInsertRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
-		// DELETE MAY RESULT IN THE REMOVAL OF OTHER fkS IN db AND SHOULD BE EXECUTED
-		for(DML fkDML: fkDMLs)
-		{
-			Combiner.removeDML(fkDML);
-			DMLQueue.RemoveDML(dml);
-		}
-		
-		for(DML recordDML: recordDMLs)
-		{
-			if( recordDML.type != DMLType.DELETE && recordDML.type != DMLType.INSERT)
-			{
-				Combiner.removeDML(recordDML);
-				DMLQueue.RemoveDML(recordDML);
-			}
-		}
-	}
 
 }

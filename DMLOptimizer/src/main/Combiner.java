@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import model.DML;
-import model.FKValue;
 
 public class Combiner 
 {
 
 	public static Map<String,Map<String, List<DML>>> PKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
-	public static Map<String,Map<String, List<DML>>> FKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
 	
 	public static void addDML(DML dml)
 	{
@@ -35,26 +33,6 @@ public class Combiner
     	recordDMLs.add(dml);
 		tableHashMap.put(dml.PKValue, recordDMLs);
 		
-		// 2. Add to FKValuesMap
-		for(FKValue fkValue: dml.FKValues)
-		{
-			// 2a. get table
-			Map<String, List<DML>> fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
-			if (fkTableHashMap == null)
-			{
-				FKValuesMap.put(fkValue.Referenced_Table, new HashMap<String, List<DML>>());
-				fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
-			}
-			
-			//2. add DML to FK
-			List<DML> fkRecordDMLs = fkTableHashMap.get(fkValue.FKValueString);
-			if (fkRecordDMLs == null)
-	    	{
-				fkRecordDMLs = new LinkedList<DML>();
-	    	}
-			fkRecordDMLs.add(dml);
-			fkTableHashMap.put(fkValue.FKValueString, fkRecordDMLs);
-		}		
 	}
 	
 	
@@ -62,9 +40,6 @@ public class Combiner
 	{
 		Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableHashMap.get(dml.PKValue);
-		
-		Map<String, List<DML>> fkHashMap = FKValuesMap.get(dml.table);
-		List<DML> fkDMLs = fkHashMap.get(dml.PKValue);
 		
 		// NO DMLs to reduce against
 		if(recordDMLs.size() == 1)
@@ -76,19 +51,15 @@ public class Combiner
 		}
 		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs, fkDMLs);
+			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
 		{
-			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs, fkDMLs);
+			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
 		{
 			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs); 
-		}
-		else if(OptimizerRules.checkDeleteInsertRule(dml, recordDMLs))
-		{
-			OptimizerRules.applyDeleteInsertRule(dml, recordDMLs, fkDMLs);
 		}
 		
 	}
@@ -99,28 +70,17 @@ public class Combiner
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
 		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
-		
-		for(FKValue fkValue: dml.FKValues)
-		{
-			// 2a. get table
-			Map<String, List<DML>> fkTableHashMap = FKValuesMap.get(fkValue.Referenced_Table);
-			List<DML> fkRecordDMLs = fkTableHashMap.get(fkValue.FKValueString);
-			fkRecordDMLs.remove(dml); //TEST: test if this is reflected in FKValuesMap
-		}
 	}
 
 
 	public static List<DML> removeRecordDMLs(DML dml) {
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
-		Map<String, List<DML>> FKtableMap = FKValuesMap.get(dml.table);
-		List<DML> FKrecordDMLs = FKtableMap.get(dml.PKValue);
 		
-		tableMap.remove(dml.PKValue);
-		FKtableMap.remove(dml.PKValue);
+		for(DML deleteDML: recordDMLs)
+			removeDML(deleteDML);
 		
-		FKrecordDMLs.addAll(recordDMLs);
-		return FKrecordDMLs;
+		return recordDMLs;
 	}
 	
 }

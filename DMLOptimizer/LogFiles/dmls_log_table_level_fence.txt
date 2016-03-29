@@ -1,0 +1,11 @@
+INSERT INTO friendship VALUES (20,779,2);
+INSERT INTO friendship VALUES (4969,235,1);
+INSERT INTO friendship VALUES (332,24857,1);
+UPDATE friendship SET status=1 WHERE inviterid=20 AND inviteeid= 779;
+UPDATE friendship SET status=2 WHERE inviterid=20 AND inviteeid= 779;
+UPDATE friendship SET status=1 WHERE status=2;
+UPDATE friendship SET status=1 WHERE inviterid=20 AND inviteeid= 779;
+UPDATE friendship SET status=2 WHERE inviterid=20 AND inviteeid= 779;
+DELETE FROM friendship WHERE inviterid=20 AND inviteeid= 779;
+DELETE FROM friendship WHERE inviterid=4969 AND inviteeid= 235;
+DELETE FROM friendship WHERE inviterid=332 AND inviteeid= 24857;

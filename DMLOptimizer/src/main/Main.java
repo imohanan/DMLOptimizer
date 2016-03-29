@@ -46,7 +46,6 @@ public class Main {
 		    			dml = new UpdateDML(dmlLine);
 		    		
 		    		dml.SetPrimaryKeyValue();
-		        	dml.SetForeignKeyValues();
 		    		DMLQueue.AddDML(dml);
 		    		
 			    	if (dml.isTableLevelFence())
