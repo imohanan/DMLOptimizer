@@ -21,6 +21,7 @@ public class Main {
 	
 	public static void main(String[] args) throws SQLException {
 
+		long startTime = System.currentTimeMillis();
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
@@ -69,7 +70,15 @@ public class Main {
 			        }
 		    	}	        
 		    }
+		    long stopTime = System.currentTimeMillis();
+		    long elapsedTime = stopTime - startTime;
+		    System.out.println("Time taken in Combine Stage: " + elapsedTime +" milliseconds");
 		    Util.BatchAndPush();
+		    long stopTimebatch = System.currentTimeMillis();
+		    long elapsedTimebatch = stopTimebatch - stopTime;
+		    long totaltime = elapsedTimebatch + elapsedTime;
+		    System.out.println("Time taken in Batch Stage: " + elapsedTimebatch +" milliseconds");
+		    System.out.println("Total Time taken by program: " + totaltime +" milliseconds");
 		    
 		} 
 		catch (IOException x) {
