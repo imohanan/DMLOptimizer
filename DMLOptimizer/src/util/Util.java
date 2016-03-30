@@ -17,7 +17,7 @@ public class Util {
 	private static Statement statement=null;
 	private static DMLType currType = null;
 	private static String currTable = null;
-	private static int totalBatched=0;
+	public static int totalBatched=0;
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -63,7 +63,6 @@ public class Util {
 			int[] count=statement.executeBatch();
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
-			System.out.println("total batched: "+totalBatched);
 			
 		}
 	}
