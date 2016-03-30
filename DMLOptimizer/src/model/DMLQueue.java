@@ -41,9 +41,16 @@ public class DMLQueue {
 		if (DMLQueueHead == null)
 			return null;
 		DML resultNode = DMLQueueHead;
-		DMLQueueHead = DMLQueueHead.NextNode;
-		if (DMLQueueHead != null)
+		if (DMLQueueHead.NextNode != null)
+		{
+			DMLQueueHead = DMLQueueHead.NextNode;
 			DMLQueueHead.PrevNode = null;
+		}
+		else
+		{
+			DMLQueueHead = null;
+			DMLQueueTail = null;
+		}
 		resultNode.NextNode = null;
 		return resultNode;
 		
