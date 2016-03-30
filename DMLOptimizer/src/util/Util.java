@@ -1,7 +1,9 @@
 package util;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import main.Combiner;
 import main.MySqlSchemaParser;
@@ -15,6 +17,7 @@ public class Util {
 	private static Statement statement=null;
 	private static DMLType currType = null;
 	private static String currTable = null;
+	private static int totalBatched=0;
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -59,7 +62,9 @@ public class Util {
 		if (statement!=null){
 			System.out.println(statement.toString());
 			int[] count=statement.executeBatch();
-			System.out.println("  ");
+			Set countSet = new HashSet(Arrays.asList(count));
+			totalBatched+=countSet.size();
+			System.out.println("total batched: "+totalBatched);
 			
 		}
 		System.out.println("done with batching.");
@@ -116,6 +121,8 @@ public class Util {
 			System.out.println(dml1.toDMLString());
 			System.out.println(statement.toString());
 			int[] count=statement.executeBatch();
+			Set countSet = new HashSet(Arrays.asList(count));
+			totalBatched+=countSet.size();
 			statement.addBatch(dml1.toDMLString());
 		}
 		

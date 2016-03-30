@@ -1,3 +1,4 @@
 DELETE FROM friendship WHERE inviterid=20 AND inviteeid= 779;
 DELETE FROM friendship WHERE inviterid=4969 AND inviteeid= 235;
 DELETE FROM friendship WHERE inviterid=332 AND inviteeid= 24857;
+DELETE FROM users where userid=100000;
