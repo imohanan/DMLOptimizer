@@ -70,6 +70,7 @@ public class Main {
 		    	}	        
 		    }
 		    Util.BatchAndPush();
+		    
 		} 
 		catch (IOException x) {
 		    System.err.format("IOException: %s%n", x);
@@ -78,5 +79,14 @@ public class Main {
 		{
 		    System.err.format("Exception: %s%n", x);
 		}
+		finally
+		{
+			System.out.print("Number of DMLs: ");
+			System.out.println(DML.counter);
+			System.out.print("Number of DMLs after combining: ");
+			System.out.println(DML.combcounter);
+			
+		} 
+		
 	}
 }
