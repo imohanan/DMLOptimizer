@@ -56,6 +56,12 @@ public class Util {
 			batch(nextDML, currType, currTable);
 
 		}
+		if (statement!=null){
+			System.out.println(statement.toString());
+			int[] count=statement.executeBatch();
+			System.out.println("  ");
+			
+		}
 		System.out.println("done with batching.");
 	}
 
@@ -105,10 +111,12 @@ public class Util {
 	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
 
 		if(checkBatchingRules(dml1.type,dml1.table,type,table)){
-			statement.addBatch(dml1.toString());
+			statement.addBatch(dml1.toDMLString());
 		} else {
-			statement.executeBatch();
-			statement.addBatch(dml1.toString());
+			System.out.println(dml1.toDMLString());
+			System.out.println(statement.toString());
+			int[] count=statement.executeBatch();
+			statement.addBatch(dml1.toDMLString());
 		}
 		
 	}

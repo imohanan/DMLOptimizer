@@ -67,9 +67,12 @@ public abstract class DML {
 		    DMLSetAttributeValues.put(key, value);
 		}
 	}
-	
-	public void toDMLString()
-	{
+
+	public String toDMLString() {
+		return null;
+		// TODO Auto-generated method stub
+		
 	}
+
 	
 }

@@ -55,7 +55,7 @@ public class UpdateDML extends DML{
 
 
 	@Override
-	public void toDMLString() {
+	public String toDMLString() {
 		String setClause = "";
 		String whereClause = "";
 		for(Map.Entry<String, String> entry :DMLSetAttributeValues.entrySet())
@@ -69,6 +69,7 @@ public class UpdateDML extends DML{
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
 		DMLString = "update " + table + " set " + setClause + " where " + whereClause + ";";
+		return DMLString;
 	}
 
 }
