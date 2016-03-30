@@ -22,7 +22,7 @@ public class Main {
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
-		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);;
+		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line

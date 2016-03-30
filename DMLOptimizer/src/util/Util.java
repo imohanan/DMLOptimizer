@@ -56,15 +56,13 @@ public class Util {
 			batch(nextDML, currType, currTable);
 
 		}
-
+		System.out.println("done with batching.");
 	}
 
 
 	private static boolean checkBatchingRules(DMLType dml1Type,String dml1Table,DMLType dml2Type, String dml2Table) {
-		if ((dml1Type == DMLType.INSERT || dml1Type == DMLType.UPDATE)
-				&& (dml1Type == dml2Type) && (dml1Table == dml2Table)) {
+		if ((dml1Type == dml2Type) && (dml1Table.equals( dml2Table)))
 			return true;
-		}
 		return false;
 	}
 
@@ -112,6 +110,6 @@ public class Util {
 			statement.executeBatch();
 			statement.addBatch(dml1.toString());
 		}
-
+		
 	}
 }
