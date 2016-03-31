@@ -16,12 +16,14 @@ import model.UpdateDML;
 import util.Util;
 
 public class Main {
-
+	
+	public static long startTime = 0;
+	public static long stopTime = 0;
 	
 	
 	public static void main(String[] args) throws SQLException {
 
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
@@ -70,16 +72,8 @@ public class Main {
 			        }
 		    	}	        
 		    }
-		    long stopTime = System.currentTimeMillis();
-		    long elapsedTime = stopTime - startTime;
-		    System.out.println("Time taken in Combine Stage: " + elapsedTime +" milliseconds");
-		    Util.BatchAndPush();
-		    long stopTimebatch = System.currentTimeMillis();
-		    long elapsedTimebatch = stopTimebatch - stopTime;
-		    long totaltime = elapsedTimebatch + elapsedTime;
-		    System.out.println("Time taken in Batch Stage: " + elapsedTimebatch +" milliseconds");
-		    System.out.println("Total Time taken by program: " + totaltime +" milliseconds");
 		    
+		    Util.BatchAndPush();		    
 		} 
 		catch (IOException x) {
 		    System.err.format("IOException: %s%n", x);
@@ -90,10 +84,14 @@ public class Main {
 		}
 		finally
 		{
-			System.out.print("Number of DMLs: ");
+			Main.stopTime = System.currentTimeMillis();
+			long elapsedTime = Main.stopTime - Main.startTime;
+		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" milliseconds");
+			System.out.print("Total Number of DMLs: ");
 			System.out.println(DML.counter);
 			System.out.print("Number of DMLs after combining: ");
 			System.out.println(DML.combcounter);
+			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
 			
 		} 
 		
