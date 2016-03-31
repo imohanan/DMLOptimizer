@@ -60,14 +60,12 @@ public class Util {
 
 		}
 		if (statement!=null){
-			System.out.println(statement.toString());
 			int[] count=statement.executeBatch();
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
 			System.out.println("total batched: "+totalBatched);
 			
 		}
-		System.out.println("done with batching.");
 	}
 
 
@@ -118,8 +116,6 @@ public class Util {
 		if(checkBatchingRules(dml1.type,dml1.table,type,table)){
 			statement.addBatch(dml1.toDMLString());
 		} else {
-			System.out.println(dml1.toDMLString());
-			System.out.println(statement.toString());
 			int[] count=statement.executeBatch();
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
