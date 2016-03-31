@@ -14,9 +14,10 @@ import java.sql.SQLException;
 import com.mysql.jdbc.Statement;
 
 public class OriginialRun {
+	
 	private static Connection db_conn = null;
 	public static void main(String[] args) throws IOException, SQLException{
-		
+		long startTime = System.currentTimeMillis();
 		if (args.length<3){
 			System.out.println("Wrong number of arguments.Exiting.");
 			System.exit(-1);
@@ -36,6 +37,9 @@ public class OriginialRun {
 			    	}
 			    System.out.println("Number of executed dmls in Original way: "+ count);
 			    db_conn.close();
+			    long stopTime = System.currentTimeMillis();
+			    long elapsedTime = stopTime - startTime;
+			    System.out.println("Time taken for original run: " + elapsedTime +" milliseconds");
 			    }
 		}
 	public static void setupConnection(String username,String password, String db) {
