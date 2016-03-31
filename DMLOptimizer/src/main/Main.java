@@ -19,7 +19,8 @@ public class Main {
 	
 	public static long startTime = 0;
 	public static long stopTime = 0;
-	
+	public static long tableLevelFence = 0;
+	public static long recordLevelFence = 0;
 	
 	public static void main(String[] args) throws SQLException {
 
@@ -53,12 +54,12 @@ public class Main {
 		    		
 			    	if (dml.isTableLevelFence())
 			        {
-			        	System.out.println("Table Level Fence found");
+			    		tableLevelFence ++;
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
-			        	System.out.println("Record Level Fence found");
+			        	recordLevelFence++;
 			    		Combiner.addDML(dml);
 //			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
 //			        	Util.BatchAndPush(ListOfAffectedDMLs);
@@ -92,7 +93,8 @@ public class Main {
 			System.out.print("Number of DMLs after combining: ");
 			System.out.println(DML.combcounter);
 			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
-			
+        	System.out.println("Table Level Fence count is: " + tableLevelFence);
+        	System.out.println("Record Level Fence count is: " + recordLevelFence);
 		} 
 		
 	}
