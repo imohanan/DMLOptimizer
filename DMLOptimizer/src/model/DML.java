@@ -7,6 +7,9 @@ import java.util.Map;
 import main.MySqlSchemaParser;
 
 public abstract class DML {
+   public static int counter = 0;
+   public static int combcounter = 0;
+   public static int batchcounter = 0;
 
 	public String DMLString;
 	public String table;
@@ -18,6 +21,11 @@ public abstract class DML {
 	public Boolean IsTableLevelFence = false;
 	public DML NextNode = null;
 	public DML PrevNode = null;
+	
+	public DML() {
+		counter++;
+		combcounter++;
+	}
 	
 	public void SetPrimaryKeyValue()
 	{

@@ -58,6 +58,8 @@ public class DMLQueue {
 	
 	public static void RemoveDML(DML dml)
 	{
+		DML.combcounter--;
+		
 		if (dml.NextNode != null && dml.PrevNode != null) 
 		{
 			dml.NextNode.PrevNode = dml.PrevNode;
