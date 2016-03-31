@@ -44,7 +44,7 @@ public class DeleteDML extends DML {
 
 
 	@Override
-	public void toDMLString() {
+	public String toDMLString() {
 		String whereClause = "";
 		for(Map.Entry<String, String> entry: DMLGetAttributeValues.entrySet() )
 		{
@@ -52,7 +52,7 @@ public class DeleteDML extends DML {
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
 		DMLString = "delete from " + table + " where " + whereClause + ";";
-		
+		return DMLString;
 	}
 
 }

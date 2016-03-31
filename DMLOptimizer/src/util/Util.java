@@ -1,7 +1,9 @@
 package util;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import main.Combiner;
 import main.MySqlSchemaParser;
@@ -15,6 +17,7 @@ public class Util {
 	private static Statement statement=null;
 	private static DMLType currType = null;
 	private static String currTable = null;
+	private static int totalBatched=0;
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -56,15 +59,19 @@ public class Util {
 			batch(nextDML, currType, currTable);
 
 		}
-
+		if (statement!=null){
+			int[] count=statement.executeBatch();
+			Set countSet = new HashSet(Arrays.asList(count));
+			totalBatched+=countSet.size();
+			System.out.println("total batched: "+totalBatched);
+			
+		}
 	}
 
 
 	private static boolean checkBatchingRules(DMLType dml1Type,String dml1Table,DMLType dml2Type, String dml2Table) {
-		if ((dml1Type == DMLType.INSERT || dml1Type == DMLType.UPDATE)
-				&& (dml1Type == dml2Type) && (dml1Table == dml2Table)) {
+		if ((dml1Type == dml2Type) && (dml1Table.equals( dml2Table)))
 			return true;
-		}
 		return false;
 	}
 
@@ -107,11 +114,13 @@ public class Util {
 	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
 
 		if(checkBatchingRules(dml1.type,dml1.table,type,table)){
-			statement.addBatch(dml1.toString());
+			statement.addBatch(dml1.toDMLString());
 		} else {
-			statement.executeBatch();
-			statement.addBatch(dml1.toString());
+			int[] count=statement.executeBatch();
+			Set countSet = new HashSet(Arrays.asList(count));
+			totalBatched+=countSet.size();
+			statement.addBatch(dml1.toDMLString());
 		}
-
+		
 	}
 }

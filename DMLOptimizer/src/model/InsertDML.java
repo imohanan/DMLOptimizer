@@ -58,7 +58,7 @@ public class InsertDML extends DML{
 
 
 	@Override
-	public void toDMLString() {
+	public String toDMLString() {
 		String attributes = "(";
 		String values = "(";
 		for(Map.Entry<String, String> entry :DMLSetAttributeValues.entrySet())
@@ -69,6 +69,7 @@ public class InsertDML extends DML{
 		attributes = attributes.substring(0, attributes.length() - 1) + ")";
 		values = values.substring(0, values.length() - 1) + ")";
 		DMLString = "insert into " + table + attributes + " values " + values + ";";
+		return DMLString;
 	}
 	
 }
