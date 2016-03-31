@@ -63,6 +63,11 @@ public class DMLQueue {
 			dml.NextNode.PrevNode = dml.PrevNode;
 			dml.PrevNode.NextNode = dml.NextNode;
 		}
+		else if(DMLQueueHead == dml && DMLQueueTail == dml)
+		{
+			DMLQueueHead = null;
+			DMLQueueTail = null;
+		}
 		else if(DMLQueueHead == dml)
 		{
 			DMLQueueHead = DMLQueueHead.NextNode;
