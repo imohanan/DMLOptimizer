@@ -72,7 +72,78 @@ public abstract class DML {
 		for (Map.Entry<String, String> entry : dMLSetAttributeValues2.entrySet()) {
 		    String key = entry.getKey();
 		    String value = entry.getValue().toString();
-		    DMLSetAttributeValues.put(key, value);
+		    String origValue = DMLSetAttributeValues.get(key);
+		    String newNumber= value.replaceAll("[^0-9]", "");
+		    
+		    if (origValue == null || !value.toLowerCase().contains(key.toLowerCase())) {
+		    	DMLSetAttributeValues.put(key, value);
+		    }
+		    else if (value.toLowerCase().contains(key.toLowerCase()) && origValue.toLowerCase().contains(key.toLowerCase())){
+		    	String origNumber = origValue.replaceAll("[^0-9]", "");	   
+		    	String newValue = key;
+		    	if (value.indexOf("+") != -1 && origValue.indexOf("+") != -1) {
+		    		int ans = Integer.parseInt(newNumber) + Integer.parseInt(origNumber);
+		    		newValue = newValue + "+" + ans;
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("+") != -1 && origValue.indexOf("-") != -1) {
+		    		int ans = ((-1) * Integer.parseInt(newNumber)) + Integer.parseInt(origNumber);
+		    		if (ans < 0) {
+		    			newValue = newValue + "-" + Math.abs(ans);
+		    		}
+		    		else {
+		    			newValue = newValue + "+" + Math.abs(ans);
+		    		}		    		
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("-") != -1 && origValue.indexOf("+") != -1) {
+		    		int ans = ((-1) * Integer.parseInt(newNumber)) + Integer.parseInt(origNumber);
+		    		if (ans < 0) {
+		    			newValue = newValue + "-" + Math.abs(ans);
+		    		}
+		    		else {
+		    			newValue = newValue + "+" + Math.abs(ans);
+		    		}		    		
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("-") != -1 && origValue.indexOf("-") != -1) {
+		    		int ans = Integer.parseInt(newNumber) + Integer.parseInt(origNumber);
+		    		newValue = newValue + "-" + ans;
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("*") != -1){
+		    		//TODO
+		    	}
+		    	
+		    }
+		    else {
+		    	String origNumber = origValue;
+		    	String newValue = "";
+		    	if (value.indexOf("+") != -1) {
+		    		int ans = Integer.parseInt(origNumber) + Integer.parseInt(newNumber);
+		    		if (ans < 0){
+		    			newValue = newValue + "-" + Math.abs(ans);
+		    		}
+		    		else {
+		    			newValue = newValue + "+" + Math.abs(ans);
+		    		}
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("-") != -1) {
+		    		int ans = Integer.parseInt(origNumber) + ((-1)*Integer.parseInt(newNumber));
+		    		if (ans < 0){
+		    			newValue = newValue + "-" + Math.abs(ans);
+		    		}
+		    		else {
+		    			newValue = newValue + "+" + Math.abs(ans);
+		    		}
+		    		DMLSetAttributeValues.put(key, newValue);
+		    	}
+		    	else if (value.indexOf("*") != -1) {
+		    		//TODO
+		    	}
+		    }
+		    
 		}
 	}
 

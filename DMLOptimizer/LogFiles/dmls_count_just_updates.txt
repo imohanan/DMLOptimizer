@@ -1,0 +1,3 @@
+UPDATE friendship SET status=status + 1 WHERE inviterid=20 AND inviteeid= 779;
+UPDATE friendship SET status= StAtus - 1 WHERE inviterid=20 AND inviteeid= 779;
+UPDATE friendship SET status= STATUS +1 WHERE inviterid=20 AND inviteeid= 779;
