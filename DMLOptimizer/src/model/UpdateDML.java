@@ -23,7 +23,6 @@ public class UpdateDML extends DML{
 		
 		// 4. set attributes Values
 		String[] clauses = inputString.split(" where ");
-		//TODO add the SET attributes SET PendCount=PendCount+1?? Should be record level fence?????
 		
 		String[] setClauses = clauses[0].split(" set ");
 		String[] setAttValues = setClauses[1].split(",");

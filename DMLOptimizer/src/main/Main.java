@@ -36,7 +36,6 @@ public class Main {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	
-		    	line = line.toLowerCase();
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
