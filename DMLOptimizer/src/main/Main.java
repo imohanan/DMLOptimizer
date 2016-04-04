@@ -38,9 +38,10 @@ public class Main {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	consoleLineCount++;
-		    	if(consoleLineCount%1000 == 0)
-		    		System.out.println("1000 Iterations Completed: "+Integer.toString(consoleLineCount/1000));
+		    	if(consoleLineCount%100000 == 0)
+		    		System.out.println("100000 Iterations Completed: "+Integer.toString(consoleLineCount/100000));
 		    	line = line.toLowerCase();
+		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
