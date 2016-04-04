@@ -8,8 +8,6 @@ import main.MySqlSchemaParser;
 
 public abstract class DML {
    public static int counter = 0;
-   public static int combcounter = 0;
-   public static int batchcounter = 0;
 
 	public String DMLString;
 	public String table;
@@ -24,7 +22,6 @@ public abstract class DML {
 	
 	public DML() {
 		counter++;
-		combcounter++;
 	}
 	
 	public void SetPrimaryKeyValue()
