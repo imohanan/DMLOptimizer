@@ -36,6 +36,7 @@ public class Main {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	
+		    	line = line.toLowerCase();
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
@@ -60,13 +61,10 @@ public class Main {
 			        {
 			        	recordLevelFence++;
 			    		Combiner.addDML(dml);
-//			        	List<DML> ListOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
-//			        	Util.BatchAndPush(ListOfAffectedDMLs);
 			    		Util.BatchAndPush();
 			        }
 			        else
 			        {
-
 			    		Combiner.addDML(dml);
 			        	Combiner.applyOptimizerRules(dml);
 			        }
