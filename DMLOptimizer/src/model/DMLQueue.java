@@ -7,12 +7,14 @@ public class DMLQueue {
 
 	private static DML DMLQueueHead;
 	private static DML DMLQueueTail;
+	private static int queueSize = 0;
 
 	public static DML getDMLQueueHead() {
 		return DMLQueueHead;
 	}
 
 	public static void setDMLQueueHead(DML dMLQueueHead) {
+		queueSize++;
 		DMLQueueHead = dMLQueueHead;
 	}
 
@@ -21,10 +23,12 @@ public class DMLQueue {
 	}
 
 	public static void setDMLQueueTail(DML dMLQueueTail) {
+		queueSize++;
 		DMLQueueTail = dMLQueueTail;
 	}
 	
 	public static void AddDML(DML dml) {
+		queueSize++;
 		if (DMLQueueTail == null || DMLQueueHead == null)
 		{
 			DMLQueueTail = dml;
@@ -40,6 +44,7 @@ public class DMLQueue {
 	{
 		if (DMLQueueHead == null)
 			return null;
+		queueSize--;
 		DML resultNode = DMLQueueHead;
 		if (DMLQueueHead.NextNode != null)
 		{
@@ -52,12 +57,12 @@ public class DMLQueue {
 			DMLQueueTail = null;
 		}
 		resultNode.NextNode = null;
-		return resultNode;
-		
+		return resultNode;	
 	}
 	
 	public static void RemoveDML(DML dml)
 	{
+		queueSize--;
 		if (dml.NextNode != null && dml.PrevNode != null) 
 		{
 			dml.NextNode.PrevNode = dml.PrevNode;
@@ -84,12 +89,14 @@ public class DMLQueue {
 	
 	public static void AddToHead(DML dml)
 	{
+		queueSize++;
 		dml.NextNode = DMLQueueHead;
 		DMLQueueHead.PrevNode = dml;
 		DMLQueueHead = dml;
 	}
+	
 	public static int getQueueSize(){
-		return 0;
+		return queueSize;
 	}
 	
 	public static Boolean IsEmpty()
