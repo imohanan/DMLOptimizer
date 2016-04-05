@@ -38,8 +38,8 @@ public class OriginialRun {
 			    System.out.println("Number of executed dmls in Original way: "+ count);
 			    db_conn.close();
 			    long stopTime = System.currentTimeMillis();
-			    long elapsedTime = stopTime - startTime;
-			    System.out.println("Time taken for original run: " + elapsedTime +" milliseconds");
+			    double elapsedTime = (((stopTime - startTime)*1.67)/100000);
+			    System.out.println("Time taken for original run: " + elapsedTime +" minutes");
 			    }
 		}
 	public static void setupConnection(String username,String password, String db) {

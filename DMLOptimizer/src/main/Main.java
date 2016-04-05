@@ -85,8 +85,8 @@ public class Main {
 		finally
 		{
 			Main.stopTime = System.currentTimeMillis();
-			long elapsedTime = Main.stopTime - Main.startTime;
-		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" milliseconds");
+			double elapsedTime = (((Main.stopTime - Main.startTime)*1.67)/100000);
+		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" minutes");
 			System.out.print("Total Number of DMLs: ");
 			System.out.println(DML.counter);
 			System.out.print("Number of DMLs after combining: ");
