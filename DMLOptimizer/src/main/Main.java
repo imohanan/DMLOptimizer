@@ -1,12 +1,11 @@
 package main;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Iterator;
 
 import model.DML;
 import model.DMLQueue;
@@ -96,6 +95,14 @@ public class Main {
 			System.out.println("Average number of dmls in each batch : "+(Util.totalBatched/Util.dbmsAccess));
         	System.out.println("Table Level Fence count is: " + tableLevelFence);
         	System.out.println("Record Level Fence count is: " + recordLevelFence);
+        	Iterator<Integer> iterator = Util.NoDMLsPassedToBatch.keySet().iterator();
+
+        	while (iterator.hasNext()) {
+        	   String key = iterator.next().toString();
+        	   Integer value = Util.NoDMLsPassedToBatch.get(key);
+
+        	   System.out.println(key + " " + value);
+        	}
 		} 
 		
 	}

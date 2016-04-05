@@ -51,6 +51,15 @@ public class Util {
 		if (statement==null){
 		statement=  (Statement) MySqlSchemaParser.db_conn
 				.createStatement();}
+		int Qsize=DMLQueue.getQueueSize();
+		if(NoDMLsPassedToBatch.get(Qsize)!=null){
+			int val=NoDMLsPassedToBatch.get(Qsize);
+			NoDMLsPassedToBatch.remove(Qsize);
+			NoDMLsPassedToBatch.put(Qsize, val+1);
+		}
+		else{
+			NoDMLsPassedToBatch.put(Qsize, 1);
+		}
 		
 		if (!DMLQueue.IsEmpty()&& currTable==null && currType==null) {
 			DML currDML = DMLQueue.RemoveDMLfromHead();
