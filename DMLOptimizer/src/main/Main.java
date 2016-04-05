@@ -25,18 +25,23 @@ public class Main {
 	public static void main(String[] args) throws SQLException {
 
 		startTime = System.currentTimeMillis();
+		System.out.println("Start Time " + Long.toString(startTime));
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
 		
 		// 2. For each log line
+		int consoleLineCount = 0;
 		Path filePath = Paths.get(args[3]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
-		    	
+		    	consoleLineCount++;
+		    	if(consoleLineCount%100000 == 0)
+		    		System.out.println("100000 Iterations Completed: "+Integer.toString(consoleLineCount/100000));
 		    	line = line.toLowerCase();
+		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
@@ -51,6 +56,7 @@ public class Main {
 		    		
 		    		dml.SetPrimaryKeyValue();
 		    		DMLQueue.AddDML(dml);
+		    		Combiner.addDML(dml);
 		    		
 			    	if (dml.isTableLevelFence())
 			        {
@@ -60,12 +66,10 @@ public class Main {
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	recordLevelFence++;
-			    		Combiner.addDML(dml);
 			    		Util.BatchAndPush();
 			        }
 			        else
 			        {
-			    		Combiner.addDML(dml);
 			        	Combiner.applyOptimizerRules(dml);
 			        }
 		    	}	        
@@ -73,22 +77,20 @@ public class Main {
 		    
 		    Util.BatchAndPush();		    
 		} 
-		catch (IOException x) {
-		    System.err.format("IOException: %s%n", x);
-		}
 		catch(Exception x)
 		{
 		    System.err.format("Exception: %s%n", x);
+		    System.out.println("Exeception");
 		}
 		finally
 		{
 			Main.stopTime = System.currentTimeMillis();
-			long elapsedTime = Main.stopTime - Main.startTime;
-		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" milliseconds");
+			double elapsedTime = (((Main.stopTime - Main.startTime)*1.67)/100000);
+		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" minutes");
 			System.out.print("Total Number of DMLs: ");
 			System.out.println(DML.counter);
 			System.out.print("Number of DMLs after combining: ");
-			System.out.println(DML.combcounter);
+			System.out.println(Combiner.combcounter);
 			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
 			System.out.println("Total number of access to dbms: "+Util.dbmsAccess);
 			System.out.println("Average number of dmls in each batch : "+(Util.totalBatched/Util.dbmsAccess));

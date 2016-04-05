@@ -11,10 +11,11 @@ public class Combiner
 {
 
 	public static Map<String,Map<String, List<DML>>> PKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
+	public static int combcounter = 0;
 	
 	public static void addDML(DML dml)
 	{
-    	
+		combcounter++;
 		// 1.add to PKValuesMap 
     	// 1a. get table
     	Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
@@ -67,13 +68,14 @@ public class Combiner
 	
 	
 	public static void removeDML(DML dml) {
+		combcounter--;
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
 		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
 	}
 
 
-	public static List<DML> removeRecordDMLs(DML dml) {
+	/*public static List<DML> removeRecordDMLs(DML dml) {
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
 		
@@ -81,6 +83,6 @@ public class Combiner
 			removeDML(deleteDML);
 		
 		return recordDMLs;
-	}
+	}*/
 	
 }

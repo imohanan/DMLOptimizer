@@ -68,7 +68,6 @@ public class OptimizerRules {
 	}
 
 
-
 	public static void applyInsertUpdateRule(DML dml, List<DML> recordDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
@@ -91,6 +90,7 @@ public class OptimizerRules {
 	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
+			if (recordDML == dml) return; // TODO: use FKeys to remove FKey DMLs instead of this line
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
 		}
@@ -101,7 +101,7 @@ public class OptimizerRules {
 		for(DML recordDML: recordDMLs)
 		{
 			if (recordDML == dml)
-				continue;
+				return;
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
 		}

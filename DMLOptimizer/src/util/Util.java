@@ -62,6 +62,8 @@ public class Util {
 			DML nextDML = DMLQueue.RemoveDMLfromHead();
 
 			batch(nextDML, currType, currTable);
+			currType=nextDML.type;
+			currTable=nextDML.table;
 
 		}
 		if (statement!=null){
@@ -69,7 +71,9 @@ public class Util {
 			dbmsAccess++;
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
-			
+			statement=null;
+			currType=null;
+			currTable=null;
 			
 		}
 	}
