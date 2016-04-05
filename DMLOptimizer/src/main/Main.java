@@ -90,6 +90,8 @@ public class Main {
 			System.out.print("Number of DMLs after combining: ");
 			System.out.println(DML.combcounter);
 			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
+			System.out.println("Total number of access to dbms: "+Util.dbmsAccess);
+			System.out.println("Average number of dmls in each batch : "+(Util.totalBatched/Util.dbmsAccess));
         	System.out.println("Table Level Fence count is: " + tableLevelFence);
         	System.out.println("Record Level Fence count is: " + recordLevelFence);
 		} 

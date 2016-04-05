@@ -84,32 +84,15 @@ public class DMLQueue {
 		dml.PrevNode = null;
 	}
 	
-	public static DML getMin(List<DML> dmls){
-		//Return the DML from List which is the next one to get fired based on order in DMLQUEUE.
-		DML dml=null;
-		return dml;
-	}
-	public static DML getMinAndRemove(List<DML> dmls){
-		//Return the DML from List which is the next one to get fired based on order in DMLQUEUE.
-		//Then,remove that dml from DMLQUEUE.
-		DML dml=null;
-		return dml;
-	}
-	public static int getIndex(DML dml){
-		//Return the index of dml in DMLQUEUE.Return Null if you could not find it.
-		return 0;
-	}
-	public static boolean removeDML(DML dml){
-		//Remove the dml from DMLQUEUE. Return ture if successful, false if unsuccessful.
-		return true;
-	}
 	public static void AddToHead(DML dml)
 	{
 		dml.NextNode = DMLQueueHead;
 		DMLQueueHead.PrevNode = dml;
 		DMLQueueHead = dml;
 	}
-	
+	public static int getQueueSize(){
+		return 0;
+	}
 	
 	public static Boolean IsEmpty()
 	{

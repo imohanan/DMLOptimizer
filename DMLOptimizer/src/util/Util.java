@@ -2,7 +2,9 @@ package util;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import main.Combiner;
@@ -18,6 +20,8 @@ public class Util {
 	private static DMLType currType = null;
 	private static String currTable = null;
 	public static int totalBatched=0;
+	public static int dbmsAccess=0;
+	public static Map<Integer, Integer> NoDMLsPassedToBatch=new HashMap<Integer,Integer>();
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -47,6 +51,7 @@ public class Util {
 		if (statement==null){
 		statement=  (Statement) MySqlSchemaParser.db_conn
 				.createStatement();}
+		
 		if (!DMLQueue.IsEmpty()&& currTable==null && currType==null) {
 			DML currDML = DMLQueue.RemoveDMLfromHead();
 			currType = currDML.type;
@@ -61,8 +66,10 @@ public class Util {
 		}
 		if (statement!=null){
 			int[] count=statement.executeBatch();
+			dbmsAccess++;
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
+			
 			
 		}
 	}
@@ -116,6 +123,7 @@ public class Util {
 			statement.addBatch(dml1.toDMLString());
 		} else {
 			int[] count=statement.executeBatch();
+			dbmsAccess++;
 			Set countSet = new HashSet(Arrays.asList(count));
 			totalBatched+=countSet.size();
 			statement.addBatch(dml1.toDMLString());
