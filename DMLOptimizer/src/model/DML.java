@@ -66,6 +66,7 @@ public abstract class DML {
 	public void changeValues(Map<String, String> dMLSetAttributeValues2,  DMLType newType)
 	{
 		type = newType;
+		boolean pendcountDmlSeen = false;
 		for (Map.Entry<String, String> entry : dMLSetAttributeValues2.entrySet()) {
 		    String key = entry.getKey();
 		    String value = entry.getValue().toString();
@@ -76,6 +77,7 @@ public abstract class DML {
 		    	DMLSetAttributeValues.put(key, value);
 		    }
 		    else if (value.toLowerCase().contains(key.toLowerCase()) && origValue.toLowerCase().contains(key.toLowerCase())){
+		    	pendcountDmlSeen = true;
 		    	String origNumber = origValue.replaceAll("[^0-9]", "");	   
 		    	String newValue = key;
 		    	if (value.indexOf("+") != -1 && origValue.indexOf("+") != -1) {
@@ -114,6 +116,7 @@ public abstract class DML {
 		    	
 		    }
 		    else {
+		    	pendcountDmlSeen = true;
 		    	String origNumber = origValue;
 		    	String newValue = "";
 		    	if (value.indexOf("+") != -1) {
@@ -142,6 +145,10 @@ public abstract class DML {
 		    }
 		    
 		}
+		if (pendcountDmlSeen) {
+			Stats.pendcountDML++;
+		}
+		
 	}
 
 	public String toDMLString() {

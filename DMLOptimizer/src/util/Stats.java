@@ -15,6 +15,7 @@ public class Stats {
 	public static int insertDeleteCount = 0;
 	public static int updateDeleteCount = 0;
 	public static int updateUpdateCount = 0;
+	public static int pendcountDML = 0 ;
 	
 	public static int recordFenceCount = 0;
 	public static int tableFenceCount = 0;
@@ -34,5 +35,6 @@ public class Stats {
     	System.out.println("Rule InsertDelete count is : " + Stats.insertDeleteCount);
     	System.out.println("Rule UpdateDelete count is : " + Stats.updateDeleteCount);
     	System.out.println("Rule UpdateUpdate count is : " + Stats.updateUpdateCount);
+    	System.out.println("Number of  PendCount type DMLs observed and combined is : " + Stats.pendcountDML);
 	}
 }
