@@ -16,7 +16,7 @@ import util.Stats;
 import util.Util;
 
 public class Main {
-	
+	public static boolean blind=true;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
@@ -50,12 +50,18 @@ public class Main {
 			    	if (dml.isTableLevelFence())
 			        {
 			    		Stats.tableFenceCount++;
+			    		if(!blind)
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
+			        	if (blind)
+			        		Util.blindBatch();
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	Stats.recordFenceCount++;
+			        	if(!blind)
 			    		Util.BatchAndPush();
+			    		if(blind)
+			    		Util.blindBatch();
 			        }
 			        else
 			        {
@@ -63,8 +69,10 @@ public class Main {
 			        }
 		    	}	        
 		    }
-		    
-		    Util.BatchAndPush();		    
+		    if(!blind)
+		    	Util.BatchAndPush();
+		    if (blind)
+		    	Util.blindBatch();
 		} 
 		catch(Exception x)
 		{
@@ -77,17 +85,7 @@ public class Main {
 			Stats.stopTime = System.currentTimeMillis();
 			Stats.printStats();
 		
-			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
-			System.out.println("Total number of access to dbms: "+Util.dbmsAccess);
-			System.out.println("Average number of dmls in each batch : "+(Util.totalBatched/Util.dbmsAccess));
-        	Iterator<Integer> iterator = Util.NoDMLsPassedToBatch.keySet().iterator();
-
-        	while (iterator.hasNext()) {
-        	   String key = iterator.next().toString();
-        	   Integer value = Util.NoDMLsPassedToBatch.get(key);
-
-        	   System.out.println(key + " " + value);
-        	}
+			
 		} 
 		
 	}

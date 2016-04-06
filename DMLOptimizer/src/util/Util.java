@@ -2,10 +2,10 @@ package util;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+
+import com.mysql.jdbc.Statement;
 
 import main.Combiner;
 import main.MySqlSchemaParser;
@@ -13,15 +13,11 @@ import model.DML;
 import model.DMLQueue;
 import model.DMLType;
 
-import com.mysql.jdbc.Statement;
-
 public class Util {
 	private static Statement statement=null;
 	private static DMLType currType = null;
 	private static String currTable = null;
-	public static int totalBatched=0;
-	public static int dbmsAccess=0;
-	public static Map<Integer, Integer> NoDMLsPassedToBatch=new HashMap<Integer,Integer>();
+	public static int batchSize;
 
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
@@ -46,19 +42,25 @@ public class Util {
 	}
 
 	public static void BatchAndPush() throws SQLException {// For
-															// TableLevelFence
+												// TableLevelFence
+		batchSize=0;
+		Stats.batchCalls++;
 		Combiner.PKValuesMap.clear();
 		if (statement==null){
 		statement=  (Statement) MySqlSchemaParser.db_conn
 				.createStatement();}
 		int Qsize=DMLQueue.getQueueSize();
-		if(NoDMLsPassedToBatch.get(Qsize)!=null){
-			int val=NoDMLsPassedToBatch.get(Qsize);
-			NoDMLsPassedToBatch.remove(Qsize);
-			NoDMLsPassedToBatch.put(Qsize, val+1);
+		if(Qsize>Stats.maxCombinerToBatchSize)
+			Stats.maxCombinerToBatchSize=Qsize;
+		else if(Qsize<Stats.minCombinerToBatchSize)
+			Stats.minCombinerToBatchSize=Qsize;
+		if(Stats.NoDMLsPassedToBatcher.get(Qsize)!=null){
+			int val=Stats.NoDMLsPassedToBatcher.get(Qsize);
+			Stats.NoDMLsPassedToBatcher.remove(Qsize);
+			Stats.NoDMLsPassedToBatcher.put(Qsize, val+1);
 		}
 		else{
-			NoDMLsPassedToBatch.put(Qsize, 1);
+			Stats.NoDMLsPassedToBatcher.put(Qsize, 1);
 		}
 		
 		if (!DMLQueue.IsEmpty()&& currTable==null && currType==null) {
@@ -76,10 +78,20 @@ public class Util {
 
 		}
 		if (statement!=null){
-			int[] count=statement.executeBatch();
-			dbmsAccess++;
+			int[] count=null;
+			if(Stats.issueToDBMS)
+				 count=statement.executeBatch();
+			else{
+				statement.clearBatch();
+			}
+			 
+			Stats.dbmsAccess++;
 			Set countSet = new HashSet(Arrays.asList(count));
-			totalBatched+=countSet.size();
+			if (countSet.size()>Stats.maxBatched)
+				Stats.maxBatched=countSet.size();
+			else if(countSet.size()<Stats.minBatched)
+				Stats.minBatched=countSet.size();
+			Stats.totalBatched+=countSet.size();
 			statement=null;
 			currType=null;
 			currTable=null;
@@ -131,16 +143,78 @@ public class Util {
 //	}
 
 	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
-
+		int[] count=null;
+		
 		if(checkBatchingRules(dml1.type,dml1.table,type,table)){
 			statement.addBatch(dml1.toDMLString());
+			batchSize++;
 		} else {
-			int[] count=statement.executeBatch();
-			dbmsAccess++;
+			if(Stats.issueToDBMS){
+				 count=statement.executeBatch();
+				 if (batchSize>Stats.maxBatched)
+					 Stats.maxBatched=batchSize;
+				 else if (batchSize<Stats.minBatched)
+					 Stats.minBatched=batchSize;
+				 batchSize=0;
+			}
+				
+			else{
+				statement.clearBatch();
+			}
+			Stats.dbmsAccess++;
 			Set countSet = new HashSet(Arrays.asList(count));
-			totalBatched+=countSet.size();
+			if (countSet.size()>Stats.maxBatched)
+				Stats.maxBatched=countSet.size();
+			else if(countSet.size()<Stats.minBatched)
+				Stats.minBatched=countSet.size();
+			Stats.totalBatched+=countSet.size();
 			statement.addBatch(dml1.toDMLString());
 		}
 		
 	}
-}
+	public static void blindBatch() throws SQLException{
+		batchSize=0;
+		Stats.batchCalls++;
+		Combiner.PKValuesMap.clear();
+		if (statement==null){
+		statement=  (Statement) MySqlSchemaParser.db_conn
+				.createStatement();}
+		int Qsize=DMLQueue.getQueueSize();
+		if(Qsize>Stats.maxCombinerToBatchSize)
+			Stats.maxCombinerToBatchSize=Qsize;
+		else if(Qsize<Stats.minCombinerToBatchSize)
+			Stats.minCombinerToBatchSize=Qsize;
+		if(Stats.NoDMLsPassedToBatcher.get(Qsize)!=null){
+			int val=Stats.NoDMLsPassedToBatcher.get(Qsize);
+			Stats.NoDMLsPassedToBatcher.remove(Qsize);
+			Stats.NoDMLsPassedToBatcher.put(Qsize, val+1);
+		}
+		else{
+			Stats.NoDMLsPassedToBatcher.put(Qsize, 1);
+		}
+		
+		while (!DMLQueue.IsEmpty()) {
+			statement.addBatch(DMLQueue.RemoveDMLfromHead().toDMLString());
+		}
+		if (statement!=null){
+			int[] count=null;
+			if(Stats.issueToDBMS)
+				 count=statement.executeBatch();
+			else{
+				statement.clearBatch();
+			}
+			 
+			Stats.dbmsAccess++;
+			Set countSet = new HashSet(Arrays.asList(count));
+			if (countSet.size()>Stats.maxBatched)
+				Stats.maxBatched=countSet.size();
+			else if(countSet.size()<Stats.minBatched)
+				Stats.minBatched=countSet.size();
+			Stats.totalBatched+=countSet.size();
+			statement=null;
+			
+		}
+	}
+
+	}
+
