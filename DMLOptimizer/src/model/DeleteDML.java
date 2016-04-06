@@ -18,15 +18,15 @@ public class DeleteDML extends DML {
 		type = DMLType.DELETE;
 		
 		// 3. set table
-		table = words[2];
+		table = words[2].toLowerCase();
 		
 		// 4. set attributes Values
-		String[] clauses = inputString.split(" where ");
-		String[] attVals = clauses[1].split(" and ");
+		String[] clauses = inputString.split("\\s*(?i)where\\s*");
+		String[] attVals = clauses[1].split("\\s*(?i)and\\s*");
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
-			DMLGetAttributeValues.put(elements[0].toString(), elements[1].toString());
+			DMLGetAttributeValues.put(elements[0].toString().toLowerCase(), elements[1].toString());
 		}
 	}
 

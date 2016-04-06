@@ -9,7 +9,7 @@ public class InsertDML extends DML{
 
 	public InsertDML(String inputString) {
 		//1. set String
-		DMLString = inputString.toLowerCase();
+		DMLString = inputString;
 		// 2. Set Type
 		type = DMLType.INSERT;
 		
@@ -18,7 +18,7 @@ public class InsertDML extends DML{
 		String[] words = inputString.split(" ");
 		
 		//3.Set Table
-		table = words[2];
+		table = words[2].toLowerCase();
 		
 		// 4. set attributes Values
 		String values = words[4].replace('(', ' ');

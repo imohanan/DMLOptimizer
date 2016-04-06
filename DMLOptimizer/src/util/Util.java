@@ -26,12 +26,12 @@ public class Util {
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
 		dmlString = dmlString.trim();
-		String[] parts = dmlString.split(" where ");
+		String[] parts = dmlString.split("\\s*(?i)where\\s*");
 		if (parts.length == 1)
 			return new String[] { dmlString };
 
 		String DMLPre = parts[0];
-		String[] DMLPosts = parts[1].split(" or ");
+		String[] DMLPosts = parts[1].split("\\s*(?i)or\\s*");
 
 		String NewDMLs[] = new String[DMLPosts.length];
 

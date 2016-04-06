@@ -19,24 +19,24 @@ public class UpdateDML extends DML{
 		type = DMLType.UPDATE;
 		
 		// 3. set table
-		table = words[1];
+		table = words[1].toLowerCase();
 		
 		// 4. set attributes Values
-		String[] clauses = inputString.split(" where ");
+		String[] clauses = inputString.split("\\s*(?i)where\\s*");
 		
-		String[] setClauses = clauses[0].split(" set ");
+		String[] setClauses = clauses[0].split("\\s*(?i)set\\s*");
 		String[] setAttValues = setClauses[1].split(",");
 		for(String setAttVal: setAttValues)
 		{
 			String[] elements = setAttVal.trim().split("=");
-			DMLSetAttributeValues.put(elements[0], elements[1].toString());
+			DMLSetAttributeValues.put(elements[0].toLowerCase(), elements[1].toString());
 		}
 		
-		String[] attVals = clauses[1].split(" and ");
+		String[] attVals = clauses[1].split("\\s*(?i)and\\s*");
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
-			DMLGetAttributeValues.put(elements[0], elements[1].toString());
+			DMLGetAttributeValues.put(elements[0].toLowerCase(), elements[1].toString());
 		}		
 	}
 

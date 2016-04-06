@@ -30,10 +30,7 @@ public class Main {
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
-		    while ((line = reader.readLine()) != null) {
-		    
-		    	line = line.toLowerCase();
-		    	
+		    while ((line = reader.readLine()) != null) {		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
