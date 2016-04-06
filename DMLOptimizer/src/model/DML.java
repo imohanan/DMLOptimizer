@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import main.MySqlSchemaParser;
+import util.Stats;
 
 public abstract class DML {
-   public static int counter = 0;
 
 	public String DMLString;
 	public String table;
@@ -21,7 +21,7 @@ public abstract class DML {
 	public DML PrevNode = null;
 	
 	public DML() {
-		counter++;
+		Stats.DMLTotal++;
 	}
 	
 	public void SetPrimaryKeyValue()

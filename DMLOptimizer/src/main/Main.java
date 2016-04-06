@@ -12,33 +12,26 @@ import model.DMLQueue;
 import model.DeleteDML;
 import model.InsertDML;
 import model.UpdateDML;
+import util.Stats;
 import util.Util;
 
 public class Main {
 	
-	public static long startTime = 0;
-	public static long stopTime = 0;
-	public static long tableLevelFence = 0;
-	public static long recordLevelFence = 0;
-	
 	public static void main(String[] args) throws SQLException {
 
-		startTime = System.currentTimeMillis();
-		System.out.println("Start Time " + Long.toString(startTime));
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		Combiner combiner = new Combiner();
-		
+		Stats stats = new Stats();
+		Stats.startTime = System.currentTimeMillis();
 		// 2. For each log line
-		int consoleLineCount = 0;
+		
 		Path filePath = Paths.get(args[3]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
-		    	consoleLineCount++;
-		    	if(consoleLineCount%100000 == 0)
-		    		System.out.println("100000 Iterations Completed: "+Integer.toString(consoleLineCount/100000));
+		    
 		    	line = line.toLowerCase();
 		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
@@ -59,12 +52,12 @@ public class Main {
 		    		
 			    	if (dml.isTableLevelFence())
 			        {
-			    		tableLevelFence ++;
+			    		Stats.tableFenceCount++;
 			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
-			        	recordLevelFence++;
+			        	Stats.recordFenceCount++;
 			    		Util.BatchAndPush();
 			        }
 			        else
@@ -83,18 +76,13 @@ public class Main {
 		}
 		finally
 		{
-			Main.stopTime = System.currentTimeMillis();
-			double elapsedTime = (((Main.stopTime - Main.startTime)*1.67)/100000);
-		    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" minutes");
-			System.out.print("Total Number of DMLs: ");
-			System.out.println(DML.counter);
-			System.out.print("Number of DMLs after combining: ");
-			System.out.println(Combiner.combcounter);
+			
+			Stats.stopTime = System.currentTimeMillis();
+			Stats.printStats();
+		
 			System.out.println("Total number of DMLs after batching: "+ Util.totalBatched);
 			System.out.println("Total number of access to dbms: "+Util.dbmsAccess);
 			System.out.println("Average number of dmls in each batch : "+(Util.totalBatched/Util.dbmsAccess));
-        	System.out.println("Table Level Fence count is: " + tableLevelFence);
-        	System.out.println("Record Level Fence count is: " + recordLevelFence);
         	Iterator<Integer> iterator = Util.NoDMLsPassedToBatch.keySet().iterator();
 
         	while (iterator.hasNext()) {

@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import model.DML;
+import util.Stats;
 
 public class Combiner 
 {
 
 	public static Map<String,Map<String, List<DML>>> PKValuesMap = new HashMap<String,Map<String, List<DML>>> ();
-	public static int combcounter = 0;
 	
 	public static void addDML(DML dml)
 	{
-		combcounter++;
+		Stats.DMLAfterCombining++;
 		// 1.add to PKValuesMap 
     	// 1a. get table
     	Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
@@ -48,18 +48,22 @@ public class Combiner
 		
 		if(OptimizerRules.checkInsertUpdateRule(dml, recordDMLs))
 		{
+			Stats.insertUpdateCount++;
 			OptimizerRules.applyInsertUpdateRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
 		{
+			Stats.insertDeleteCount++;
 			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
 		{
+			Stats.updateDeleteCount++;
 			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
 		{
+			Stats.updateUpdateCount++;
 			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs); 
 		}
 		
@@ -68,7 +72,7 @@ public class Combiner
 	
 	
 	public static void removeDML(DML dml) {
-		combcounter--;
+		Stats.DMLAfterCombining--;
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
 		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
