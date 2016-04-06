@@ -68,7 +68,7 @@ public class MySqlSchemaParser {
 				if(doesDBExist(db)){
 					db_conn.close();
 					db_conn = DriverManager.getConnection(
-							"jdbc:mysql://localhost:3306/"+db, username, password);
+							"jdbc:mysql://localhost:3306/"+db+"?rewriteBatchedStatements=true", username, password);
 				System.out.println("You made it, take control your database now!");
 				}
 				else{System.out.println("Failed to make connection! Check if database "+db+" exists.");

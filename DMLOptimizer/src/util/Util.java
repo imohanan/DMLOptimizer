@@ -182,7 +182,7 @@ public class Util {
 		int Qsize=DMLQueue.getQueueSize();
 		if(Qsize>Stats.maxCombinerToBatchSize)
 			Stats.maxCombinerToBatchSize=Qsize;
-		else if(Qsize<Stats.minCombinerToBatchSize)
+		if(Qsize<Stats.minCombinerToBatchSize)
 			Stats.minCombinerToBatchSize=Qsize;
 		if(Stats.NoDMLsPassedToBatcher.get(Qsize)!=null){
 			int val=Stats.NoDMLsPassedToBatcher.get(Qsize);
@@ -195,9 +195,10 @@ public class Util {
 		
 		while (!DMLQueue.IsEmpty()) {
 			statement.addBatch(DMLQueue.RemoveDMLfromHead().toDMLString());
+			System.out.println(DMLQueue.RemoveDMLfromHead().toDMLString());
 		}
 		if (statement!=null){
-			int[] count=null;
+			int[] count = null;
 			if(Stats.issueToDBMS)
 				 count=statement.executeBatch();
 			else{

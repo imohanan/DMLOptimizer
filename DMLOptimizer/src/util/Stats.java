@@ -21,7 +21,7 @@ public class Stats {
 	
 	public static int recordFenceCount = 0;
 	public static int tableFenceCount = 0;
-	public static int totalBatched=0;
+	public static int totalBatched=1;
 	public static int maxCombinerToBatchSize=Integer.MIN_VALUE;
 	public static int minCombinerToBatchSize=Integer.MAX_VALUE;
 	public static int minBatched=Integer.MAX_VALUE;//Min batched from any size of group coming from combiner
