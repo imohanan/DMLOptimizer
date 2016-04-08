@@ -62,7 +62,7 @@ public class InsertDML extends DML{
 		List<Fkey> FKeys= MySqlSchemaParser.TableFkeys.get(table);
 		for(Fkey fk: FKeys)
 		{
-			String fk_table = fk.getFk_table();
+			String pk_table = fk.getPk_table();
 			List<String> columns = fk.getFk_cols();
 			String keyValue = "";
 			Boolean keyFound = true;
@@ -78,7 +78,7 @@ public class InsertDML extends DML{
 			}
 			if (keyFound == true)
 			{
-				FKValue fKValue = new FKValue(keyValue,fk_table);
+				FKValue fKValue = new FKValue(keyValue,pk_table);
 				FKValues.add(fKValue);
 			}
 		}

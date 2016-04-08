@@ -1,5 +1,6 @@
 package main;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,8 +64,13 @@ public class Combiner
 		Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableHashMap.get(dml.PKValue);
 
-		Map<String, List<DML>> fkHashMap = FKValuesMap.get(dml.table);
-		List<DML> fkDMLs = fkHashMap.get(dml.PKValue);
+		List<DML> fkDMLs = Collections.emptyList();
+		if (FKValuesMap.containsKey(dml.table))
+		{
+			Map<String, List<DML>> fkHashMap = FKValuesMap.get(dml.table);
+			if (fkHashMap.containsKey(dml.PKValue))
+				fkDMLs = fkHashMap.get(dml.PKValue);
+		}
 	
 		// NO DMLs to reduce against
 		if(recordDMLs.size() == 1)
@@ -112,19 +118,31 @@ public class Combiner
 
 
 	public static List<DML> removeRecordDMLs(DML dml) {
+		List<DML> finalDMLs = new LinkedList<DML>();
+		
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
-		Map<String, List<DML>> FKtableMap = FKValuesMap.get(dml.table);
-		List<DML> FKrecordDMLs = FKtableMap.get(dml.PKValue);
+
+		List<DML> FKrecordDMLs = Collections.emptyList();
+		if (FKValuesMap.containsKey(dml.table))
+		{
+			Map<String, List<DML>> FKtableMap = FKValuesMap.get(dml.table);
+			if (FKtableMap.containsKey(dml.PKValue))
+				FKrecordDMLs = FKtableMap.get(dml.PKValue);
+		}
 		
-		recordDMLs.addAll(FKrecordDMLs);
 		for(DML deleteDML: recordDMLs)
+		{
+			finalDMLs.add(deleteDML);
 			removeDML(deleteDML);
+		}
+		for(DML deleteDML: FKrecordDMLs)
+		{
+			finalDMLs.add(deleteDML);
+			removeDML(deleteDML);
+		}
 		
-		tableMap.remove(dml.PKValue);
-		FKtableMap.remove(dml.PKValue);
-		
-		return recordDMLs;
+		return finalDMLs;
 	}
 	
 }

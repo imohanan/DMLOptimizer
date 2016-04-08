@@ -35,6 +35,7 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
+		    		System.out.println(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))
