@@ -87,23 +87,32 @@ public class OptimizerRules {
 	}
 
 
-	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
+	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
-			if (recordDML == dml) return; // TODO: use FKeys to remove FKey DMLs instead of this line
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
+		}
+		for(DML fkDML: fkDMLs)
+		{
+			Combiner.removeDML(fkDML);
+			DMLQueue.RemoveDML(fkDML);
 		}
 	}
 
 
-	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs) {
+	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
 			if (recordDML == dml)
-				return;
+				continue;
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
+		}
+		for(DML fkDML: fkDMLs)
+		{
+			Combiner.removeDML(fkDML);
+			DMLQueue.RemoveDML(fkDML);
 		}
 	}
 

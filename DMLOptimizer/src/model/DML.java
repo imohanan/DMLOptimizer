@@ -15,6 +15,7 @@ public abstract class DML {
 	public Map<String,String> DMLGetAttributeValues = new HashMap<String,String>(); 
 	public Map<String,String> DMLSetAttributeValues = new HashMap<String,String>(); 
 	public String PKValue;
+	public List<FKValue> FKValues = new LinkedList<>(); 
 	public Boolean IsRecordLevelFence = false;
 	public Boolean IsTableLevelFence = false;
 	public DML NextNode = null;
@@ -27,6 +28,34 @@ public abstract class DML {
 	public void SetPrimaryKeyValue()
 	{
 		
+	}
+	
+	public void SetForeignKeyValues()
+	{
+		// TODO: Handle case where Update is updating a FK-> values removed from foreign key map?
+		List<Fkey> FKeys= MySqlSchemaParser.TableFkeys.get(table);
+		for(Fkey fk: FKeys)
+		{
+			String fk_table = fk.getFk_table();
+			List<String> columns = fk.getFk_cols();
+			String keyValue = "";
+			Boolean keyFound = true;
+			for(String col: columns)
+			{
+				String val = DMLGetAttributeValues.get(col);
+				if (val == null)
+				{
+					keyFound = false;
+					break;
+				}
+				keyValue = keyValue + val +";";
+			}
+			if (keyFound == true)
+			{
+				FKValue fKValue = new FKValue(keyValue,fk_table);
+				FKValues.add(fKValue);
+			}
+		}
 	}
 	
 	public Boolean isTableLevelFence()
@@ -46,7 +75,6 @@ public abstract class DML {
 		}
 		return false;
 	}
-	
 	
 	public Boolean isRecordLevelFence()
 	{

@@ -3,6 +3,7 @@ package util;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.mysql.jdbc.Statement;
@@ -215,6 +216,11 @@ public class Util {
 			statement=null;
 			
 		}
+	}
+
+	public static void BatchAndPush(List<DML> listOfAffectedDMLs) {
+		// TODO Auto-generated method stub for record level fence
+		System.out.println("To be implemented");
 	}
 
 	}
