@@ -21,9 +21,11 @@ import model.Fkey;
 public class MySqlSchemaParser {
 	public static boolean verbose = false;
 	public static Map<String, List<String>> TableAttrs = new HashMap<String, List<String>>();
+	public static Map<String,List<tuple>>AttrTypes= new HashMap<String,List<tuple>>();
 	public static Map<String, List<String>> TablePkeys = new HashMap<String, List<String>>();
 	public static Map<String, List<Fkey>> TableFkeys = new HashMap<String, List<Fkey>>();
 	public static Map<String, Set<String>> ImpactedTables = new HashMap<String, Set<String>>();
+	public static Map<String,List<tuple>> AttrInitVal=new HashMap<String,List<tuple>>();
 	public static List<String> TablesInDB = new LinkedList<String>();
 	public static Connection db_conn = null;
 
@@ -33,14 +35,61 @@ public class MySqlSchemaParser {
 		TablesInDB=getAllTables(db);
 		for (String table: TablesInDB){
 			TableAttrs.put(table,getAttributes(table));
+			getAttrTypes(table);
+			getAttrDefaultValue(table);
 			TablePkeys.put(table, getPkey(table));
 			TableFkeys.put(table, getFKey(table));
 		}
 		fillImpactedTables();
 		if (verbose)printImpactedTables();
+//		System.out.println("Atrribute , Type");
+//		printAttrTypeOrDefValue(AttrTypes);
+//		System.out.println("Attribute, Inital value");
+//		printAttrTypeOrDefValue(AttrInitVal);
 		
 	}
-
+	public static void printAttrTypeOrDefValue(Map<String,List<tuple>> map){
+		Iterator<Entry<String, List<tuple>>> it=map.entrySet().iterator();
+		while(it.hasNext()){
+			List<tuple> li=new LinkedList<tuple>(); {
+			};
+			Map.Entry<String, List<tuple>> pair=(Map.Entry<String,List<tuple>>)it.next();
+			li=pair.getValue();
+			for (tuple t:li){
+				System.out.println(t.st1+" , "+t.st2);
+			}
+			
+		}
+		
+	}
+	public static void getAttrTypes(String table) throws SQLException{//TODO:Check if it works fine.--Shiva--
+		List<tuple> attrToTypeList=new LinkedList<tuple>();
+		ResultSet rsColumns = null;
+		java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
+	    rsColumns = metadata.getColumns(null, null, table, null);
+	    while (rsColumns.next()) {
+	    	String type=rsColumns.getString("TYPE_NAME").toLowerCase();
+	    	String col=rsColumns.getString("COLUMN_NAME").toLowerCase();
+	    	tuple object=new tuple(col,type);
+	    	attrToTypeList.add(object);
+	   
+	    }
+	    AttrTypes.put(table, attrToTypeList);
+	}
+	public static void getAttrDefaultValue(String table) throws SQLException{
+		List<tuple> attrToDefVal=new LinkedList<tuple>();
+		ResultSet rsColumns = null;
+		java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
+	    rsColumns = metadata.getColumns(null, null, table, null);
+	    while (rsColumns.next()) {
+	    	String defVal= rsColumns.getString("COLUMN_DEF");//Do not change it to lowercase.
+	    	String col=rsColumns.getString("COLUMN_NAME").toLowerCase();
+	    	tuple object=new tuple(col,defVal);
+	    	attrToDefVal.add(object);
+	   
+	    }
+	    AttrInitVal.put(table, attrToDefVal);
+	}
 	public static void setupConnection(String username,String password, String db) {
 
 		try {
@@ -68,7 +117,8 @@ public class MySqlSchemaParser {
 				if(doesDBExist(db)){
 					db_conn.close();
 					db_conn = DriverManager.getConnection(
-							"jdbc:mysql://localhost:3306/"+db+"?rewriteBatchedStatements=true", username, password);
+							"jdbc:mysql://localhost:3306/"+db+
+							        "?rewriteBatchedStatements=true", username, password);
 				System.out.println("You made it, take control your database now!");
 				}
 				else{System.out.println("Failed to make connection! Check if database "+db+" exists.");
@@ -101,7 +151,7 @@ public class MySqlSchemaParser {
 			stmt = db_conn.createStatement();
 			rs = stmt.executeQuery(qry);
 			while (rs.next()) {
-				result += rs.getString("data_type");
+				result += rs.getString("data_type").toLowerCase();
 			}
 
 		} catch (SQLException ex) {
@@ -140,9 +190,9 @@ public class MySqlSchemaParser {
 			stmt = db_conn.createStatement();
 			rs = stmt.executeQuery(qry);
 			while (rs.next()) {
-				result.add(rs.getString("Tables_in_" + dbName));
+				result.add(rs.getString("Tables_in_" + dbName).toLowerCase());
 				if (verbose)
-					System.out.println(rs.getString("Tables_in_" + dbName));
+					System.out.println(rs.getString("Tables_in_" + dbName).toLowerCase());
 			}
 
 		} catch (SQLException ex) {
@@ -184,7 +234,7 @@ public class MySqlSchemaParser {
 			while (rs.next()) {
 				result.add(rs.getString("COLUMN_NAME").toLowerCase());
 				if (verbose)
-					System.out.println(rs.getString("COLUMN_NAME"));
+					System.out.println(rs.getString("COLUMN_NAME").toLowerCase());
 			}
 
 		} catch (SQLException ex) {
@@ -218,7 +268,7 @@ public class MySqlSchemaParser {
 			while (rs.next()) {
 				result.add(rs.getString("COLUMN_NAME").toLowerCase());
 				if (verbose)
-					System.out.println(rs.getString("COLUMN_NAME"));
+					System.out.println(rs.getString("COLUMN_NAME").toLowerCase());
 			}
 
 		} catch (SQLException ex) {
@@ -249,9 +299,9 @@ public class MySqlSchemaParser {
 			java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
 			rs = metadata.getTables(null, null, tableName, null);
 			while (rs.next()) {
-				qryResult.add(rs.getString("TABLE_NAME"));
+				qryResult.add(rs.getString("TABLE_NAME").toLowerCase());
 				if (verbose)
-					System.out.println(rs.getString("TABLE_NAME"));
+					System.out.println(rs.getString("TABLE_NAME").toLowerCase());
 			}
 
 		} catch (SQLException ex) {
@@ -292,18 +342,18 @@ public class MySqlSchemaParser {
 				Fkey currentFK;
 				List<String> pk_cols = new LinkedList<String>();
 				List<String> fk_cols = new LinkedList<String>();
-				currentFK = fkMap.get(rs.getString("FK_NAME"));
+				currentFK = fkMap.get(rs.getString("FK_NAME").toLowerCase());
 				if (currentFK != null) {
-					currentFK.addFk_cols(rs.getString("FKCOLUMN_NAME"));
-					currentFK.addPk_cols(rs.getString("PKCOLUMN_NAME"));
+					currentFK.addFk_cols(rs.getString("FKCOLUMN_NAME").toLowerCase());
+					currentFK.addPk_cols(rs.getString("PKCOLUMN_NAME").toLowerCase());
 				} else {
 					pk_cols.add(rs.getString("PKCOLUMN_NAME").toLowerCase());
 					fk_cols.add(rs.getString("FKCOLUMN_NAME").toLowerCase());
-					currentFK = new Fkey(rs.getString("FK_NAME"),
-							rs.getString("PKTABLE_NAME"),
-							rs.getString("FKTABLE_NAME"), pk_cols, fk_cols,
-							rs.getString("DELETE_RULE"));
-					fkMap.put(rs.getString("FK_NAME"), currentFK);
+					currentFK = new Fkey(rs.getString("FK_NAME").toLowerCase(),
+							rs.getString("PKTABLE_NAME").toLowerCase(),
+							rs.getString("FKTABLE_NAME").toLowerCase(), pk_cols, fk_cols,
+							rs.getString("DELETE_RULE").toLowerCase());
+					fkMap.put(rs.getString("FK_NAME").toLowerCase(), currentFK);
 					fkeys.add(currentFK);
 				}
 
@@ -372,4 +422,13 @@ public class MySqlSchemaParser {
 		}
 		return false;
 	}
+}
+ class tuple{
+	String st1;//attr
+	String st2;//type or val
+	public tuple(String st1,String st2){
+		this.st1=st1;
+		this.st2=st2;
+	}
+
 }
