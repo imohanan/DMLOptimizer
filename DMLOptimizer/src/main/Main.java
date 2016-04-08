@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 import model.DML;
 import model.DMLQueue;
@@ -59,10 +60,12 @@ public class Main {
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	Stats.recordFenceCount++;
-			        	if(!blind)
-			    		Util.BatchAndPush();
-			    		if(blind)
-			    		Util.blindBatch();
+			        	List<DML> listOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
+			        	Util.BatchAndPush(listOfAffectedDMLs);
+			        	//if(!blind)
+			    		//Util.BatchAndPush();
+			    		//if(blind)
+			    		//Util.blindBatch();
 			        }
 			        else
 			        {
