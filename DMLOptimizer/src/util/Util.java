@@ -195,8 +195,7 @@ public class Util {
 		
 		while (!DMLQueue.IsEmpty()) {
 			String d=DMLQueue.RemoveDMLfromHead().toDMLString();
-			statement.addBatch(d);
-			System.out.println(d);
+			statement.addBatch(d.substring(0, d.length()-1));
 		}
 		if (statement!=null){
 			int[] count = null;

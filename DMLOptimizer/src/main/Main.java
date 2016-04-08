@@ -16,7 +16,7 @@ import util.Stats;
 import util.Util;
 
 public class Main {
-	public static boolean blind=true;
+	public static boolean blind=false;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
