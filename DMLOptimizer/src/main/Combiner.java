@@ -102,17 +102,12 @@ public class Combiner
 		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
 		
 		//FKeys removal
+		for(FKValue fkValue: dml.FKValues)
+		{
+			Map<String, List<DML>> fkMap = FKValuesMap.get(fkValue.Referenced_Table);
+			List<DML> fkdmls = fkMap.get(fkValue.FKValueString);
+			fkdmls.remove(dml);
+		}
 	}
-
-
-	/*public static List<DML> removeRecordDMLs(DML dml) {
-		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
-		List<DML> recordDMLs = tableMap.get(dml.PKValue);
-		
-		for(DML deleteDML: recordDMLs)
-			removeDML(deleteDML);
-		
-		return recordDMLs;
-	}*/
 	
 }
