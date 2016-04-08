@@ -51,7 +51,7 @@ public class DeleteDML extends DML {
 			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " and ";
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
-		DMLString = "delete from " + table + " where " + whereClause + ";";
+		DMLString = "delete from " + table + " where " + whereClause;
 		return DMLString;
 	}
 

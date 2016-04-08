@@ -67,7 +67,7 @@ public class UpdateDML extends DML{
 			whereClause = whereClause + entry.getKey() + "=" + entry.getValue() + " and ";
 		}
 		whereClause = whereClause.substring(0, whereClause.length() - 5);
-		DMLString = "update " + table + " set " + setClause + " where " + whereClause + ";";
+		DMLString = "update " + table + " set " + setClause + " where " + whereClause;
 		return DMLString;
 	}
 

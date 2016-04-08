@@ -90,7 +90,7 @@ public class OptimizerRules {
 	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs) {
 		for(DML recordDML: recordDMLs)
 		{
-			if (recordDML == dml) return; // TODO: use FKeys to remove FKey DMLs instead of this line
+			if (recordDML == dml) continue; // TODO: use FKeys to remove FKey DMLs instead of this line
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
 		}

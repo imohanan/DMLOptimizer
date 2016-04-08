@@ -44,6 +44,7 @@ public class Main {
 		    			dml = new UpdateDML(dmlLine);
 		    		
 		    		dml.SetPrimaryKeyValue();
+		    		dml.SetForeignKeyValues();
 		    		DMLQueue.AddDML(dml);
 		    		Combiner.addDML(dml);
 		    		
@@ -81,11 +82,8 @@ public class Main {
 		}
 		finally
 		{
-			
 			Stats.stopTime = System.currentTimeMillis();
-			Stats.printStats();
-		
-			
+			Stats.printStats();			
 		} 
 		
 	}
