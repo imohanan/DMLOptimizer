@@ -52,12 +52,12 @@ public class Stats {
     	
     	System.out.println("Minimum group size of DMLs passed to batcher: "+Integer.toString(minCombinerToBatchSize));
     	System.out.println("Maximum group size of DMLs passed to batcher: "+Integer.toString(maxCombinerToBatchSize));
-    	System.out.println("Average group size of DMLs passed to batcher: "+Float.toString(DMLAfterCombining/batchCalls));
+//    	System.out.println("Average group size of DMLs passed to batcher: "+Float.toString(DMLAfterCombining/batchCalls));
     	System.out.println("Total number of DMLs after batching: "+ totalBatched);
 //		System.out.println("Total number of access to dbms: "+dbmsAccess);
 		System.out.println("Minimum number of DMLS in each batch: "+Integer.toString(minBatched));
 		System.out.println("Maximum number of DMLS in each batch: "+Integer.toString(maxBatched));
-		System.out.println("Average number of DMLS in each batch: "+Float.toString(DMLAfterCombining/totalBatched));
+//		System.out.println("Average number of DMLS in each batch: "+Float.toString(DMLAfterCombining/totalBatched));
 	
 //    	Iterator<Integer> iterator = NoDMLsPassedToBatcher.keySet().iterator();
 //
