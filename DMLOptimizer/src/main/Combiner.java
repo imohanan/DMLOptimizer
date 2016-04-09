@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 import model.DML;
+import model.DMLComparator;
 import model.FKValue;
 import util.Stats;
 
@@ -117,8 +119,7 @@ public class Combiner
 	}
 
 
-	public static List<DML> removeRecordDMLs(DML dml) {
-		List<DML> finalDMLs = new LinkedList<DML>();
+	public static PriorityQueue<DML> removeRecordDMLs(DML dml) {
 		
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
@@ -130,19 +131,21 @@ public class Combiner
 			if (FKtableMap.containsKey(dml.PKValue))
 				FKrecordDMLs = FKtableMap.get(dml.PKValue);
 		}
+		int size = recordDMLs.size() + FKrecordDMLs.size();
+		PriorityQueue<DML> finalDMLMinHeap = new PriorityQueue<DML>(size, new DMLComparator());
 		
 		for(DML deleteDML: recordDMLs)
 		{
-			finalDMLs.add(deleteDML);
+			finalDMLMinHeap.add(deleteDML);
 			removeDML(deleteDML);
 		}
 		for(DML deleteDML: FKrecordDMLs)
 		{
-			finalDMLs.add(deleteDML);
+			finalDMLMinHeap.add(deleteDML);
 			removeDML(deleteDML);
 		}
 		
-		return finalDMLs;
+		return finalDMLMinHeap;
 	}
 	
 }

@@ -9,6 +9,8 @@ import util.Stats;
 
 public abstract class DML {
 
+	public static int counter = 0;
+	public int id;
 	public String DMLString;
 	public String table;
 	public DMLType type;
@@ -22,7 +24,9 @@ public abstract class DML {
 	public DML PrevNode = null;
 	
 	public DML() {
+		id = counter;
 		Stats.DMLTotal++;
+		counter++;
 	}
 	
 	public void SetPrimaryKeyValue()

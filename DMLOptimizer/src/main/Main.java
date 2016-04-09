@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import model.DML;
 import model.DMLQueue;
@@ -17,7 +18,7 @@ import util.Stats;
 import util.Util;
 
 public class Main {
-	public static boolean blind=false;
+	public static boolean blind=true;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
@@ -35,7 +36,6 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		System.out.println(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))
@@ -61,8 +61,11 @@ public class Main {
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	Stats.recordFenceCount++;
-			        	List<DML> listOfAffectedDMLs = Combiner.removeRecordDMLs(dml);
-			        	Util.BatchAndPush(listOfAffectedDMLs);
+			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
+			        	DML d1;
+			        	while (affectedDMLs.size() != 0)
+			        		 d1 = affectedDMLs.remove();
+			        	Util.BatchAndPush(affectedDMLs);
 			        	//if(!blind)
 			    		//Util.BatchAndPush();
 			    		//if(blind)

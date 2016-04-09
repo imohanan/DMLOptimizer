@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.mysql.jdbc.Statement;
@@ -218,7 +219,7 @@ public class Util {
 		}
 	}
 
-	public static void BatchAndPush(List<DML> listOfAffectedDMLs) {
+	public static void BatchAndPush(PriorityQueue<DML> affectedDMLs) {
 		// TODO Auto-generated method stub for record level fence
 		System.out.println("To be implemented");
 	}
