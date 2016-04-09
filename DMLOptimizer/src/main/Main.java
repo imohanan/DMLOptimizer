@@ -38,6 +38,11 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
+		    		dmlLine = dmlLine.replace("=", " = ");
+		    		dmlLine = dmlLine.replace("(", " (");
+		    		dmlLine = dmlLine.replace(")", ") ");
+		    		dmlLine = dmlLine.replaceAll("( )+", " ");
+		    		dmlLine = dmlLine.replaceAll("\\s+(?=[^()]*\\))", "");
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))

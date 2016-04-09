@@ -20,16 +20,31 @@ public class InsertDML extends DML{
 		//3.Set Table
 		table = words[2].toLowerCase();
 		
-		// 4. set attributes Values
-		String values = words[4].replace('(', ' ');
-		values = values.replace(')', ' ');
-		values = values.trim();
-		String[] valueList = values.split(",");
-		for(int idx = 0; idx < valueList.length; idx++)
-		{
-			DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx]);
+		if (words.length == 6){
+			String keys = words[3].replace('(', ' ');
+			keys = keys.replace(')', ' ');
+			keys = keys.trim();
+			String[] keyslist = keys.split(",");
+			String values = words[5].replace('(', ' ');
+			values = values.replace(')', ' ');
+			values = values.trim();
+			String[] valueList = values.split(",");
+			for(int idx = 0; idx < valueList.length; idx++) 
+			{
+				DMLSetAttributeValues.put(keyslist[idx].toLowerCase(), valueList[idx]);
+			}		
 		}
-	
+		else{
+			// 4. set attributes Values
+			String values = words[4].replace('(', ' ');
+			values = values.replace(')', ' ');
+			values = values.trim();
+			String[] valueList = values.split(",");
+			for(int idx = 0; idx < valueList.length; idx++)
+			{
+				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx]);
+			}			
+		}	
 	}
 
 	
