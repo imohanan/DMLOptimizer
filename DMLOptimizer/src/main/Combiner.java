@@ -2,6 +2,7 @@ package main;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -134,15 +135,17 @@ public class Combiner
 		int size = recordDMLs.size() + FKrecordDMLs.size();
 		PriorityQueue<DML> finalDMLMinHeap = new PriorityQueue<DML>(size, new DMLComparator());
 		
-		for(DML deleteDML: recordDMLs)
+		while(recordDMLs.size() != 0)
 		{
-			finalDMLMinHeap.add(deleteDML);
-			removeDML(deleteDML);
+			DML deleteElement = recordDMLs.get(0);
+			finalDMLMinHeap.add(deleteElement);
+			removeDML(deleteElement);
 		}
-		for(DML deleteDML: FKrecordDMLs)
+		while(FKrecordDMLs.size() != 0)
 		{
-			finalDMLMinHeap.add(deleteDML);
-			removeDML(deleteDML);
+			DML deleteElement = FKrecordDMLs.get(0);
+			finalDMLMinHeap.add(deleteElement);
+			removeDML(deleteElement);
 		}
 		
 		return finalDMLMinHeap;

@@ -197,7 +197,7 @@ public class Util {
 		
 		while (!DMLQueue.IsEmpty()) {
 			String d=DMLQueue.RemoveDMLfromHead().toDMLString();
-			statement.addBatch(d.substring(0, d.length()-1));
+			statement.addBatch(d);
 		}
 		if (statement!=null){
 			int[] count = null;
@@ -252,7 +252,7 @@ public class Util {
 
 	public static void BatchAndPush(PriorityQueue<DML> affectedDMLs) {
 		// TODO Auto-generated method stub for record level fence
-		System.out.println("To be implemented");
+		//System.out.println("To be implemented");
 	}
 
 	}

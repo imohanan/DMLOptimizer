@@ -1,0 +1,8 @@
+delete from users where userid =100000;
+insert into users ( userid ) values ( 100000 );
+insert into friendship values(1, 100000, 1);
+insert into friendship values(2, 100000, 1);
+update users set name='Indu' where userid=100000;
+insert into friendship values(3, 100000, 1);
+insert into friendship values(4, 100000, 1);
+delete from users where userid=100000 and name='Indu';

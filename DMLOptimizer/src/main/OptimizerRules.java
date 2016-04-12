@@ -88,13 +88,15 @@ public class OptimizerRules {
 
 
 	public static void applyInsertDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
-		for(DML recordDML: recordDMLs)
+		while(recordDMLs.size() != 0)
 		{
+			DML recordDML = recordDMLs.get(0);
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
 		}
-		for(DML fkDML: fkDMLs)
+		while(fkDMLs.size() != 0)
 		{
+			DML fkDML = fkDMLs.get(0);
 			Combiner.removeDML(fkDML);
 			DMLQueue.RemoveDML(fkDML);
 		}
@@ -102,15 +104,17 @@ public class OptimizerRules {
 
 
 	public static void applyUpdateDeleteRule(DML dml, List<DML> recordDMLs, List<DML> fkDMLs) {
-		for(DML recordDML: recordDMLs)
+		while(recordDMLs.size() != 0)
 		{
+			DML recordDML = recordDMLs.get(0);
 			if (recordDML == dml)
 				continue;
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
 		}
-		for(DML fkDML: fkDMLs)
+		while(fkDMLs.size() != 0)
 		{
+			DML fkDML = fkDMLs.get(0);
 			Combiner.removeDML(fkDML);
 			DMLQueue.RemoveDML(fkDML);
 		}

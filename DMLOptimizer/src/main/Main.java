@@ -33,10 +33,16 @@ public class Main {
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
-		    while ((line = reader.readLine()) != null) {		    	
+		    while ((line = reader.readLine()) != null) {
+		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
+		    		dmlLine = dmlLine.replace("=", " = ");
+		    		dmlLine = dmlLine.replace("(", " (");
+		    		dmlLine = dmlLine.replace(")", ") ");
+		    		dmlLine = dmlLine.replaceAll("( )+", " ");
+		    		dmlLine = dmlLine.replaceAll("\\s+(?=[^()]*\\))", "");
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))
@@ -63,10 +69,8 @@ public class Main {
 			        {
 			        	Stats.recordFenceCount++;
 			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
-			        	DML d1;
-			        	while (affectedDMLs.size() != 0)
-			        		 d1 = affectedDMLs.remove();
-			        	Util.BatchAndPush(affectedDMLs);
+			        	//Util.BatchAndPush(affectedDMLs);
+			        	
 			        	//if(!blind)
 			    		//Util.BatchAndPush();
 			    		//if(blind)
