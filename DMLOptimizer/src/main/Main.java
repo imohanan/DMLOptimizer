@@ -91,10 +91,12 @@ public class Main {
 			        }
 		    	}	        
 		    }
-		    if(!blind)
-		    	Util.BatchAndPush();
-		    if (blind)
-		    	Util.blindBatch();
+			if (blind)
+        		Util.blindBatch();
+        	else if(prepared)
+        		Util.batchUsingPreparedStatement();
+        	else
+        		Util.BatchAndPush();
 		} 
 		catch(Exception x)
 		{
