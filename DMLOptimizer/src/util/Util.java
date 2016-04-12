@@ -3,6 +3,7 @@ package util;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -41,6 +42,58 @@ public class Util {
 		}
 
 		return NewDMLs;
+	}
+
+	public static void BatchAndPush(Boolean ManualBatching) throws SQLException {
+		//TODO: Add stats variables
+		
+		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
+				.createStatement();
+		List<DML> DMLsToBatch = new LinkedList<DML>();
+		
+		while( DMLQueue.IsEmpty() == false )
+		{
+			DML currDML = DMLQueue.RemoveDMLfromHead();
+			
+			if((DMLsToBatch.isEmpty() == true 
+					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
+					&& currDML.IsRecordLevelFence == false
+					&& currDML.IsTableLevelFence == false
+					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+			{
+				DMLsToBatch.add(currDML);
+			}
+			else
+			{
+				String batchedStatement = getBatchedStatement(DMLsToBatch);
+				manualStatement.addBatch(batchedStatement);
+				
+				DMLsToBatch = new LinkedList<DML>();
+				DMLsToBatch.add(currDML);
+			}
+		}
+		 
+		manualStatement.executeBatch();
+		
+	}
+
+
+	
+	private static String getBatchedStatement(List<DML> DMLsToBatch) {
+		if (DMLsToBatch.size() == 1)
+			return DMLsToBatch.get(0).DMLString;
+		
+		if(DMLsToBatch.get(0).type == DMLType.INSERT)
+		{
+			String batchedStatement = ManualBatching.batchInsert(DMLsToBatch);
+			return batchedStatement;
+		}
+		else if(DMLsToBatch.get(0).type == DMLType.DELETE)
+		{
+			String batchedStatement = ManualBatching.batchDelete(DMLsToBatch);
+			return batchedStatement;
+		}
+		return null;
 	}
 
 	public static void BatchAndPush() throws SQLException {// For
