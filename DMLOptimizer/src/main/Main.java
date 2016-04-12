@@ -19,7 +19,8 @@ import util.Util;
 //comment
 
 public class Main {
-	public static boolean blind=true;
+	public static boolean blind=false;
+	public static boolean prepared=true;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
@@ -60,15 +61,23 @@ public class Main {
 			    	if (dml.isTableLevelFence())
 			        {
 			    		Stats.tableFenceCount++;
-			    		if(!blind)
-			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        	if (blind)
 			        		Util.blindBatch();
+			        	else if(prepared)
+			        		Util.batchUsingPreparedStatement();
+			        	else
+			        		Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	Stats.recordFenceCount++;
 			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
+			        	if (blind)
+			        		Util.blindBatch();
+			        	else if(prepared)
+			        		Util.batchUsingPreparedStatement();
+			        	else
+			        		Util.BatchAndPush();
 			        	//Util.BatchAndPush(affectedDMLs);
 			        	
 			        	//if(!blind)
