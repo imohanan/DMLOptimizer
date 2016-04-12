@@ -18,6 +18,8 @@ import model.DMLType;
 
 public class Util {
 	private static Statement statement=null;
+	private static String template = null;
+	private static java.sql.PreparedStatement preparedStatement = null;
 	private static DMLType currType = null;
 	private static String currTable = null;
 	public static int batchSize;
@@ -126,7 +128,6 @@ public class Util {
 		}
 		while (!DMLQueue.IsEmpty()) {
 			DML nextDML = DMLQueue.RemoveDMLfromHead();
-
 			batch(nextDML, currType, currTable);
 			currType=nextDML.type;
 			currTable=nextDML.table;
@@ -271,6 +272,37 @@ public class Util {
 			
 		}
 	}
+	public static void batchUsingPreparedStatement() throws SQLException{
+//		batchSize=0;
+//		int attrCount=1;
+//		Stats.batchCalls++;
+//		Combiner.PKValuesMap.clear();
+//		if (!DMLQueue.IsEmpty()&& currTable==null && currType==null) {
+//			DML currDML = DMLQueue.RemoveDMLfromHead();
+//			currType = currDML.type;
+//			currTable = currDML.table;
+//			if (currType==DMLType.INSERT){
+//				template=PreparedStatement.tableToInsertPreparedStatements.get(currTable);
+//				preparedStatement = MySqlSchemaParser.db_conn.prepareStatement(template);
+//				for (String attr:MySqlSchemaParser.TableAttrs.get(currTable)){//List of attributes in the table
+//					String attrType=MySqlSchemaParser.getAttrType(currTable, attr);
+//					String attrVal=null;
+//					if(currDML.DMLSetAttributeValues.containsKey(attr)){
+//						 attrVal=currDML.DMLSetAttributeValues.get(attr);
+//						 else
+//							 attrVal=MySqlSchemaParser.AttrInitVal.get(currTable).get}
+//						if(attrType.equalsIgnoreCase("VARCHAR" )||attrType.equalsIgnoreCase("LONGVARCHAR"))
+//							preparedStatement.setString(attrCount, currDML.DMLSetAttributeValues.get(attr));
+//					}
+//					attrCount++;
+//				}
+//			}
+//			else if (currType==DMLType.DELETE){
+//				template=PreparedStatement.tableToDeletePreparedStatements.get(currTable);
+//			}
+//			
+		}
+		
 
 	public static void BatchAndPush(PriorityQueue<DML> affectedDMLs) {
 		// TODO Auto-generated method stub for record level fence

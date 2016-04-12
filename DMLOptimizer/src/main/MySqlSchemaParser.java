@@ -21,11 +21,11 @@ import model.Fkey;
 public class MySqlSchemaParser {
 	public static boolean verbose = false;
 	public static Map<String, List<String>> TableAttrs = new HashMap<String, List<String>>();
-	public static Map<String,List<tuple>>AttrTypes= new HashMap<String,List<tuple>>();
+	public static Map<String,Map<String,String>>AttrTypes= new HashMap<String,Map<String,String>>();
 	public static Map<String, List<String>> TablePkeys = new HashMap<String, List<String>>();
 	public static Map<String, List<Fkey>> TableFkeys = new HashMap<String, List<Fkey>>();
 	public static Map<String, Set<String>> ImpactedTables = new HashMap<String, Set<String>>();
-	public static Map<String,List<tuple>> AttrInitVal=new HashMap<String,List<tuple>>();
+	public static Map<String,Map<String,String>> AttrInitVal=new HashMap<String,Map<String,String>>();
 	public static List<String> TablesInDB = new LinkedList<String>();
 	public static Connection db_conn = null;
 
@@ -41,51 +41,30 @@ public class MySqlSchemaParser {
 			TableFkeys.put(table, getFKey(table));
 		}
 		fillImpactedTables();
-		if (verbose)printImpactedTables();
-//		System.out.println("Atrribute , Type");
-//		printAttrTypeOrDefValue(AttrTypes);
-//		System.out.println("Attribute, Inital value");
-//		printAttrTypeOrDefValue(AttrInitVal);
-		
+		if (verbose)printImpactedTables();	
 	}
-	public static void printAttrTypeOrDefValue(Map<String,List<tuple>> map){
-		Iterator<Entry<String, List<tuple>>> it=map.entrySet().iterator();
-		while(it.hasNext()){
-			List<tuple> li=new LinkedList<tuple>(); {
-			};
-			Map.Entry<String, List<tuple>> pair=(Map.Entry<String,List<tuple>>)it.next();
-			li=pair.getValue();
-			for (tuple t:li){
-				System.out.println(t.st1+" , "+t.st2);
-			}
-			
-		}
-		
-	}
+
 	public static void getAttrTypes(String table) throws SQLException{//TODO:Check if it works fine.--Shiva--
-		List<tuple> attrToTypeList=new LinkedList<tuple>();
+		Map<String,String> attrToTypeList=new HashMap<String,String>();
 		ResultSet rsColumns = null;
 		java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
 	    rsColumns = metadata.getColumns(null, null, table, null);
 	    while (rsColumns.next()) {
 	    	String type=rsColumns.getString("TYPE_NAME").toLowerCase();
 	    	String col=rsColumns.getString("COLUMN_NAME").toLowerCase();
-	    	tuple object=new tuple(col,type);
-	    	attrToTypeList.add(object);
-	   
+	    	attrToTypeList.put(col,type);
 	    }
 	    AttrTypes.put(table, attrToTypeList);
 	}
 	public static void getAttrDefaultValue(String table) throws SQLException{
-		List<tuple> attrToDefVal=new LinkedList<tuple>();
+		Map<String,String> attrToDefVal=new HashMap<String,String>();
 		ResultSet rsColumns = null;
 		java.sql.DatabaseMetaData metadata = db_conn.getMetaData();
 	    rsColumns = metadata.getColumns(null, null, table, null);
 	    while (rsColumns.next()) {
 	    	String defVal= rsColumns.getString("COLUMN_DEF");//Do not change it to lowercase.
 	    	String col=rsColumns.getString("COLUMN_NAME").toLowerCase();
-	    	tuple object=new tuple(col,defVal);
-	    	attrToDefVal.add(object);
+	    	attrToDefVal.put(col,defVal);
 	   
 	    }
 	    AttrInitVal.put(table, attrToDefVal);
@@ -423,12 +402,4 @@ public class MySqlSchemaParser {
 		return false;
 	}
 }
- class tuple{
-	String st1;//attr
-	String st2;//type or val
-	public tuple(String st1,String st2){
-		this.st1=st1;
-		this.st2=st2;
-	}
 
-}
