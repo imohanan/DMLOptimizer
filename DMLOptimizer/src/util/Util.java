@@ -231,21 +231,21 @@ public class Util {
 					currType = currDML.type;
 					currTable = currDML.table;
 					if (currType == DMLType.INSERT) {
-						template = PreparedStatement.tableToInsertPreparedStatements.get(currTable);
+						template = PrepStatement.tableToInsertPreparedStatements.get(currTable);
 					} else if (currType == DMLType.DELETE) {
-						template = PreparedStatement.tableToDeletePreparedStatements.get(currTable);
+						template = PrepStatement.tableToDeletePreparedStatements.get(currTable);
 					}
 					preparedStatement = MySqlSchemaParser.db_conn.prepareStatement(template);
 					fillPreparedStatement(currTable, currDML);
 					preparedStatement.addBatch();
 
 				} else {
-					if (preparedStatement != null) {
+					if (preparedStatement != null) 
 						executePreparedStatement();
-						Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
-						st.executeUpdate(currDML.toDMLString());
-						continue;
-					}
+					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
+					st.executeUpdate(currDML.toDMLString());
+					continue;
+					
 				}
 			} else {
 				currDML = DMLQueue.getDMLQueueHead();
@@ -268,12 +268,14 @@ public class Util {
 	public static void executePreparedStatement() throws SQLException {
 		preparedStatement.executeBatch();
 		preparedStatement.clearBatch();
-		preparedStatement = null;
 		MySqlSchemaParser.db_conn.commit();
+		preparedStatement = null;
+		currTable=null;
+		currType=null;
 	}
 
 	public static void fillPreparedStatement(String table, DML dml) throws SQLException {
-		int attrCount = 0;
+		int attrCount = 1;
 		for (String attr : MySqlSchemaParser.TableAttrs.get(table)) {// List of
 																		// attributes
 																		// in

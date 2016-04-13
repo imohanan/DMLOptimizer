@@ -9,11 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import com.mysql.jdbc.PreparedStatement;
+
 import model.DML;
 import model.DMLQueue;
 import model.DeleteDML;
 import model.InsertDML;
 import model.UpdateDML;
+import util.PrepStatement;
 import util.Stats;
 import util.Util;
 //comment
@@ -25,6 +28,7 @@ public class Main {
 
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
 		Stats stats = new Stats();
 		Stats.startTime = System.currentTimeMillis();
