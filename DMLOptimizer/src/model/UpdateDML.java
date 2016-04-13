@@ -28,14 +28,14 @@ public class UpdateDML extends DML{
 		for(String setAttVal: setAttValues)
 		{
 			String[] elements = setAttVal.trim().split("=");
-			DMLSetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].toString());
+			DMLSetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
 		}
 		
 		String[] attVals = clauses[1].split("\\s*(?i)and\\s*");
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
-			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].toString());
+			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
 		}		
 	}
 
