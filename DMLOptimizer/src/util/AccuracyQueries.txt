@@ -1,0 +1,11 @@
+select count(*) from friendship;
+select count(*) from manipulation;
+select count(*) from resources;
+select count(*) from users;
+			
+select count(*),status from friendship group by status;
+select count(*),Pendcount Pendcount from users group by Pendcount;
+select count(*),confcount confcount from users group by confcount;
+			
+select count(*),Pendcount Pendcount from users where userid between 1 and 100 group by Pendcount;
+select count(*),confcount confcount from users where userid between 1 and 100 group by confcount;
