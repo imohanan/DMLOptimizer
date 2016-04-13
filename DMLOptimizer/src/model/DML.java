@@ -180,7 +180,7 @@ public abstract class DML {
 		if (pendcountDmlSeen) {
 			Stats.pendcountDML++;
 		}
-		
+		toDMLString();
 	}
 
 	public String toDMLString() {
