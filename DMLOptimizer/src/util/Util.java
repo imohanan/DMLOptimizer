@@ -307,6 +307,13 @@ public class Util {
 		batchSize = 0;
 		Stats.batchCalls++;
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
+		int sizeofheap = affectedDMLs.size();
+		Stats.DMLSentToBatcher += sizeofheap;
+		if (sizeofheap > Stats.maxCombinerToBatchSize) 
+			Stats.maxCombinerToBatchSize = sizeofheap;
+		if (sizeofheap < Stats.minCombinerToBatchSize)
+			Stats.minCombinerToBatchSize = sizeofheap;
+		int batchcount =0;
 		while (!affectedDMLs.isEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = affectedDMLs.remove();
@@ -328,6 +335,11 @@ public class Util {
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
 					st.executeUpdate(currDML.toDMLString());
+					Stats.dbmsAccess++;
+					if (Stats.minBatched > 1)
+						Stats.minBatched = 1;
+					if (Stats.maxBatched < 1)
+						Stats.maxBatched = 1;
 					continue;
 					
 				}
@@ -352,6 +364,12 @@ public class Util {
 	public static void batchUsingPreparedStatement() throws SQLException {
 		batchSize = 0;
 		Stats.batchCalls++;
+		int sizeofqueue = DMLQueue.getQueueSize();
+		Stats.DMLSentToBatcher += sizeofqueue;
+		if (sizeofqueue > Stats.maxCombinerToBatchSize) 
+			Stats.maxCombinerToBatchSize = sizeofqueue;
+		if (sizeofqueue < Stats.minCombinerToBatchSize)
+			Stats.minCombinerToBatchSize = sizeofqueue;
 		Combiner.PKValuesMap.clear();
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
 		while (!DMLQueue.IsEmpty()) {
@@ -375,6 +393,7 @@ public class Util {
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
 					st.executeUpdate(currDML.toDMLString());
+					Stats.dbmsAccess ++;
 					continue;
 					
 				}
@@ -397,9 +416,15 @@ public class Util {
 	}
 
 	public static void executePreparedStatement() throws SQLException {
-		preparedStatement.executeBatch();
+		int counts[] = preparedStatement.executeBatch();
+		int batchsize = counts.length;
+		if (batchsize > Stats.maxBatched) 
+			Stats.maxBatched = batchsize;
+		if (batchsize < Stats.minBatched)
+			Stats.minBatched = batchsize;
 		preparedStatement.clearBatch();
 		MySqlSchemaParser.db_conn.commit();
+		Stats.dbmsAccess ++;
 		preparedStatement = null;
 		currTable=null;
 		currType=null;

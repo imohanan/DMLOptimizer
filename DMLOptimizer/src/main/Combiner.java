@@ -117,7 +117,6 @@ public class Combiner
 			List<DML> fkdmls = fkMap.get(fkValue.FKValueString);
 			fkdmls.remove(dml);
 		}
-		DMLQueue.RemoveDML(dml);
 	}
 
 
@@ -141,12 +140,14 @@ public class Combiner
 			DML deleteElement = recordDMLs.get(0);
 			finalDMLMinHeap.add(deleteElement);
 			removeDML(deleteElement);
+			DMLQueue.RemoveDML(deleteElement);
 		}
 		while(FKrecordDMLs.size() != 0)
 		{
 			DML deleteElement = FKrecordDMLs.get(0);
 			finalDMLMinHeap.add(deleteElement);
 			removeDML(deleteElement);
+			DMLQueue.RemoveDML(deleteElement);
 		}
 		
 		return finalDMLMinHeap;
