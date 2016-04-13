@@ -9,14 +9,14 @@ public class InsertDML extends DML{
 
 	public InsertDML(String inputString) {
 		//1. set String
-		DMLString = inputString;
-		// 2. Set Type
-		type = DMLType.INSERT;
-		
 		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
+		DMLString = inputString;
 		String[] words = inputString.split(" ");
 		
+		// 2. Set Type
+				type = DMLType.INSERT;
+				
 		//3.Set Table
 		table = words[2].toLowerCase();
 		
@@ -31,7 +31,7 @@ public class InsertDML extends DML{
 			String[] valueList = values.split(",");
 			for(int idx = 0; idx < valueList.length; idx++) 
 			{
-				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx]);
+				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx].trim());
 			}		
 		}
 		else{
@@ -42,7 +42,7 @@ public class InsertDML extends DML{
 			String[] valueList = values.split(",");
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
-				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx]);
+				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx].trim());
 			}			
 		}	
 	}

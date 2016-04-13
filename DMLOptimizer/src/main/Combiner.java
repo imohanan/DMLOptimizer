@@ -10,6 +10,7 @@ import java.util.PriorityQueue;
 
 import model.DML;
 import model.DMLComparator;
+import model.DMLQueue;
 import model.FKValue;
 import util.Stats;
 
@@ -103,7 +104,6 @@ public class Combiner
 	}
 
 	
-	
 	public static void removeDML(DML dml) {
 		Stats.DMLAfterCombining--;
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
@@ -117,6 +117,7 @@ public class Combiner
 			List<DML> fkdmls = fkMap.get(fkValue.FKValueString);
 			fkdmls.remove(dml);
 		}
+		DMLQueue.RemoveDML(dml);
 	}
 
 

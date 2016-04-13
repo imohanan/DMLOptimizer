@@ -48,7 +48,7 @@ public class Util {
 	}
 
 	public static void ManualBatchAndPush() throws SQLException {
-		//TODO: Add stats variables
+		Stats.batchCalls ++;
 		
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
 				.createStatement();
@@ -68,8 +68,15 @@ public class Util {
 			}
 			else
 			{
-				String batchedStatement = getBatchedStatement(DMLsToBatch);
-				manualStatement.addBatch(batchedStatement);
+				if (DMLsToBatch.isEmpty() == false)
+				{
+					if (DMLsToBatch.size() > Stats.maxBatched) 
+						Stats.maxBatched = DMLsToBatch.size();
+					if (DMLsToBatch.size() < Stats.minBatched) 
+						Stats.minBatched = DMLsToBatch.size();
+					String batchedStatement = getBatchedStatement(DMLsToBatch);
+					manualStatement.addBatch(batchedStatement);
+				}
 				
 				DMLsToBatch = new LinkedList<DML>();
 				DMLsToBatch.add(currDML);
@@ -78,6 +85,60 @@ public class Util {
 		
 		if (!DMLsToBatch.isEmpty())
 		{
+			if (DMLsToBatch.size() > Stats.maxBatched) 
+				Stats.maxBatched = DMLsToBatch.size();
+			if (DMLsToBatch.size() < Stats.minBatched) 
+				Stats.minBatched = DMLsToBatch.size();
+			String batchedStatement = getBatchedStatement(DMLsToBatch);
+			manualStatement.addBatch(batchedStatement);
+		}
+		
+		int[] results = manualStatement.executeBatch();
+		manualStatement.clearBatch();
+		manualStatement.close();
+		Stats.dbmsAccess++;
+	}
+
+	public static void ManualBatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
+		Stats.batchCalls ++;
+		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
+				.createStatement();
+		List<DML> DMLsToBatch = new LinkedList<DML>();
+		
+		while( affectedDMLs.isEmpty() == false )
+		{
+			DML currDML = affectedDMLs.remove();
+			
+			if((DMLsToBatch.isEmpty() == true 
+					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
+					&& currDML.IsRecordLevelFence == false
+					&& currDML.IsTableLevelFence == false
+					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+			{
+				DMLsToBatch.add(currDML);
+			}
+			else
+			{
+				if (DMLsToBatch.isEmpty() == false)
+				{
+					if (DMLsToBatch.size() > Stats.maxBatched) 
+						Stats.maxBatched = DMLsToBatch.size();
+					if (DMLsToBatch.size() < Stats.minBatched) 
+						Stats.minBatched = DMLsToBatch.size();
+					String batchedStatement = getBatchedStatement(DMLsToBatch);
+					manualStatement.addBatch(batchedStatement);
+				}
+				DMLsToBatch = new LinkedList<DML>();
+				DMLsToBatch.add(currDML);
+			}
+		}
+		
+		if (DMLsToBatch.isEmpty() == false)
+		{
+			if (DMLsToBatch.size() > Stats.maxBatched) 
+				Stats.maxBatched = DMLsToBatch.size();
+			if (DMLsToBatch.size() < Stats.minBatched) 
+				Stats.minBatched = DMLsToBatch.size();
 			String batchedStatement = getBatchedStatement(DMLsToBatch);
 			manualStatement.addBatch(batchedStatement);
 		}
@@ -85,10 +146,8 @@ public class Util {
 		int[] results = manualStatement.executeBatch();
 		manualStatement.clearBatch();
 		manualStatement.close();
-		
-	}
-
-
+		Stats.dbmsAccess ++;
+	}	
 	
 	private static String getBatchedStatement(List<DML> DMLsToBatch) {
 		if (DMLsToBatch.size() == 1)
@@ -168,42 +227,6 @@ public class Util {
 			return true;
 		return false;
 	}
-
-	// public static void BatchAndPush(List<DML> listOfAffectedDMLs)
-	// throws SQLException {
-	// if (statement==null){
-	// statement=(Statement) MySqlSchemaParser.db_conn
-	// .createStatement();
-	// }
-	// if (!listOfAffectedDMLs.isEmpty()&& currTable==null && currType==null) {
-	// DML currDML = DMLQueue.RemoveDMLfromHead();
-	// currType = currDML.type;
-	// currTable = currDML.table;
-	// batch(currDML, currType, currTable);
-	// }
-	// while (!listOfAffectedDMLs.isEmpty()) {
-	// DML curr = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
-	// DML next = DMLQueue.getMinAndRemove(listOfAffectedDMLs);
-	// if (curr != null && next != null) {
-	// if (checkBatchingRules(curr, next)) {
-	// Combiner.PKValuesMap.remove(curr);
-	// Combiner.FKValuesMap.remove(curr);
-	// Combiner.PKValuesMap.remove(next);
-	// Combiner.FKValuesMap.remove(next);
-	// DML batchRs = batch(curr, next);
-	// DMLQueue.AddToHead(batchRs);
-	// } else {
-	// Combiner.PKValuesMap.remove(curr);
-	// Combiner.FKValuesMap.remove(curr);
-	// pushToDBMS(curr);
-	// DMLQueue.AddToHead(next);
-	// }
-	//
-	// } else {// next is empty
-	// pushToDBMS(curr);
-	// }
-	// }
-	// }
 
 	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
 		int[] count = null;
@@ -371,7 +394,7 @@ public class Util {
 					
 				}
 			} else {
-				currDML = DMLQueue.getDMLQueueHead();
+				currDML = DMLQueue.DMLQueueHead;
 				if (checkBatchingRules(currDML.type, currDML.table, currType, currTable)
 						&& !currDML.isRecordLevelFence() && !currDML.isTableLevelFence()) {
 					currDML = DMLQueue.RemoveDMLfromHead();
