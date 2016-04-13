@@ -70,7 +70,7 @@ public class Main {
 			        	else if(prepared)
 			        		Util.batchUsingPreparedStatement();
 			        	else
-			        		Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
+			        		Util.ManualBatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
@@ -81,13 +81,7 @@ public class Main {
 			        	else if(prepared)
 			        		Util.batchUsingPreparedStatementRLF(affectedDMLs);
 			        	else
-			        		Util.BatchAndPush();
-			        	//Util.BatchAndPush(affectedDMLs);
-			        	Util.ManualBatchAndPush();
-			        	//if(!blind)
-			    		//Util.BatchAndPush();
-			    		//if(blind)
-			    		//Util.blindBatch();
+			        		Util.ManualBatchAndPush(affectedDMLs);
 			        }
 			        else
 			        {
