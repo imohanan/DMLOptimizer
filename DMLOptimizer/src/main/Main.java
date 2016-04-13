@@ -9,21 +9,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import com.mysql.jdbc.PreparedStatement;
+
 import model.DML;
 import model.DMLQueue;
 import model.DeleteDML;
 import model.InsertDML;
 import model.UpdateDML;
+import util.PrepStatement;
 import util.Stats;
 import util.Util;
 //comment
 
 public class Main {
 	public static boolean blind=false;
+	public static boolean prepared=false;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
 		Stats stats = new Stats();
 		Stats.startTime = System.currentTimeMillis();
@@ -60,15 +65,23 @@ public class Main {
 			    	if (dml.isTableLevelFence())
 			        {
 			    		Stats.tableFenceCount++;
-			    		if(!blind)
-			        	Util.ManualBatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        	if (blind)
-			        		Util.blindBatch();
+			        		Util.ManualBatchAndPush();
+			        	else if(prepared)
+			        		Util.batchUsingPreparedStatement();
+			        	else
+			        		Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
 			        	Stats.recordFenceCount++;
 			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
+			        	if (blind)
+			        		Util.blindBatch();
+			        	else if(prepared)
+			        		Util.batchUsingPreparedStatementRLF(affectedDMLs);
+			        	else
+			        		Util.BatchAndPush();
 			        	//Util.BatchAndPush(affectedDMLs);
 			        	Util.ManualBatchAndPush();
 			        	//if(!blind)
@@ -82,10 +95,13 @@ public class Main {
 			        }
 		    	}	        
 		    }
-		    if(!blind)
-		    	Util.ManualBatchAndPush();
-		    if (blind)
-		    	Util.blindBatch();
+
+			if (blind)
+        		Util.blindBatch();
+        	else if(prepared)
+        		Util.batchUsingPreparedStatement();
+        	else
+        		Util.ManualBatchAndPush();
 		} 
 		catch(Exception x)
 		{
