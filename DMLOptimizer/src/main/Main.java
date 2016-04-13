@@ -23,7 +23,7 @@ import util.Util;
 
 public class Main {
 	public static boolean blind=false;
-	public static boolean prepared=false;
+	public static boolean prepared=true;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
@@ -66,7 +66,7 @@ public class Main {
 			        {
 			    		Stats.tableFenceCount++;
 			        	if (blind)
-			        		Util.ManualBatchAndPush();
+			        		Util.blindBatch();
 			        	else if(prepared)
 			        		Util.batchUsingPreparedStatement();
 			        	else
@@ -83,7 +83,7 @@ public class Main {
 			        	else
 			        		Util.BatchAndPush();
 			        	//Util.BatchAndPush(affectedDMLs);
-			        	Util.ManualBatchAndPush();
+			        	
 			        	//if(!blind)
 			    		//Util.BatchAndPush();
 			    		//if(blind)
@@ -95,13 +95,12 @@ public class Main {
 			        }
 		    	}	        
 		    }
-
 			if (blind)
         		Util.blindBatch();
         	else if(prepared)
         		Util.batchUsingPreparedStatement();
         	else
-        		Util.ManualBatchAndPush();
+        		Util.BatchAndPush();
 		} 
 		catch(Exception x)
 		{
