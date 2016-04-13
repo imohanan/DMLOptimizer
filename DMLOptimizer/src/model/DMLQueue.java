@@ -5,22 +5,16 @@ import java.util.List;
 public class DMLQueue {
 	
 
-	private static DML DMLQueueHead;
-	private static DML DMLQueueTail;
-	private static int queueSize = 0;
+	public static DML DMLQueueHead;
+	public static DML DMLQueueTail;
+	public static int queueSize = 0;
 
-	public static DML getDMLQueueHead() {
-		return DMLQueueHead;
-	}
 
 	public static void setDMLQueueHead(DML dMLQueueHead) {
 		queueSize++;
 		DMLQueueHead = dMLQueueHead;
 	}
 
-	public static DML getDMLQueueTail() {
-		return DMLQueueTail;
-	}
 
 	public static void setDMLQueueTail(DML dMLQueueTail) {
 		queueSize++;

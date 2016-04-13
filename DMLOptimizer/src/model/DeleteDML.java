@@ -9,9 +9,9 @@ public class DeleteDML extends DML {
 
 	public DeleteDML(String inputString) {
 		// 1. set DMLString
-		DMLString = inputString;
 		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
+		DMLString = inputString;
 		String[] words = inputString.split(" ");
 		
 		// 2. Set type

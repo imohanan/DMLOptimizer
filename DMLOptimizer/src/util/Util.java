@@ -68,8 +68,11 @@ public class Util {
 			}
 			else
 			{
-				String batchedStatement = getBatchedStatement(DMLsToBatch);
-				manualStatement.addBatch(batchedStatement);
+				if (DMLsToBatch.isEmpty() == false)
+				{
+					String batchedStatement = getBatchedStatement(DMLsToBatch);
+					manualStatement.addBatch(batchedStatement);
+				}
 				
 				DMLsToBatch = new LinkedList<DML>();
 				DMLsToBatch.add(currDML);
@@ -88,7 +91,47 @@ public class Util {
 		
 	}
 
+	public static void ManualBatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
+		
+		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
+				.createStatement();
+		List<DML> DMLsToBatch = new LinkedList<DML>();
+		
+		while( affectedDMLs.isEmpty() == false )
+		{
+			DML currDML = affectedDMLs.remove();
+			
+			if((DMLsToBatch.isEmpty() == true 
+					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
+					&& currDML.IsRecordLevelFence == false
+					&& currDML.IsTableLevelFence == false
+					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+			{
+				DMLsToBatch.add(currDML);
+			}
+			else
+			{
+				if (DMLsToBatch.isEmpty() == false)
+				{
+					String batchedStatement = getBatchedStatement(DMLsToBatch);
+					manualStatement.addBatch(batchedStatement);
+				}
+				DMLsToBatch = new LinkedList<DML>();
+				DMLsToBatch.add(currDML);
+			}
+		}
+		
+		if (DMLsToBatch.isEmpty() == false)
+		{
+			String batchedStatement = getBatchedStatement(DMLsToBatch);
+			manualStatement.addBatch(batchedStatement);
+		}
+		 
+		int[] results = manualStatement.executeBatch();
+		manualStatement.clearBatch();
+		manualStatement.close();
 
+	}	
 	
 	private static String getBatchedStatement(List<DML> DMLsToBatch) {
 		if (DMLsToBatch.size() == 1)
@@ -356,7 +399,7 @@ public class Util {
 					
 				}
 			} else {
-				currDML = DMLQueue.getDMLQueueHead();
+				currDML = DMLQueue.DMLQueueHead;
 				if (checkBatchingRules(currDML.type, currDML.table, currType, currTable)
 						&& !currDML.isRecordLevelFence() && !currDML.isTableLevelFence()) {
 					currDML = DMLQueue.RemoveDMLfromHead();

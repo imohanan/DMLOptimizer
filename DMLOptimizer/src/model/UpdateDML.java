@@ -8,12 +8,11 @@ import main.MySqlSchemaParser;
 public class UpdateDML extends DML{
 
 	public UpdateDML(String inputString) {
-		// 1. Set DMLString
-		DMLString = inputString;
-		
+		// 1. Set DMLString		
 		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
 		String[] words = inputString.split(" ");
+		DMLString = inputString;
 		
 		// 2. Set type
 		type = DMLType.UPDATE;
