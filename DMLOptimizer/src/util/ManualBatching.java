@@ -3,6 +3,7 @@ package util;
 import java.util.List;
 import java.util.Map;
 
+import main.MySqlSchemaParser;
 import model.DML;
 
 public class ManualBatching {
@@ -10,7 +11,31 @@ public class ManualBatching {
 	public static String batchInsert(List<DML> DMLsToBatch) {
 		String table = DMLsToBatch.get(0).table;
 		
-		String batchedDML = "";//"insert into " + table + attributes + " values " + values;
+		String attributes = "(";
+		for(String attr: MySqlSchemaParser.TableAttrs.get(table))
+		{
+			attributes = attributes + attr + ",";
+		}
+		attributes = attributes.substring(0, attributes.length() - 1) + ")";
+		
+		String batchedValues = "";
+		for(DML dml: DMLsToBatch)
+		{
+			String values = "(";
+			for(String attr: MySqlSchemaParser.TableAttrs.get(table))
+			{
+				String attrValue = dml.DMLSetAttributeValues.get(attr);
+				if (attrValue != null)
+					values = values + attrValue + ",";
+				else
+					values = values + MySqlSchemaParser.AttrInitVal.get(table).get(attr) + ",";
+			}
+			values = values.substring(0, values.length() - 1) + "),";
+			batchedValues = batchedValues + values;
+		}
+		batchedValues = batchedValues.substring(0, batchedValues.length() - 1);
+		
+		String batchedDML = "insert into " + table + attributes + " values " + batchedValues;
 		return batchedDML;
 	}
 

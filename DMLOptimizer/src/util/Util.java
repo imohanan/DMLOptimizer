@@ -46,7 +46,7 @@ public class Util {
 		return NewDMLs;
 	}
 
-	public static void BatchAndPush(Boolean ManualBatching) throws SQLException {
+	public static void ManualBatchAndPush() throws SQLException {
 		//TODO: Add stats variables
 		
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
@@ -74,8 +74,16 @@ public class Util {
 				DMLsToBatch.add(currDML);
 			}
 		}
+		
+		if (!DMLsToBatch.isEmpty())
+		{
+			String batchedStatement = getBatchedStatement(DMLsToBatch);
+			manualStatement.addBatch(batchedStatement);
+		}
 		 
-		manualStatement.executeBatch();
+		int[] results = manualStatement.executeBatch();
+		manualStatement.clearBatch();
+		manualStatement.close();
 		
 	}
 

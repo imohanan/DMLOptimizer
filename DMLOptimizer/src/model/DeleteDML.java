@@ -26,7 +26,7 @@ public class DeleteDML extends DML {
 		for(String attVal: attVals)
 		{
 			String[] elements = attVal.split("=");
-			DMLGetAttributeValues.put(elements[0].toString().toLowerCase(), elements[1].toString());
+			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
 		}
 	}
 

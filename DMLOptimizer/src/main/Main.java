@@ -19,7 +19,7 @@ import util.Util;
 //comment
 
 public class Main {
-	public static boolean blind=true;
+	public static boolean blind=false;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
@@ -61,7 +61,7 @@ public class Main {
 			        {
 			    		Stats.tableFenceCount++;
 			    		if(!blind)
-			        	Util.BatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
+			        	Util.ManualBatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
 			        	if (blind)
 			        		Util.blindBatch();
 			        }
@@ -70,7 +70,7 @@ public class Main {
 			        	Stats.recordFenceCount++;
 			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
 			        	//Util.BatchAndPush(affectedDMLs);
-			        	
+			        	Util.ManualBatchAndPush();
 			        	//if(!blind)
 			    		//Util.BatchAndPush();
 			    		//if(blind)
@@ -83,7 +83,7 @@ public class Main {
 		    	}	        
 		    }
 		    if(!blind)
-		    	Util.BatchAndPush();
+		    	Util.ManualBatchAndPush();
 		    if (blind)
 		    	Util.blindBatch();
 		} 
