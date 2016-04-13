@@ -28,7 +28,7 @@ public class Stats {
 	public static int minCombinerToBatchSize=Integer.MAX_VALUE;
 	public static int batchCalls=0;
 
-	public static int minBatched=1;//Min batched from any size of group coming from combiner
+	public static int minBatched= Integer.MAX_VALUE;//Min batched from any size of group coming from combiner
 	public static int maxBatched=1;
     
 	public static int dbmsAccess=0;

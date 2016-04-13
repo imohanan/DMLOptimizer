@@ -336,6 +336,10 @@ public class Util {
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
 					st.executeUpdate(currDML.toDMLString());
 					Stats.dbmsAccess++;
+					if (Stats.minBatched > 1)
+						Stats.minBatched = 1;
+					if (Stats.maxBatched < 1)
+						Stats.maxBatched = 1;
 					continue;
 					
 				}
