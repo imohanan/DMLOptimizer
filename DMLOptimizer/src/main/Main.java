@@ -79,7 +79,7 @@ public class Main {
 			        	if (blind)
 			        		Util.blindBatch();
 			        	else if(prepared)
-			        		Util.batchUsingPreparedStatement();
+			        		Util.batchUsingPreparedStatementRLF(affectedDMLs);
 			        	else
 			        		Util.BatchAndPush();
 			        	//Util.BatchAndPush(affectedDMLs);

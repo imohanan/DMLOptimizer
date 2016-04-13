@@ -217,6 +217,52 @@ public class Util {
 
 		}
 	}
+	
+	public static void batchUsingPreparedStatementRLF(PriorityQueue<DML> affectedDMLs) throws SQLException {
+		batchSize = 0;
+		Stats.batchCalls++;
+		MySqlSchemaParser.db_conn.setAutoCommit(false);
+		while (!affectedDMLs.isEmpty()) {
+			if (currTable == null && currType == null) {
+				currDML = affectedDMLs.remove();
+				if ((currDML.type == DMLType.INSERT || currDML.type == DMLType.DELETE) && !currDML.isRecordLevelFence()
+						&& !currDML.isTableLevelFence()) {
+					currType = currDML.type;
+					currTable = currDML.table;
+					if (currType == DMLType.INSERT) {
+						template = PrepStatement.tableToInsertPreparedStatements.get(currTable);
+					} else if (currType == DMLType.DELETE) {
+						template = PrepStatement.tableToDeletePreparedStatements.get(currTable);
+					}
+					preparedStatement = MySqlSchemaParser.db_conn.prepareStatement(template);
+					fillPreparedStatement(currTable, currDML);
+					preparedStatement.addBatch();
+
+				} else {
+					if (preparedStatement != null) 
+						executePreparedStatement();
+					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
+					st.executeUpdate(currDML.toDMLString());
+					continue;
+					
+				}
+			} else {
+				currDML = affectedDMLs.peek();
+				if (checkBatchingRules(currDML.type, currDML.table, currType, currTable)
+						&& !currDML.isRecordLevelFence() && !currDML.isTableLevelFence()) {
+					currDML = affectedDMLs.remove();
+					fillPreparedStatement(currTable, currDML);
+					preparedStatement.addBatch();
+
+				} else {
+					executePreparedStatement();
+				}
+			}
+		}
+		if (preparedStatement != null) {
+			executePreparedStatement();
+		}
+	}
 
 	public static void batchUsingPreparedStatement() throws SQLException {
 		batchSize = 0;
@@ -226,7 +272,7 @@ public class Util {
 		while (!DMLQueue.IsEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = DMLQueue.RemoveDMLfromHead();
-				if (currDML.type == DMLType.INSERT || currDML.type == DMLType.DELETE && !currDML.isRecordLevelFence()
+				if ((currDML.type == DMLType.INSERT || currDML.type == DMLType.DELETE) && !currDML.isRecordLevelFence()
 						&& !currDML.isTableLevelFence()) {
 					currType = currDML.type;
 					currTable = currDML.table;
