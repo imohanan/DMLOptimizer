@@ -334,7 +334,11 @@ public class Util {
 					if (preparedStatement != null) 
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
-					st.executeUpdate(currDML.toDMLString());
+					st.addBatch(currDML.toDMLString());
+					st.executeBatch();
+					MySqlSchemaParser.db_conn.commit();
+					st.clearBatch();
+					st.close();
 					Stats.dbmsAccess++;
 					if (Stats.minBatched > 1)
 						Stats.minBatched = 1;
@@ -392,7 +396,11 @@ public class Util {
 					if (preparedStatement != null) 
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
-					st.executeUpdate(currDML.toDMLString());
+					st.addBatch(currDML.toDMLString());
+					st.executeBatch();
+					MySqlSchemaParser.db_conn.commit();
+					st.clearBatch();
+					st.close();
 					Stats.dbmsAccess ++;
 					continue;
 					
@@ -413,6 +421,7 @@ public class Util {
 		if (preparedStatement != null) {
 			executePreparedStatement();
 		}
+		
 	}
 
 	public static void executePreparedStatement() throws SQLException {

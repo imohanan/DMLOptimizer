@@ -118,7 +118,7 @@ public abstract class DML {
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
 		    	else if (value.indexOf("+") != -1 && origValue.indexOf("-") != -1) {
-		    		int ans = ((-1) * Integer.parseInt(newNumber)) + Integer.parseInt(origNumber);
+		    		int ans = ((-1) * Integer.parseInt(origNumber)) + Integer.parseInt(newNumber);
 		    		if (ans < 0) {
 		    			newValue = newValue + "-" + Math.abs(ans);
 		    		}
