@@ -57,8 +57,10 @@ public class Main {
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))
 		    			dml = new DeleteDML(dmlLine);
-		    		else
+		    		else if (words[0].equalsIgnoreCase("update"))
 		    			dml = new UpdateDML(dmlLine);
+		    		else
+		    			continue;
 		    		
 		    		dml.SetPrimaryKeyValue();
 		    		dml.SetForeignKeyValues();
