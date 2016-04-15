@@ -457,13 +457,13 @@ public class Util {
 				else if (attrType.equalsIgnoreCase("SMALLINT "))
 					preparedStatement.setNull(attrCount, java.sql.Types.SMALLINT);
 				else if (attrType.equalsIgnoreCase("TINYINT"))
-					preparedStatement.setLong(attrCount, java.sql.Types.TINYINT);
+					preparedStatement.setNull(attrCount, java.sql.Types.TINYINT);
 				else if (attrType.equalsIgnoreCase("BIGINT"))
-					preparedStatement.setLong(attrCount, java.sql.Types.BIGINT);
+					preparedStatement.setNull(attrCount, java.sql.Types.BIGINT);
 				else if (attrType.equalsIgnoreCase("DECIMAL"))
-					preparedStatement.setLong(attrCount, java.sql.Types.DECIMAL);
+					preparedStatement.setNull(attrCount, java.sql.Types.DECIMAL);
 				else if (attrType.equalsIgnoreCase("char"))
-					preparedStatement.setLong(attrCount, java.sql.Types.CHAR);
+					preparedStatement.setNull(attrCount, java.sql.Types.CHAR);
 
 			} else {
 				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR"))
@@ -487,6 +487,13 @@ public class Util {
 					preparedStatement.setByte(attrCount, Byte.parseByte(attrVal));
 				else if (attrType.equalsIgnoreCase("nstring"))
 					preparedStatement.setNString(attrCount, attrVal);
+				else if(attrType.equalsIgnoreCase("date"))
+					preparedStatement.setDate(attrCount, java.sql.Date.valueOf(attrVal));
+				else if(attrType.equalsIgnoreCase("datetime"))
+					preparedStatement.setTime(attrCount, java.sql.Time.valueOf(attrVal));
+				else if(attrType.equalsIgnoreCase("timestamp"))
+					preparedStatement.setTimestamp(attrCount, java.sql.Timestamp.valueOf(attrVal));
+				
 
 			}
 
