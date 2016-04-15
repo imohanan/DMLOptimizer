@@ -23,7 +23,7 @@ import util.Util;
 
 public class Main {
 	public static boolean blind=false;
-	public static boolean prepared=true;
+	public static boolean prepared=false;
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
