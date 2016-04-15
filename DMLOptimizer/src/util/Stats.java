@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import main.Main;
+
 public class Stats {
 	
 	public static long startTime = 0;
@@ -39,6 +41,7 @@ public class Stats {
 	
 	public static void printStats()
 	{
+		float avgbatch =0;
 		double elapsedTime = (((stopTime - startTime)*1.67)/100000);
 	    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" minutes");
 	    
@@ -61,7 +64,12 @@ public class Stats {
 //		System.out.println("Total number of access to dbms: "+dbmsAccess);
 		System.out.println("Minimum number of DMLS in a batch: "+Integer.toString(minBatched));
 		System.out.println("Maximum number of DMLS in a batch: "+Integer.toString(maxBatched));
-		System.out.println("Average number of DMLs per batch:" + Float.toString(DMLSentToBatcher/dbmsAccess));
+		if (Main.prepared == false && Main.blind == false)
+		{
+			avgbatch = DMLSentToBatcher/dbmsAccess;
+		}
+			
+		System.out.println("Average number of DMLs per batch:" + Float.toString(avgbatch));
 //		System.out.println("Average number of DMLS in each batch: "+Float.toString(DMLAfterCombining/totalBatched));
 	
 	}

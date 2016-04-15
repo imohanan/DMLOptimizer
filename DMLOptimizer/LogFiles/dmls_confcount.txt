@@ -1,0 +1,9 @@
+UPDATE users SET ConfCount=ConfCount+1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount+1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount+1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
+UPDATE users SET ConfCount=ConfCount-1 WHERE userid=17768;
