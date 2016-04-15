@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.Main;
 import main.MySqlSchemaParser;
 import util.Stats;
 
@@ -25,7 +26,7 @@ public abstract class DML {
 	
 	public DML() {
 		id = counter;
-		Stats.DMLTotal++;
+		Main.batcher.DMLTotal++;
 		counter++;
 	}
 	
@@ -178,7 +179,7 @@ public abstract class DML {
 		    
 		}
 		if (pendcountDmlSeen) {
-			Stats.pendcountDML++;
+			Main.batcher.pendcountDML++;
 		}
 		toDMLString();
 	}

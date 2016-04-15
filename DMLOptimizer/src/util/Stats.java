@@ -14,7 +14,6 @@ public class Stats {
 	
 	public static int DMLTotal = 0;
 	public static int DMLAfterCombining = 0;
-	public static int DMLSentToBatcher = 0;
 	
 	public static int insertUpdateCount = 0;
 	public static int insertDeleteCount = 0;
@@ -34,14 +33,14 @@ public class Stats {
 	public static int maxBatched=1;
     
 	public static int dbmsAccess=0;
-
+	public static int countManualBatcher=0; 
 	public static boolean issueToDBMS=true;
 	public static Map<Integer, Integer> NoDMLsPassedToBatcher=new HashMap<Integer,Integer>();//<size of group,occurance>
 	public static Map<Integer, Integer> BatchSizeToDBMSAccess=new HashMap<Integer,Integer>();//<size of group,#dbms access>
 	
 	public static void printStats()
-	{
-		float avgbatch =0;
+	{		
+		float avgbatch ;
 		double elapsedTime = (((stopTime - startTime)*1.67)/100000);
 	    System.out.println("Time taken in Optimized algorithm: " + elapsedTime +" minutes");
 	    
@@ -59,14 +58,18 @@ public class Stats {
     	
     	System.out.println("Minimum number of DMLs passed from Combiner -> Batcher in one call: "+Integer.toString(minCombinerToBatchSize));
     	System.out.println("maximum number of DMLs passed from Combiner -> Batcher in one call: "+Integer.toString(maxCombinerToBatchSize));
-    	System.out.println("Average number of DMLs passed from Combiner -> Batcher per call: "+Float.toString(DMLSentToBatcher/batchCalls));
+    	System.out.println("Average number of DMLs passed from Combiner -> Batcher per call: "+Float.toString(DMLAfterCombining/batchCalls));
 //    	System.out.println("Total number of DMLs after batching: "+ totalBatched);
 //		System.out.println("Total number of access to dbms: "+dbmsAccess);
 		System.out.println("Minimum number of DMLS in a batch: "+Integer.toString(minBatched));
 		System.out.println("Maximum number of DMLS in a batch: "+Integer.toString(maxBatched));
 		if (Main.prepared == false && Main.blind == false)
 		{
-			avgbatch = DMLSentToBatcher/dbmsAccess;
+			avgbatch = (float)DMLAfterCombining/(float)dbmsAccess;
+		}
+		else
+		{
+			avgbatch = (float)DMLAfterCombining/(float)countManualBatcher;
 		}
 			
 		System.out.println("Average number of DMLs per batch:" + Float.toString(avgbatch));

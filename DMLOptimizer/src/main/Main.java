@@ -24,14 +24,22 @@ import util.Util;
 public class Main {
 	public static boolean blind=false;
 	public static boolean prepared=true;
+	public static Batcher batcher;
+	
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
+		if (blind)
+			batcher = new BlindBatcher();
+		else if (prepared)
+			batcher = new PreparedBatcher();
+		else
+			batcher = new ManualBatcher();
+		
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
-		Stats stats = new Stats();
-		Stats.startTime = System.currentTimeMillis();
+		batcher.startTime = System.currentTimeMillis();
 		// 2. For each log line
 		
 		Path filePath = Paths.get(args[3]);
@@ -43,11 +51,7 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		dmlLine = dmlLine.replace("=", " = ");
-		    		dmlLine = dmlLine.replace("(", " (");
-		    		dmlLine = dmlLine.replace(")", ") ");
-		    		dmlLine = dmlLine.replaceAll("( )+", " ");
-		    		dmlLine = dmlLine.replaceAll("\\s+(?=[^()]*\\))", "");
+		    		dmlLine = Util.preprocessDMLString(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))
@@ -64,24 +68,14 @@ public class Main {
 		    		
 			    	if (dml.isTableLevelFence())
 			        {
-			    		Stats.tableFenceCount++;
-			        	if (blind)
-			        		Util.blindBatch();
-			        	else if(prepared)
-			        		Util.batchUsingPreparedStatement();
-			        	else
-			        		Util.ManualBatchAndPush(); // TODO: FUTURE - Push only the impacted tables DMLs
+			    		batcher.tableFenceCount++;
+			    		batcher.BatchAndPush();
 			        }
 			        else if (dml.isRecordLevelFence())
 			        {
-			        	Stats.recordFenceCount++;
+			        	batcher.recordFenceCount++;
 			        	PriorityQueue<DML> affectedDMLs = Combiner.removeRecordDMLs(dml);
-			        	if (blind)
-			        		Util.blindBatch();
-			        	else if(prepared)
-			        		Util.batchUsingPreparedStatementRLF(affectedDMLs);
-			        	else
-			        		Util.ManualBatchAndPush(affectedDMLs);
+			        	batcher.BatchAndPush(affectedDMLs);
 			        }
 			        else
 			        {
@@ -89,12 +83,7 @@ public class Main {
 			        }
 		    	}	        
 		    }
-			if (blind)
-        		Util.blindBatch();
-        	else if(prepared)
-        		Util.batchUsingPreparedStatement();
-        	else
-        		Util.BatchAndPush();
+		    batcher.BatchAndPush();
 		} 
 		catch(Exception x)
 		{
@@ -103,8 +92,8 @@ public class Main {
 		}
 		finally
 		{
-			Stats.stopTime = System.currentTimeMillis();
-			Stats.printStats();			
+			batcher.stopTime = System.currentTimeMillis();
+			batcher.printStats();			
 		} 
 		
 	}
