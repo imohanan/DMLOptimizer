@@ -14,7 +14,6 @@ import util.Stats;
 public class PreparedBatcher extends Batcher{
 
 	int batchSize;
-	private Statement statement = null;
 	private  String template = null;
 	private  java.sql.PreparedStatement preparedStatement = null;
 	private  DMLType currType = null;
@@ -32,7 +31,6 @@ public class PreparedBatcher extends Batcher{
 			maxCombinerToBatchSize = sizeofheap;
 		if (sizeofheap < minCombinerToBatchSize)
 			minCombinerToBatchSize = sizeofheap;
-		int batchcount =0;
 		while (!affectedDMLs.isEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = affectedDMLs.remove();

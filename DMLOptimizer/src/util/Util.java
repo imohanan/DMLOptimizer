@@ -26,8 +26,7 @@ public class Util {
 	private static String currTable = null;
 	public static int batchSize;
 
-	public static String preprocessDMLString(String dmlLine)
-	{
+	public static String preprocessDMLString(String dmlLine) {
 		dmlLine = dmlLine.replace("=", " = ");
 		dmlLine = dmlLine.replace("(", " (");
 		dmlLine = dmlLine.replace(")", ") ");
@@ -35,7 +34,7 @@ public class Util {
 		dmlLine = dmlLine.replaceAll("\\s+(?=[^()]*\\))", "");
 		return dmlLine;
 	}
-	
+
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
 		dmlString = dmlString.trim();
@@ -58,47 +57,44 @@ public class Util {
 	}
 
 	public static void ManualBatchAndPush() throws SQLException {
-		Stats.batchCalls ++;
+		Stats.batchCalls++;
 		if (Stats.minCombinerToBatchSize > DMLQueue.queueSize)
 			Stats.minCombinerToBatchSize = DMLQueue.queueSize;
-		if(Stats.maxCombinerToBatchSize < DMLQueue.queueSize)
+		if (Stats.maxCombinerToBatchSize < DMLQueue.queueSize)
 			Stats.maxCombinerToBatchSize = DMLQueue.queueSize;
-		
-		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
-				.createStatement();
+
+		Statement manualStatement = (Statement) MySqlSchemaParser.db_conn.createStatement();
 		List<DML> DMLsToBatch = new LinkedList<DML>();
-		
-		while( DMLQueue.IsEmpty() == false )
-		{
+
+		while (DMLQueue.IsEmpty() == false) {
 			DML currDML = DMLQueue.RemoveDMLfromHead();
-			
-			if((DMLsToBatch.isEmpty() == true 
-					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
-					&& currDML.IsRecordLevelFence == false
-					&& currDML.IsTableLevelFence == false
-					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+
+			if ((DMLsToBatch.isEmpty() == true || checkBatchingRules(currDML.type, currDML.table,
+					DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true) && currDML.IsRecordLevelFence == false
+					&& currDML.IsTableLevelFence == false && currDML.type != DMLType.UPDATE) // Not
+																								// attempting
+																								// to
+																								// batch
+																								// update
+																								// DMLs
 			{
 				DMLsToBatch.add(currDML);
-			}
-			else
-			{
-				if (DMLsToBatch.isEmpty() == false)
-				{
+			} else {
+				if (DMLsToBatch.isEmpty() == false) {
 					String batchedStatement = getBatchedStatement(DMLsToBatch);
 					manualStatement.addBatch(batchedStatement);
 				}
-				
+
 				DMLsToBatch = new LinkedList<DML>();
 				DMLsToBatch.add(currDML);
 			}
 		}
-		
-		if (!DMLsToBatch.isEmpty())
-		{
+
+		if (!DMLsToBatch.isEmpty()) {
 			String batchedStatement = getBatchedStatement(DMLsToBatch);
 			manualStatement.addBatch(batchedStatement);
 		}
-		
+
 		int[] results = manualStatement.executeBatch();
 		manualStatement.clearBatch();
 		manualStatement.close();
@@ -106,32 +102,30 @@ public class Util {
 	}
 
 	public static void ManualBatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
-		Stats.batchCalls ++;
+		Stats.batchCalls++;
 		if (Stats.minCombinerToBatchSize > affectedDMLs.size())
 			Stats.minCombinerToBatchSize = affectedDMLs.size();
-		if(Stats.maxCombinerToBatchSize < affectedDMLs.size())
+		if (Stats.maxCombinerToBatchSize < affectedDMLs.size())
 			Stats.maxCombinerToBatchSize = affectedDMLs.size();
-		
-		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
-				.createStatement();
+
+		Statement manualStatement = (Statement) MySqlSchemaParser.db_conn.createStatement();
 		List<DML> DMLsToBatch = new LinkedList<DML>();
-		
-		while( affectedDMLs.isEmpty() == false )
-		{
+
+		while (affectedDMLs.isEmpty() == false) {
 			DML currDML = affectedDMLs.remove();
-			
-			if((DMLsToBatch.isEmpty() == true 
-					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
-					&& currDML.IsRecordLevelFence == false
-					&& currDML.IsTableLevelFence == false
-					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+
+			if ((DMLsToBatch.isEmpty() == true || checkBatchingRules(currDML.type, currDML.table,
+					DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true) && currDML.IsRecordLevelFence == false
+					&& currDML.IsTableLevelFence == false && currDML.type != DMLType.UPDATE) // Not
+																								// attempting
+																								// to
+																								// batch
+																								// update
+																								// DMLs
 			{
 				DMLsToBatch.add(currDML);
-			}
-			else
-			{
-				if (DMLsToBatch.isEmpty() == false)
-				{
+			} else {
+				if (DMLsToBatch.isEmpty() == false) {
 					String batchedStatement = getBatchedStatement(DMLsToBatch);
 					manualStatement.addBatch(batchedStatement);
 				}
@@ -139,35 +133,31 @@ public class Util {
 				DMLsToBatch.add(currDML);
 			}
 		}
-		
-		if (DMLsToBatch.isEmpty() == false)
-		{
+
+		if (DMLsToBatch.isEmpty() == false) {
 			String batchedStatement = getBatchedStatement(DMLsToBatch);
 			manualStatement.addBatch(batchedStatement);
 		}
-		 
+
 		int[] results = manualStatement.executeBatch();
 		manualStatement.clearBatch();
 		manualStatement.close();
-		Stats.dbmsAccess ++;
-	}	
-	
+		Stats.dbmsAccess++;
+	}
+
 	private static String getBatchedStatement(List<DML> DMLsToBatch) {
-		Stats.countManualBatcher ++;
-		if (DMLsToBatch.size() > Stats.maxBatched) 
+		Stats.countManualBatcher++;
+		if (DMLsToBatch.size() > Stats.maxBatched)
 			Stats.maxBatched = DMLsToBatch.size();
-		if (DMLsToBatch.size() < Stats.minBatched) 
+		if (DMLsToBatch.size() < Stats.minBatched)
 			Stats.minBatched = DMLsToBatch.size();
-		
+
 		if (DMLsToBatch.size() == 1)
 			return DMLsToBatch.get(0).DMLString;
-		if(DMLsToBatch.get(0).type == DMLType.INSERT)
-		{
+		if (DMLsToBatch.get(0).type == DMLType.INSERT) {
 			String batchedStatement = ManualBatching.batchInsert(DMLsToBatch);
 			return batchedStatement;
-		}
-		else if(DMLsToBatch.get(0).type == DMLType.DELETE)
-		{
+		} else if (DMLsToBatch.get(0).type == DMLType.DELETE) {
 			String batchedStatement = ManualBatching.batchDelete(DMLsToBatch);
 			return batchedStatement;
 		}
@@ -237,54 +227,26 @@ public class Util {
 	}
 
 	public static void batch(DML dml1, DMLType type, String table) throws SQLException {
-		int[] count = null;
 
 		if (checkBatchingRules(dml1.type, dml1.table, type, table)) {
 			statement.addBatch(dml1.toDMLString());
 			batchSize++;
 		} else {
-			if (Stats.issueToDBMS) {
-				count = statement.executeBatch();
-				if (batchSize > Stats.maxBatched)
-					Stats.maxBatched = batchSize;
-				else if (batchSize < Stats.minBatched)
-					Stats.minBatched = batchSize;
-				batchSize = 0;
-			}
-
-			else {
+				statement.executeBatch();
 				statement.clearBatch();
 			}
 			Stats.dbmsAccess++;
-			Set countSet = new HashSet(Arrays.asList(count));
-			if (countSet.size() > Stats.maxBatched)
-				Stats.maxBatched = countSet.size();
-			else if (countSet.size() < Stats.minBatched)
-				Stats.minBatched = countSet.size();
-			Stats.totalBatched += countSet.size();
 			statement.addBatch(dml1.toDMLString());
 		}
 
-	}
 
 	public static void blindBatch() throws SQLException {
 		batchSize = 0;
 		Stats.batchCalls++;
 		Combiner.PKValuesMap.clear();
+		MySqlSchemaParser.db_conn.setAutoCommit(false);
 		if (statement == null) {
 			statement = (Statement) MySqlSchemaParser.db_conn.createStatement();
-		}
-		int Qsize = DMLQueue.getQueueSize();
-		if (Qsize > Stats.maxCombinerToBatchSize)
-			Stats.maxCombinerToBatchSize = Qsize;
-		if (Qsize < Stats.minCombinerToBatchSize)
-			Stats.minCombinerToBatchSize = Qsize;
-		if (Stats.NoDMLsPassedToBatcher.get(Qsize) != null) {
-			int val = Stats.NoDMLsPassedToBatcher.get(Qsize);
-			Stats.NoDMLsPassedToBatcher.remove(Qsize);
-			Stats.NoDMLsPassedToBatcher.put(Qsize, val + 1);
-		} else {
-			Stats.NoDMLsPassedToBatcher.put(Qsize, 1);
 		}
 
 		while (!DMLQueue.IsEmpty()) {
@@ -292,36 +254,49 @@ public class Util {
 			statement.addBatch(d);
 		}
 		if (statement != null) {
-			int[] count = null;
-			if (Stats.issueToDBMS)
-				count = statement.executeBatch();
-			else {
-				statement.clearBatch();
-			}
-
-			Stats.dbmsAccess++;
-			Set countSet = new HashSet(Arrays.asList(count));
-			if (countSet.size() > Stats.maxBatched)
-				Stats.maxBatched = countSet.size();
-			else if (countSet.size() < Stats.minBatched)
-				Stats.minBatched = countSet.size();
-			Stats.totalBatched += countSet.size();
+			statement.executeBatch();
+			MySqlSchemaParser.db_conn.commit();
+			statement.clearBatch();
 			statement = null;
+			statement.close();
+			Stats.dbmsAccess++;
 
 		}
 	}
-	
+	public static void blindBatchRLF(PriorityQueue<DML> affectedDMLs) throws SQLException {
+		Combiner.PKValuesMap.clear();
+		MySqlSchemaParser.db_conn.setAutoCommit(false);
+		if (statement == null) {
+			statement = (Statement) MySqlSchemaParser.db_conn.createStatement();
+		}
+
+		while (!affectedDMLs.isEmpty()) {
+			 currDML = affectedDMLs.remove();
+			statement.addBatch(currDML.toDMLString());
+		}
+		if (statement != null) {
+			statement.executeBatch();
+			MySqlSchemaParser.db_conn.commit();
+			statement.clearBatch();
+			statement = null;
+			statement.close();
+			Stats.dbmsAccess++;
+
+		}
+	}
+
+
 	public static void batchUsingPreparedStatementRLF(PriorityQueue<DML> affectedDMLs) throws SQLException {
 		batchSize = 0;
 		Stats.batchCalls++;
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
 		int sizeofheap = affectedDMLs.size();
-		//Stats.DMLSentToBatcher += sizeofheap;
-		if (sizeofheap > Stats.maxCombinerToBatchSize) 
+		// Stats.DMLSentToBatcher += sizeofheap;
+		if (sizeofheap > Stats.maxCombinerToBatchSize)
 			Stats.maxCombinerToBatchSize = sizeofheap;
 		if (sizeofheap < Stats.minCombinerToBatchSize)
 			Stats.minCombinerToBatchSize = sizeofheap;
-		int batchcount =0;
+		int batchcount = 0;
 		while (!affectedDMLs.isEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = affectedDMLs.remove();
@@ -339,7 +314,7 @@ public class Util {
 					preparedStatement.addBatch();
 
 				} else {
-					if (preparedStatement != null) 
+					if (preparedStatement != null)
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
 					st.addBatch(currDML.toDMLString());
@@ -353,7 +328,7 @@ public class Util {
 					if (Stats.maxBatched < 1)
 						Stats.maxBatched = 1;
 					continue;
-					
+
 				}
 			} else {
 				currDML = affectedDMLs.peek();
@@ -377,8 +352,8 @@ public class Util {
 		batchSize = 0;
 		Stats.batchCalls++;
 		int sizeofqueue = DMLQueue.getQueueSize();
-		//Stats.DMLSentToBatcher += sizeofqueue;
-		if (sizeofqueue > Stats.maxCombinerToBatchSize) 
+		// Stats.DMLSentToBatcher += sizeofqueue;
+		if (sizeofqueue > Stats.maxCombinerToBatchSize)
 			Stats.maxCombinerToBatchSize = sizeofqueue;
 		if (sizeofqueue < Stats.minCombinerToBatchSize)
 			Stats.minCombinerToBatchSize = sizeofqueue;
@@ -401,7 +376,7 @@ public class Util {
 					preparedStatement.addBatch();
 
 				} else {
-					if (preparedStatement != null) 
+					if (preparedStatement != null)
 						executePreparedStatement();
 					Statement st = (Statement) MySqlSchemaParser.db_conn.createStatement();
 					st.addBatch(currDML.toDMLString());
@@ -409,9 +384,9 @@ public class Util {
 					MySqlSchemaParser.db_conn.commit();
 					st.clearBatch();
 					st.close();
-					Stats.dbmsAccess ++;
+					Stats.dbmsAccess++;
 					continue;
-					
+
 				}
 			} else {
 				currDML = DMLQueue.DMLQueueHead;
@@ -429,22 +404,22 @@ public class Util {
 		if (preparedStatement != null) {
 			executePreparedStatement();
 		}
-		
+
 	}
 
 	public static void executePreparedStatement() throws SQLException {
 		int counts[] = preparedStatement.executeBatch();
 		int batchsize = counts.length;
-		if (batchsize > Stats.maxBatched) 
+		if (batchsize > Stats.maxBatched)
 			Stats.maxBatched = batchsize;
 		if (batchsize < Stats.minBatched)
 			Stats.minBatched = batchsize;
 		preparedStatement.clearBatch();
 		MySqlSchemaParser.db_conn.commit();
-		Stats.dbmsAccess ++;
+		Stats.dbmsAccess++;
 		preparedStatement = null;
-		currTable=null;
-		currType=null;
+		currTable = null;
+		currType = null;
 	}
 
 	public static void fillPreparedStatement(String table, DML dml) throws SQLException {
@@ -461,8 +436,14 @@ public class Util {
 			} else {
 				attrVal = MySqlSchemaParser.AttrInitVal.get(table).get(attr);
 			}
-			
-			if (attrVal.equalsIgnoreCase("null")&&!attrType.equalsIgnoreCase("array")&&!attrType.equalsIgnoreCase("BLOB")&&!attrType.equalsIgnoreCase("CLOB")&&!attrType.equalsIgnoreCase("DATALINK")&&!attrType.equalsIgnoreCase("JAVA_OBJECT")&&!attrType.equalsIgnoreCase("NCHAR")&&!attrType.equalsIgnoreCase("NCLOB")&&!attrType.equalsIgnoreCase("NVARCHAR")&&!attrType.equalsIgnoreCase("LONGNVARCHAR")&&!attrType.equalsIgnoreCase("REF")&&!attrType.equalsIgnoreCase("ROWID")&&!attrType.equalsIgnoreCase("SQLXML")&&!attrType.equalsIgnoreCase("STRUCT")) {
+
+			if (attrVal.equalsIgnoreCase("null") && !attrType.equalsIgnoreCase("array")
+					&& !attrType.equalsIgnoreCase("BLOB") && !attrType.equalsIgnoreCase("CLOB")
+					&& !attrType.equalsIgnoreCase("DATALINK") && !attrType.equalsIgnoreCase("JAVA_OBJECT")
+					&& !attrType.equalsIgnoreCase("NCHAR") && !attrType.equalsIgnoreCase("NCLOB")
+					&& !attrType.equalsIgnoreCase("NVARCHAR") && !attrType.equalsIgnoreCase("LONGNVARCHAR")
+					&& !attrType.equalsIgnoreCase("REF") && !attrType.equalsIgnoreCase("ROWID")
+					&& !attrType.equalsIgnoreCase("SQLXML") && !attrType.equalsIgnoreCase("STRUCT")) {
 				if (attrType.equalsIgnoreCase("VARCHAR"))
 					preparedStatement.setNull(attrCount, java.sql.Types.VARCHAR);
 				else if (attrType.equalsIgnoreCase("int"))
@@ -476,17 +457,15 @@ public class Util {
 				else if (attrType.equalsIgnoreCase("SMALLINT "))
 					preparedStatement.setNull(attrCount, java.sql.Types.SMALLINT);
 				else if (attrType.equalsIgnoreCase("TINYINT"))
-					preparedStatement.setLong(attrCount,java.sql.Types.TINYINT);
+					preparedStatement.setLong(attrCount, java.sql.Types.TINYINT);
 				else if (attrType.equalsIgnoreCase("BIGINT"))
-					preparedStatement.setLong(attrCount,java.sql.Types.BIGINT);
+					preparedStatement.setLong(attrCount, java.sql.Types.BIGINT);
 				else if (attrType.equalsIgnoreCase("DECIMAL"))
-					preparedStatement.setLong(attrCount,java.sql.Types.DECIMAL);
+					preparedStatement.setLong(attrCount, java.sql.Types.DECIMAL);
 				else if (attrType.equalsIgnoreCase("char"))
-					preparedStatement.setLong(attrCount,java.sql.Types.CHAR);
-				
+					preparedStatement.setLong(attrCount, java.sql.Types.CHAR);
 
-			}
-			else{
+			} else {
 				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR"))
 					preparedStatement.setString(attrCount, attrVal);
 				else if (attrType.equalsIgnoreCase("int"))
@@ -495,25 +474,24 @@ public class Util {
 					preparedStatement.setDouble(attrCount, Double.parseDouble(attrVal));
 				else if (attrType.equalsIgnoreCase("boolean"))
 					preparedStatement.setBoolean(attrCount, Boolean.parseBoolean(attrVal));
-				else if (attrType.equalsIgnoreCase("float")||attrType.equalsIgnoreCase("DECIMAL"))
+				else if (attrType.equalsIgnoreCase("float") || attrType.equalsIgnoreCase("DECIMAL"))
 					preparedStatement.setFloat(attrCount, Float.parseFloat(attrVal));
-				else if (attrType.equalsIgnoreCase("long")||attrType.equalsIgnoreCase("BIGINT"))
+				else if (attrType.equalsIgnoreCase("long") || attrType.equalsIgnoreCase("BIGINT"))
 					preparedStatement.setLong(attrCount, Long.parseLong(attrVal));
-				else if (attrType.equalsIgnoreCase("short")||attrType.equalsIgnoreCase("TINYINT")||attrType.equalsIgnoreCase("SMALLINT"))
+				else if (attrType.equalsIgnoreCase("short") || attrType.equalsIgnoreCase("TINYINT")
+						|| attrType.equalsIgnoreCase("SMALLINT"))
 					preparedStatement.setShort(attrCount, Short.parseShort(attrVal));
-				else if (attrType.equalsIgnoreCase("string")||attrType.equalsIgnoreCase("char"))
+				else if (attrType.equalsIgnoreCase("string") || attrType.equalsIgnoreCase("char"))
 					preparedStatement.setString(attrCount, attrVal);
 				else if (attrType.equalsIgnoreCase("byte"))
 					preparedStatement.setByte(attrCount, Byte.parseByte(attrVal));
 				else if (attrType.equalsIgnoreCase("nstring"))
 					preparedStatement.setNString(attrCount, attrVal);
-				
-				
+
 			}
 
 			attrCount++;
 		}
 	}
-
 
 }
