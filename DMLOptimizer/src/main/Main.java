@@ -19,7 +19,6 @@ import model.UpdateDML;
 import util.PrepStatement;
 import util.Stats;
 import util.Util;
-//comment
 
 public class Main {
 	public static boolean blind=false;
