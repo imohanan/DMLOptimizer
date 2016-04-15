@@ -26,6 +26,16 @@ public class Util {
 	private static String currTable = null;
 	public static int batchSize;
 
+	public static String preprocessDMLString(String dmlLine)
+	{
+		dmlLine = dmlLine.replace("=", " = ");
+		dmlLine = dmlLine.replace("(", " (");
+		dmlLine = dmlLine.replace(")", ") ");
+		dmlLine = dmlLine.replaceAll("( )+", " ");
+		dmlLine = dmlLine.replaceAll("\\s+(?=[^()]*\\))", "");
+		return dmlLine;
+	}
+	
 	public static String[] splitDMLsByOR(String dmlString) {
 		dmlString = dmlString.replace(";", " ");
 		dmlString = dmlString.trim();
@@ -49,6 +59,10 @@ public class Util {
 
 	public static void ManualBatchAndPush() throws SQLException {
 		Stats.batchCalls ++;
+		if (Stats.minCombinerToBatchSize > DMLQueue.queueSize)
+			Stats.minCombinerToBatchSize = DMLQueue.queueSize;
+		if(Stats.maxCombinerToBatchSize < DMLQueue.queueSize)
+			Stats.maxCombinerToBatchSize = DMLQueue.queueSize;
 		
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
 				.createStatement();
@@ -70,10 +84,6 @@ public class Util {
 			{
 				if (DMLsToBatch.isEmpty() == false)
 				{
-					if (DMLsToBatch.size() > Stats.maxBatched) 
-						Stats.maxBatched = DMLsToBatch.size();
-					if (DMLsToBatch.size() < Stats.minBatched) 
-						Stats.minBatched = DMLsToBatch.size();
 					String batchedStatement = getBatchedStatement(DMLsToBatch);
 					manualStatement.addBatch(batchedStatement);
 				}
@@ -85,10 +95,6 @@ public class Util {
 		
 		if (!DMLsToBatch.isEmpty())
 		{
-			if (DMLsToBatch.size() > Stats.maxBatched) 
-				Stats.maxBatched = DMLsToBatch.size();
-			if (DMLsToBatch.size() < Stats.minBatched) 
-				Stats.minBatched = DMLsToBatch.size();
 			String batchedStatement = getBatchedStatement(DMLsToBatch);
 			manualStatement.addBatch(batchedStatement);
 		}
@@ -101,6 +107,11 @@ public class Util {
 
 	public static void ManualBatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
 		Stats.batchCalls ++;
+		if (Stats.minCombinerToBatchSize > affectedDMLs.size())
+			Stats.minCombinerToBatchSize = affectedDMLs.size();
+		if(Stats.maxCombinerToBatchSize < affectedDMLs.size())
+			Stats.maxCombinerToBatchSize = affectedDMLs.size();
+		
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
 				.createStatement();
 		List<DML> DMLsToBatch = new LinkedList<DML>();
@@ -121,10 +132,6 @@ public class Util {
 			{
 				if (DMLsToBatch.isEmpty() == false)
 				{
-					if (DMLsToBatch.size() > Stats.maxBatched) 
-						Stats.maxBatched = DMLsToBatch.size();
-					if (DMLsToBatch.size() < Stats.minBatched) 
-						Stats.minBatched = DMLsToBatch.size();
 					String batchedStatement = getBatchedStatement(DMLsToBatch);
 					manualStatement.addBatch(batchedStatement);
 				}
@@ -135,10 +142,6 @@ public class Util {
 		
 		if (DMLsToBatch.isEmpty() == false)
 		{
-			if (DMLsToBatch.size() > Stats.maxBatched) 
-				Stats.maxBatched = DMLsToBatch.size();
-			if (DMLsToBatch.size() < Stats.minBatched) 
-				Stats.minBatched = DMLsToBatch.size();
 			String batchedStatement = getBatchedStatement(DMLsToBatch);
 			manualStatement.addBatch(batchedStatement);
 		}
@@ -150,9 +153,14 @@ public class Util {
 	}	
 	
 	private static String getBatchedStatement(List<DML> DMLsToBatch) {
+		Stats.countManualBatcher ++;
+		if (DMLsToBatch.size() > Stats.maxBatched) 
+			Stats.maxBatched = DMLsToBatch.size();
+		if (DMLsToBatch.size() < Stats.minBatched) 
+			Stats.minBatched = DMLsToBatch.size();
+		
 		if (DMLsToBatch.size() == 1)
 			return DMLsToBatch.get(0).DMLString;
-		
 		if(DMLsToBatch.get(0).type == DMLType.INSERT)
 		{
 			String batchedStatement = ManualBatching.batchInsert(DMLsToBatch);
@@ -308,7 +316,7 @@ public class Util {
 		Stats.batchCalls++;
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
 		int sizeofheap = affectedDMLs.size();
-		Stats.DMLSentToBatcher += sizeofheap;
+		//Stats.DMLSentToBatcher += sizeofheap;
 		if (sizeofheap > Stats.maxCombinerToBatchSize) 
 			Stats.maxCombinerToBatchSize = sizeofheap;
 		if (sizeofheap < Stats.minCombinerToBatchSize)
@@ -369,7 +377,7 @@ public class Util {
 		batchSize = 0;
 		Stats.batchCalls++;
 		int sizeofqueue = DMLQueue.getQueueSize();
-		Stats.DMLSentToBatcher += sizeofqueue;
+		//Stats.DMLSentToBatcher += sizeofqueue;
 		if (sizeofqueue > Stats.maxCombinerToBatchSize) 
 			Stats.maxCombinerToBatchSize = sizeofqueue;
 		if (sizeofqueue < Stats.minCombinerToBatchSize)

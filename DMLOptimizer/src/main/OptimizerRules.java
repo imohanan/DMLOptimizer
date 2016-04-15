@@ -5,6 +5,7 @@ import java.util.List;
 import model.DML;
 import model.DMLQueue;
 import model.DMLType;
+import util.Stats;
 
 public class OptimizerRules {
 
@@ -80,6 +81,7 @@ public class OptimizerRules {
 				// 2. remove update obj from combiner and DMLQueue
 				Combiner.removeDML(dml);
 				DMLQueue.RemoveDML(dml);
+				Main.batcher.DMLAfterCombining--;
 				return;
 			}
 		}
@@ -93,12 +95,14 @@ public class OptimizerRules {
 			DML recordDML = recordDMLs.get(0);
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
+			Main.batcher.DMLAfterCombining--;
 		}
 		while(fkDMLs.size() != 0)
 		{
 			DML fkDML = fkDMLs.get(0);
 			Combiner.removeDML(fkDML);
 			DMLQueue.RemoveDML(fkDML);
+			Main.batcher.DMLAfterCombining--;
 		}
 	}
 
@@ -111,12 +115,14 @@ public class OptimizerRules {
 				continue;
 			Combiner.removeDML(recordDML);
 			DMLQueue.RemoveDML(recordDML);
+			Main.batcher.DMLAfterCombining--;
 		}
 		while(fkDMLs.size() != 0)
 		{
 			DML fkDML = fkDMLs.get(0);
 			Combiner.removeDML(fkDML);
 			DMLQueue.RemoveDML(fkDML);
+			Main.batcher.DMLAfterCombining--;
 		}
 	}
 
@@ -133,6 +139,7 @@ public class OptimizerRules {
 				// 2. remove update obj from combiner and DMLQueue
 				Combiner.removeDML(dml);
 				DMLQueue.RemoveDML(dml);
+				Main.batcher.DMLAfterCombining--;
 				return;
 			}
 		}
