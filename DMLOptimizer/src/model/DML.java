@@ -106,7 +106,9 @@ public abstract class DML {
 		    String origValue = DMLSetAttributeValues.get(key);
 		    String newNumber= value.replaceAll("[^0-9]", "");
 		    
-		    if (origValue == null || !value.toLowerCase().contains(key.toLowerCase())) {
+		    if (origValue == null 
+		    		|| !value.toLowerCase().contains(key.toLowerCase())
+		    		|| !MySqlSchemaParser.numericTypes.contains(MySqlSchemaParser.AttrTypes.get(table).get(key)) ) {
 		    	DMLSetAttributeValues.put(key, value);
 		    }
 		    else if (value.toLowerCase().contains(key.toLowerCase()) && origValue.toLowerCase().contains(key.toLowerCase())){

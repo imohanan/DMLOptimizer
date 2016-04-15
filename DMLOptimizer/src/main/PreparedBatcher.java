@@ -99,6 +99,7 @@ public class PreparedBatcher extends Batcher{
 		while (!DMLQueue.IsEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = DMLQueue.RemoveDMLfromHead();
+				System.out.println(currDML.DMLString);
 				if ((currDML.type == DMLType.INSERT || currDML.type == DMLType.DELETE) && !currDML.isRecordLevelFence()
 						&& !currDML.isTableLevelFence()) {
 					currType = currDML.type;
