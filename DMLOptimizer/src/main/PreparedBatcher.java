@@ -195,23 +195,73 @@ public class PreparedBatcher extends Batcher{
 			} else {
 				attrVal = MySqlSchemaParser.AttrInitVal.get(table).get(attr);
 			}
-			if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR"))
-				preparedStatement.setString(attrCount, attrVal);
-			else if (attrType.equalsIgnoreCase("int"))
-				preparedStatement.setInt(attrCount, Integer.parseInt(attrVal));
-			if (attrVal.equalsIgnoreCase("null")) {
+
+			if (attrVal.equalsIgnoreCase("null") && !attrType.equalsIgnoreCase("array")
+					&& !attrType.equalsIgnoreCase("BLOB") && !attrType.equalsIgnoreCase("CLOB")
+					&& !attrType.equalsIgnoreCase("DATALINK") && !attrType.equalsIgnoreCase("JAVA_OBJECT")
+					&& !attrType.equalsIgnoreCase("NCHAR") && !attrType.equalsIgnoreCase("NCLOB")
+					&& !attrType.equalsIgnoreCase("NVARCHAR") && !attrType.equalsIgnoreCase("LONGNVARCHAR")
+					&& !attrType.equalsIgnoreCase("REF") && !attrType.equalsIgnoreCase("ROWID")
+					&& !attrType.equalsIgnoreCase("SQLXML") && !attrType.equalsIgnoreCase("STRUCT")) {
 				if (attrType.equalsIgnoreCase("VARCHAR"))
 					preparedStatement.setNull(attrCount, java.sql.Types.VARCHAR);
-				else if (attrType.equalsIgnoreCase("LONGVARCHAR"))
-					preparedStatement.setNull(attrCount, java.sql.Types.LONGNVARCHAR);
 				else if (attrType.equalsIgnoreCase("int"))
 					preparedStatement.setNull(attrCount, java.sql.Types.INTEGER);
+				else if (attrType.equalsIgnoreCase("double"))
+					preparedStatement.setNull(attrCount, java.sql.Types.DOUBLE);
+				else if (attrType.equalsIgnoreCase("boolean"))
+					preparedStatement.setNull(attrCount, java.sql.Types.BOOLEAN);
+				else if (attrType.equalsIgnoreCase("float"))
+					preparedStatement.setNull(attrCount, java.sql.Types.FLOAT);
+				else if (attrType.equalsIgnoreCase("SMALLINT "))
+					preparedStatement.setNull(attrCount, java.sql.Types.SMALLINT);
+				else if (attrType.equalsIgnoreCase("TINYINT"))
+					preparedStatement.setNull(attrCount, java.sql.Types.TINYINT);
+				else if (attrType.equalsIgnoreCase("BIGINT"))
+					preparedStatement.setNull(attrCount, java.sql.Types.BIGINT);
+				else if (attrType.equalsIgnoreCase("DECIMAL"))
+					preparedStatement.setNull(attrCount, java.sql.Types.DECIMAL);
+				else if (attrType.equalsIgnoreCase("char"))
+					preparedStatement.setNull(attrCount, java.sql.Types.CHAR);
+
+			} else {
+				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR"))
+					preparedStatement.setString(attrCount, attrVal);
+				else if (attrType.equalsIgnoreCase("int"))
+					preparedStatement.setInt(attrCount, Integer.parseInt(attrVal));
+				else if (attrType.equalsIgnoreCase("double"))
+					preparedStatement.setDouble(attrCount, Double.parseDouble(attrVal));
+				else if (attrType.equalsIgnoreCase("boolean"))
+					preparedStatement.setBoolean(attrCount, Boolean.parseBoolean(attrVal));
+				else if (attrType.equalsIgnoreCase("float") || attrType.equalsIgnoreCase("DECIMAL"))
+					preparedStatement.setFloat(attrCount, Float.parseFloat(attrVal));
+				else if (attrType.equalsIgnoreCase("long") || attrType.equalsIgnoreCase("BIGINT"))
+					preparedStatement.setLong(attrCount, Long.parseLong(attrVal));
+				else if (attrType.equalsIgnoreCase("short") || attrType.equalsIgnoreCase("TINYINT")
+						|| attrType.equalsIgnoreCase("SMALLINT"))
+					preparedStatement.setShort(attrCount, Short.parseShort(attrVal));
+				else if (attrType.equalsIgnoreCase("string") || attrType.equalsIgnoreCase("char"))
+					preparedStatement.setString(attrCount, attrVal);
+				else if (attrType.equalsIgnoreCase("byte"))
+					preparedStatement.setByte(attrCount, Byte.parseByte(attrVal));
+				else if (attrType.equalsIgnoreCase("nstring"))
+					preparedStatement.setNString(attrCount, attrVal);
+				else if(attrType.equalsIgnoreCase("date"))
+					preparedStatement.setDate(attrCount, java.sql.Date.valueOf(attrVal));
+				else if(attrType.equalsIgnoreCase("datetime"))
+					preparedStatement.setTime(attrCount, java.sql.Time.valueOf(attrVal));
+				else if(attrType.equalsIgnoreCase("timestamp"))
+					preparedStatement.setTimestamp(attrCount, java.sql.Timestamp.valueOf(attrVal));
+				
 
 			}
 
 			attrCount++;
 		}
 	}
+
+
+	
 	
 	public void executePreparedStatement() throws SQLException {
 		int counts[] = preparedStatement.executeBatch();
