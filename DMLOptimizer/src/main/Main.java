@@ -49,7 +49,7 @@ public class Main {
 		    while ((line = reader.readLine()) != null) {
 		    	counter++;
 		    	System.out.println(counter);
-		    	if (counter == 4)
+		    	if (counter == 2)
 		    		System.out.println("Debug");
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
