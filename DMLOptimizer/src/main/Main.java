@@ -50,9 +50,13 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		dmlLine = Util.preprocessDMLString(dmlLine);
+		    		//dmlLine = Util.preprocessDMLString(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
+		    		if (dmlLine.contains("WHERE W_ID = 1"))
+		    		{
+		    			System.out.println("Debug");
+		    		}
 		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))
