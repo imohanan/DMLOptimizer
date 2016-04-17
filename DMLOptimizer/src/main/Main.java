@@ -49,12 +49,12 @@ public class Main {
 		    while ((line = reader.readLine()) != null) {
 		    	counter++;
 		    	System.out.println(counter);
-		    	if (counter == 350)
+		    	if (counter == 4)
 		    		System.out.println("Debug");
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		dmlLine = Util.preprocessDMLString(dmlLine);
+		    		//dmlLine = Util.preprocessDMLString(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		if (words[0].equalsIgnoreCase("insert"))

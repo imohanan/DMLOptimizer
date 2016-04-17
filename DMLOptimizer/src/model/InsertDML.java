@@ -9,42 +9,56 @@ public class InsertDML extends DML{
 
 	public InsertDML(String inputString) {
 		//1. set String
-		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
+		if (inputString.charAt(inputString.length() - 1) == ';')
+			inputString = inputString.substring(0, inputString.length() - 1);
 		DMLString = inputString;
-		String[] words = inputString.split(" ");
-		
+
 		// 2. Set Type
 				type = DMLType.INSERT;
 				
-		//3.Set Table
-		table = words[2].toLowerCase();
+		String[] words = inputString.split("\\s*(?i) values\\s*");
+		String tableName = words[0].split("\\s*(?i) into\\s*")[1];
 		
-		if (words.length == 6){
-			String keys = words[3].replace('(', ' ');
-			keys = keys.replace(')', ' ');
-			keys = keys.trim();
-			String[] keyslist = keys.split(",");
-			String values = words[5].replace('(', ' ');
-			values = values.replace(')', ' ');
-			values = values.trim();
-			String[] valueList = values.split(",");
-			for(int idx = 0; idx < valueList.length; idx++) 
-			{
-				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx].trim());
-			}		
-		}
-		else{
+		if (tableName.indexOf('(') == -1) //insert into table values(..,..,)
+		{
+			table = tableName.trim().toLowerCase();
 			// 4. set attributes Values
-			String values = words[4].replace('(', ' ');
-			values = values.replace(')', ' ');
+			String values = words[1];
+			if (values.charAt(values.length() - 1) == ')')
+				values = values.substring(0, values.length() - 1);
+			if (values.charAt(0) == '(')
+				values = values.substring(1, values.length());
 			values = values.trim();
 			String[] valueList = values.split(",");
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
 				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx].trim());
-			}			
-		}	
+			}				
+		}
+		else //insert into table(key1, key2) values(val1, val2)
+		{
+			String[] tableNameSplit = tableName.split("\\s*(?i) \\(\\s*");
+			table = tableNameSplit[0].trim().toLowerCase();
+			String keys = tableNameSplit[1].replace('(', ' ');
+			keys = keys.replace(')', ' ');
+			keys = keys.trim();
+			String[] keyslist = keys.split(",");
+			
+			String values = words[1];
+			if (values.charAt(values.length() - 1) == ')')
+				values = values.substring(0, values.length() - 1);
+			if (values.charAt(0) == '(')
+				values = values.substring(1, values.length());
+			values = values.trim();
+			String[] valueList = values.split(",");
+
+			for(int idx = 0; idx < valueList.length; idx++)
+			{
+				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx].trim());
+			}
+		}
+		
 	}
 
 	
