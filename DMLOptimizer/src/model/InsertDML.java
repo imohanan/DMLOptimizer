@@ -33,8 +33,12 @@ public class InsertDML extends DML{
 			String[] valueList = values.split(",");
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
-				
-				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx].trim());
+				valueList[idx] = valueList[idx].trim();
+				if (valueList[idx].endsWith("'"))
+					valueList[idx] = valueList[idx].substring(0, valueList[idx].length() - 1);
+				if (valueList[idx].startsWith("'"))
+					valueList[idx] = valueList[idx].substring(1, valueList[idx].length() );
+				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx]);
 			}				
 		}
 		else //insert into table(key1, key2) values(val1, val2)
@@ -56,7 +60,12 @@ public class InsertDML extends DML{
 
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
-				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx].trim());
+				valueList[idx] = valueList[idx].trim();
+				if (valueList[idx].endsWith("'"))
+					valueList[idx] = valueList[idx].substring(0, valueList[idx].length() - 1);
+				if (valueList[idx].startsWith("'"))
+					valueList[idx] = valueList[idx].substring(1, valueList[idx].length() );
+				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx]);
 			}
 		}
 		
