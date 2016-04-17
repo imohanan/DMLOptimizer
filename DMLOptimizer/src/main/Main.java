@@ -24,6 +24,7 @@ public class Main {
 	public static boolean blind=false;
 	public static boolean prepared=true;
 	public static Batcher batcher;
+	static int counter = 0;
 	
 	public static void main(String[] args) throws SQLException {
 
@@ -46,7 +47,10 @@ public class Main {
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
-		    	
+		    	counter++;
+		    	System.out.println(counter);
+		    	if (counter == 2)
+		    		System.out.println("Debug");
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
@@ -93,7 +97,6 @@ public class Main {
 		catch(Exception x)
 		{
 		    System.err.format("Exception: %s%n", x);
-		    System.out.println("Exeception");
 		}
 		finally
 		{

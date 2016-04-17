@@ -22,7 +22,7 @@ public class UpdateDML extends DML{
 		String[] setClause = words[0].split("\\s*(?i) set \\s*");	
 		// 3. set table
 		String generateTable = setClause[0].replaceFirst("\\s*(?i)update\\s*", "").trim();
-		table = generateTable;
+		table = generateTable.toLowerCase().trim();
 		// 4. set conditions
 		String[] clauses = words[1].split("\\s*(?i) and \\s*");
 		for (String eachClause: clauses)
