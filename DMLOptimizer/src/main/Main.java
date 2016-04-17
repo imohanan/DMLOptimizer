@@ -49,18 +49,20 @@ public class Main {
 		    while ((line = reader.readLine()) != null) {
 		    	counter++;
 		    	System.out.println(counter);
-		    	if (counter == 2)
+		    	if (counter == 350)
 		    		System.out.println("Debug");
+		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
 		    		//dmlLine = Util.preprocessDMLString(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
-		    		if (dmlLine.contains("WHERE W_ID = 1"))
+		    		CharSequence c = "where W_ID = 1";
+		    		/*if (dmlLine.contains(c))
 		    		{
 		    			System.out.println("Debug");
-		    		}
+		    		}*/
 		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))
