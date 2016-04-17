@@ -1,6 +1,7 @@
 package main;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -40,8 +41,8 @@ public abstract class Batcher {
 	public  Map<Integer, Integer> NoDMLsPassedToBatcher=new HashMap<Integer,Integer>();//<size of group,occurance>
 	public  Map<Integer, Integer> BatchSizeToDBMSAccess=new HashMap<Integer,Integer>();//<size of group,#dbms access>
 
-	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {}
-	public  void BatchAndPush() throws SQLException {}
+	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException, ParseException {}
+	public  void BatchAndPush() throws SQLException, ParseException {}
 	public  void printStats(){}
 	
 	protected  boolean checkBatchingRules(DMLType dml1Type, String dml1Table, DMLType dml2Type, String dml2Table) {

@@ -1,6 +1,10 @@
 package main;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.PriorityQueue;
 
 import com.mysql.jdbc.Statement;
@@ -9,7 +13,6 @@ import model.DML;
 import model.DMLQueue;
 import model.DMLType;
 import util.PrepStatement;
-import util.Stats;
 
 public class PreparedBatcher extends Batcher{
 
@@ -21,7 +24,7 @@ public class PreparedBatcher extends Batcher{
 	private  String currTable = null;
 	
 	@Override
-	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
+	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException, ParseException {
 		batchSize = 0;
 		batchCalls++;
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
@@ -85,7 +88,7 @@ public class PreparedBatcher extends Batcher{
 	}
 
 	@Override
-	public void BatchAndPush() throws SQLException {
+	public void BatchAndPush() throws SQLException, ParseException {
 		batchSize = 0;
 		batchCalls++;
 		int sizeofqueue = DMLQueue.getQueueSize();
@@ -181,7 +184,7 @@ public class PreparedBatcher extends Batcher{
 		
 	}
 	
-	public void fillPreparedStatement(String table, DML dml) throws SQLException {
+	public void fillPreparedStatement(String table, DML dml) throws SQLException, ParseException {
 		int attrCount = 1;
 		for (String attr : MySqlSchemaParser.TableAttrs.get(table)) {// List of
 																		// attributes
@@ -196,7 +199,7 @@ public class PreparedBatcher extends Batcher{
 				attrVal = MySqlSchemaParser.AttrInitVal.get(table).get(attr);
 			}
 
-			if (attrVal.equalsIgnoreCase("null") && !attrType.equalsIgnoreCase("array")
+			if (attrVal==null && !attrType.equalsIgnoreCase("array")
 					&& !attrType.equalsIgnoreCase("BLOB") && !attrType.equalsIgnoreCase("CLOB")
 					&& !attrType.equalsIgnoreCase("DATALINK") && !attrType.equalsIgnoreCase("JAVA_OBJECT")
 					&& !attrType.equalsIgnoreCase("NCHAR") && !attrType.equalsIgnoreCase("NCLOB")
@@ -205,6 +208,10 @@ public class PreparedBatcher extends Batcher{
 					&& !attrType.equalsIgnoreCase("SQLXML") && !attrType.equalsIgnoreCase("STRUCT")) {
 				if (attrType.equalsIgnoreCase("VARCHAR"))
 					preparedStatement.setNull(attrCount, java.sql.Types.VARCHAR);
+				else if (attrType.equalsIgnoreCase("timestamp"))
+						preparedStatement.setNull(attrCount, java.sql.Types.TIMESTAMP);
+				else if (attrType.equalsIgnoreCase("time"))
+					preparedStatement.setNull(attrCount, java.sql.Types.TIME);
 				else if (attrType.equalsIgnoreCase("int"))
 					preparedStatement.setNull(attrCount, java.sql.Types.INTEGER);
 				else if (attrType.equalsIgnoreCase("double"))
@@ -225,7 +232,7 @@ public class PreparedBatcher extends Batcher{
 					preparedStatement.setNull(attrCount, java.sql.Types.CHAR);
 
 			} else {
-				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR"))
+				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR") || attrType.equalsIgnoreCase("CHAR"))
 					preparedStatement.setString(attrCount, attrVal);
 				else if (attrType.equalsIgnoreCase("int"))
 					preparedStatement.setInt(attrCount, Integer.parseInt(attrVal));
@@ -250,8 +257,12 @@ public class PreparedBatcher extends Batcher{
 					preparedStatement.setDate(attrCount, java.sql.Date.valueOf(attrVal));
 				else if(attrType.equalsIgnoreCase("datetime"))
 					preparedStatement.setTime(attrCount, java.sql.Time.valueOf(attrVal));
-				else if(attrType.equalsIgnoreCase("timestamp"))
-					preparedStatement.setTimestamp(attrCount, java.sql.Timestamp.valueOf(attrVal));
+				else if(attrType.equalsIgnoreCase("timestamp")){
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					attrVal=attrVal.replace("'", "").trim();
+					Date date = format.parse(attrVal);
+					preparedStatement.setTimestamp(attrCount, java.sql.Timestamp.valueOf(format.format(date)));
+				}
 				
 
 			}
@@ -277,6 +288,5 @@ public class PreparedBatcher extends Batcher{
 		currTable=null;
 		currType=null;
 	}
-
 
 }

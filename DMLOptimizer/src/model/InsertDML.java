@@ -33,6 +33,7 @@ public class InsertDML extends DML{
 			String[] valueList = values.split(",");
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
+				
 				DMLSetAttributeValues.put(MySqlSchemaParser.TableAttrs.get(table).get(idx).toString(), valueList[idx].trim());
 			}				
 		}
