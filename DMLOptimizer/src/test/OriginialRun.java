@@ -29,7 +29,9 @@ public class OriginialRun {
 			Path filePath = Paths.get(args[3]);
 			Charset charset = Charset.forName("US-ASCII");
 			BufferedReader reader = Files.newBufferedReader(filePath, charset);
-			    while ((line = reader.readLine()) != null) {
+			    try
+			    {
+			    	while ((line = reader.readLine()) != null) {
 			    	Statement statement=(Statement) db_conn.createStatement();
 			    	statement.execute(line);
 			    	count++;
@@ -41,7 +43,15 @@ public class OriginialRun {
 			    double elapsedTime = (((stopTime - startTime)*1.67)/100000);
 			    System.out.println("Time taken for original run: " + elapsedTime +" minutes");
 			    }
+			    catch(Exception x)
+				{
+			    	System.out.println(line);
+				    System.err.format("Exception: %s%n", x);
+				    System.out.println("Exeception");
+				}
 		}
+		}
+	
 	public static void setupConnection(String username,String password, String db) {
 
 		try {
