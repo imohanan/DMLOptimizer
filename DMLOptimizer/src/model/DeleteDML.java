@@ -9,25 +9,28 @@ public class DeleteDML extends DML {
 
 	public DeleteDML(String inputString) {
 		// 1. set DMLString
-		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
-		DMLString = inputString;
-		String[] words = inputString.split(" ");
-		
+		if(inputString.endsWith(";"))
+		{
+			inputString = inputString.substring(0,inputString.length() - 1);
+		}
+		inputString = inputString.trim();
+		DMLString = inputString;		
 		// 2. Set type
 		type = DMLType.DELETE;
-		
+		String[] words = inputString.split("\\s*(?i) where \\s*");
+		String[] generateTable = words[0].split("\\s*(?i) from \\s*");
 		// 3. set table
-		table = words[2].toLowerCase();
-		
+		table = generateTable[1].trim().toLowerCase();		
 		// 4. set attributes Values
-		String[] clauses = inputString.split("\\s*(?i)where\\s*");
-		String[] attVals = clauses[1].split("\\s*(?i)and\\s*");
-		for(String attVal: attVals)
+		String[] clauses = words[1].split("\\s*(?i) and \\s*");
+		for (String eachClause: clauses)
 		{
-			String[] elements = attVal.split("=");
+			String [] elements = eachClause.split("=");
 			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
+			
 		}
+		
 	}
 
 	
