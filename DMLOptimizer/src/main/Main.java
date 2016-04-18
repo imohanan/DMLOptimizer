@@ -22,8 +22,9 @@ import util.Util;
 
 public class Main {
 	public static boolean blind=false;
-	public static boolean prepared=false;
+	public static boolean prepared=true;
 	public static Batcher batcher;
+	public static int counter = 0;
 	
 	public static void main(String[] args) throws SQLException {
 
@@ -49,6 +50,9 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
+		    		counter ++;
+		    		if (counter == 348 || counter == 350)
+		    			System.out.println("Debug");
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		CharSequence c = "where W_ID = 1";
