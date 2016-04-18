@@ -9,3 +9,49 @@ select count(*),confcount  from users group by confcount;
 			
 select count(*),Pendcount  from users where userid between 1 and 100 group by Pendcount;
 select count(*),confcount  from users where userid between 1 and 100 group by confcount;
+
+
+#TPCC
+
+select count(*) from customer;
+select count(*) from district;
+select count(*) from history;
+select count(*) from item;
+select count(*) from new_order;
+select count(*) from oorder;
+select count(*) from order_line;
+select count(*) from stock;
+select count(*) from warehouse;
+
+
+select * from customer  limit 5;
+select * from district limit 5;
+select * from history limit 5;
+select * from item limit 5;
+select * from new_order limit 5;
+select * from oorder limit 5;
+select * from order_line limit 5;
+select * from stock limit 5;
+select * from warehouse limit 5;
+
+select * from warehouse;
+select * from district;
+
+select count(*),C_BALANCE  from customer group by C_BALANCE;
+select count(*),C_YTD_PAYMENT  from customer group by C_YTD_PAYMENT;
+select count(*),C_PAYMENT_CNT  from customer group by C_PAYMENT_CNT;
+select count(*),W_YTD  from customer group by W_YTD;
+select count(*),C_DELIVERY_CNT  from customer group by C_DELIVERY_CNT;
+
+select count(*),S_QUANTITY  from stock group by S_QUANTITY;
+select count(*),S_YTD  from stock group by S_YTD;
+select count(*),S_ORDER_CNT  from stock group by S_ORDER_CNT;
+select count(*),S_REMOTE_CNT  from stock group by S_REMOTE_CNT;
+select count(*),S_QUANTITY  from stock group by S_QUANTITY;
+
+select count(*),O_CARRIER_ID  from oorder group by O_CARRIER_ID;
+
+select count(*),OL_DELIVERY_D  from ORDER_LINE group by OL_DELIVERY_D; # skip if too many
+
+
+
