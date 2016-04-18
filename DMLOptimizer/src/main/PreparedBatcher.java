@@ -102,7 +102,6 @@ public class PreparedBatcher extends Batcher{
 		while (!DMLQueue.IsEmpty()) {
 			if (currTable == null && currType == null) {
 				currDML = DMLQueue.RemoveDMLfromHead();
-				System.out.println(currDML.DMLString);
 				if ((currDML.type == DMLType.INSERT || currDML.type == DMLType.DELETE) && !currDML.isRecordLevelFence()
 						&& !currDML.isTableLevelFence()) {
 					currType = currDML.type;
@@ -198,7 +197,10 @@ public class PreparedBatcher extends Batcher{
 			} else {
 				attrVal = MySqlSchemaParser.AttrInitVal.get(table).get(attr);
 			}
-
+			if(attrVal != null && attrVal.startsWith("'") && attrVal.endsWith("'"))
+			{
+				attrVal = attrVal.substring(1, attrVal.length()-1);
+			}
 			if (attrVal==null && !attrType.equalsIgnoreCase("array")
 					&& !attrType.equalsIgnoreCase("BLOB") && !attrType.equalsIgnoreCase("CLOB")
 					&& !attrType.equalsIgnoreCase("DATALINK") && !attrType.equalsIgnoreCase("JAVA_OBJECT")

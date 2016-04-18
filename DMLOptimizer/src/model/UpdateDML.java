@@ -29,10 +29,6 @@ public class UpdateDML extends DML{
 		{
 			String [] elements = eachClause.split("=");
 			elements[1] = elements[1].trim();
-			if(elements[1].startsWith("'") && elements[1].endsWith("'"))
-			{
-				elements[1] = elements[1].substring(1, elements[1].length()-1);
-			}
 			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1]);			
 		}
 		// 5. set attributes Values
@@ -41,10 +37,6 @@ public class UpdateDML extends DML{
 		{
 			String[] elements = indSetClause.split("=");
 			elements[1] = elements[1].trim();
-			if(elements[1].startsWith("'") && elements[1].endsWith("'"))
-			{
-				elements[1] = elements[1].substring(1, elements[1].length()-1);
-			}
 			DMLSetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1]);
 		}	
 	}

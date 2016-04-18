@@ -22,9 +22,8 @@ import util.Util;
 
 public class Main {
 	public static boolean blind=false;
-	public static boolean prepared=true;
+	public static boolean prepared=false;
 	public static Batcher batcher;
-	static int counter = 0;
 	
 	public static void main(String[] args) throws SQLException {
 
@@ -46,23 +45,13 @@ public class Main {
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
 		    String line = null;
-		    while ((line = reader.readLine()) != null) {
-		    	counter++;
-		    	System.out.println(counter);
-		    	if (counter == 350)
-		    		System.out.println("Debug");
-		    	
+		    while ((line = reader.readLine()) != null) {		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		//dmlLine = Util.preprocessDMLString(dmlLine);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
 		    		CharSequence c = "where W_ID = 1";
-		    		/*if (dmlLine.contains(c))
-		    		{
-		    			System.out.println("Debug");
-		    		}*/
 		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))

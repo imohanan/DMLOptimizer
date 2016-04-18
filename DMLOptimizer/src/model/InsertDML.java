@@ -61,10 +61,6 @@ public class InsertDML extends DML{
 			for(int idx = 0; idx < valueList.length; idx++)
 			{
 				valueList[idx] = valueList[idx].trim();
-				if (valueList[idx].endsWith("'"))
-					valueList[idx] = valueList[idx].substring(0, valueList[idx].length() - 1);
-				if (valueList[idx].startsWith("'"))
-					valueList[idx] = valueList[idx].substring(1, valueList[idx].length() );
 				DMLSetAttributeValues.put(keyslist[idx].trim().toLowerCase(), valueList[idx]);
 			}
 		}
