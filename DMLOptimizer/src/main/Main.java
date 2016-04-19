@@ -40,7 +40,6 @@ public class Main {
 		Combiner combiner = new Combiner();
 		batcher.startTime = System.currentTimeMillis();
 		// 2. For each log line
-		int counter = 0;
 		Path filePath = Paths.get(args[3]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
@@ -49,15 +48,8 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		counter++;
-		    		if(counter == 1699)
-		    		{
-		    			System.out.println("Debug");
-		    		}
-		    		System.out.println(counter);
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
-		    		CharSequence c = "where W_ID = 1";
 		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))

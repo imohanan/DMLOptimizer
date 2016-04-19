@@ -25,6 +25,7 @@ public class ManualBatcher extends Batcher{
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
 				.createStatement();
 		List<DML> DMLsToBatch = new LinkedList<DML>();
+		Boolean wasPreviousDMLFence = false;
 		
 		while( affectedDMLs.isEmpty() == false )
 		{
@@ -34,9 +35,11 @@ public class ManualBatcher extends Batcher{
 					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
 					&& currDML.IsRecordLevelFence == false
 					&& currDML.IsTableLevelFence == false
-					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+					&& currDML.type != DMLType.UPDATE
+					&& wasPreviousDMLFence == false) //Not attempting to batch update DMLs
 			{
 				DMLsToBatch.add(currDML);
+				wasPreviousDMLFence = currDML.IsRecordLevelFence || currDML.IsTableLevelFence;
 			}
 			else
 			{
@@ -47,6 +50,7 @@ public class ManualBatcher extends Batcher{
 				}
 				DMLsToBatch = new LinkedList<DML>();
 				DMLsToBatch.add(currDML);
+				wasPreviousDMLFence = currDML.IsRecordLevelFence || currDML.IsTableLevelFence;
 			}
 		}
 		
@@ -65,6 +69,9 @@ public class ManualBatcher extends Batcher{
 
 	@Override
 	public void BatchAndPush() throws SQLException {
+		Combiner.PKValuesMap.clear();
+		Combiner.FKValuesMap.clear();
+		
 		batchCalls ++;
 		if (minCombinerToBatchSize > DMLQueue.queueSize)
 			minCombinerToBatchSize = DMLQueue.queueSize;
@@ -74,6 +81,7 @@ public class ManualBatcher extends Batcher{
 		Statement manualStatement=(Statement) MySqlSchemaParser.db_conn
 				.createStatement();
 		List<DML> DMLsToBatch = new LinkedList<DML>();
+		Boolean wasPreviousDMLFence = false;
 		
 		while( DMLQueue.IsEmpty() == false )
 		{
@@ -83,9 +91,11 @@ public class ManualBatcher extends Batcher{
 					|| checkBatchingRules(currDML.type, currDML.table, DMLsToBatch.get(0).type, DMLsToBatch.get(0).table) == true)
 					&& currDML.IsRecordLevelFence == false
 					&& currDML.IsTableLevelFence == false
-					&& currDML.type != DMLType.UPDATE) //Not attempting to batch update DMLs
+					&& currDML.type != DMLType.UPDATE
+					&& wasPreviousDMLFence == false) //Not attempting to batch update DMLs
 			{
 				DMLsToBatch.add(currDML);
+				wasPreviousDMLFence = currDML.IsRecordLevelFence || currDML.IsTableLevelFence;
 			}
 			else
 			{
@@ -97,6 +107,7 @@ public class ManualBatcher extends Batcher{
 				
 				DMLsToBatch = new LinkedList<DML>();
 				DMLsToBatch.add(currDML);
+				wasPreviousDMLFence = currDML.IsRecordLevelFence || currDML.IsTableLevelFence;
 			}
 		}
 		
