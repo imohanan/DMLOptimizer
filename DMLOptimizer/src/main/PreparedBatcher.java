@@ -97,6 +97,7 @@ public class PreparedBatcher extends Batcher {
 		if (sizeofqueue < minCombinerToBatchSize)
 			minCombinerToBatchSize = sizeofqueue;
 		Combiner.PKValuesMap.clear();
+		Combiner.FKValuesMap.clear();
 		MySqlSchemaParser.db_conn.setAutoCommit(false);
 		while (!DMLQueue.IsEmpty()) {
 			if (currTable == null && currType == null) {

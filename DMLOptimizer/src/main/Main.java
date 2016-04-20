@@ -22,9 +22,8 @@ import util.Util;
 
 public class Main {
 	public static boolean blind=false;
-	public static boolean prepared=true;
+	public static boolean prepared=false;
 	public static Batcher batcher;
-	public static int counter = 0;
 	
 	public static void main(String[] args) throws SQLException {
 
@@ -41,7 +40,6 @@ public class Main {
 		Combiner combiner = new Combiner();
 		batcher.startTime = System.currentTimeMillis();
 		// 2. For each log line
-		
 		Path filePath = Paths.get(args[3]);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
@@ -50,12 +48,8 @@ public class Main {
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
 		    	for(String dmlLine: splitDMLLines)
 		    	{
-		    		counter ++;
-		    		if (counter == 348 || counter == 350)
-		    			System.out.println("Debug");
 		    		DML dml;
 		    		String[] words = dmlLine.split(" ");
-		    		CharSequence c = "where W_ID = 1";
 		    		if (words[0].equalsIgnoreCase("insert"))
 		    			dml = new InsertDML(dmlLine);
 		    		else if (words[0].equalsIgnoreCase("delete"))
