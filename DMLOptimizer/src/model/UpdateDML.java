@@ -9,34 +9,36 @@ public class UpdateDML extends DML{
 
 	public UpdateDML(String inputString) {
 		// 1. Set DMLString		
-		inputString = inputString.replace(';', ' ');
 		inputString = inputString.trim();
-		String[] words = inputString.split(" ");
-		DMLString = inputString;
-		
+		if(inputString.endsWith(";"))
+		{
+			inputString = inputString.substring(0,inputString.length() - 1);
+		}
+		inputString = inputString.trim();
+		DMLString = inputString;			
 		// 2. Set type
 		type = DMLType.UPDATE;
-		
+		String[] words = inputString.split("\\s*(?i) where \\s*");
+		String[] setClause = words[0].split("\\s*(?i) set \\s*");	
 		// 3. set table
-		table = words[1].toLowerCase();
-		
-		// 4. set attributes Values
-		String[] clauses = inputString.split("\\s*(?i)where\\s*");
-		
-		String[] setClauses = clauses[0].split("\\s*(?i)set\\s*");
-		String[] setAttValues = setClauses[1].split(",");
-		for(String setAttVal: setAttValues)
+		String generateTable = setClause[0].replaceFirst("\\s*(?i)update\\s*", "").trim();
+		table = generateTable.toLowerCase().trim();
+		// 4. set conditions
+		String[] clauses = words[1].split("\\s*(?i) and \\s*");
+		for (String eachClause: clauses)
 		{
-			String[] elements = setAttVal.trim().split("=");
-			DMLSetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
+			String [] elements = eachClause.split("=");
+			elements[1] = elements[1].trim();
+			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1]);			
 		}
-		
-		String[] attVals = clauses[1].split("\\s*(?i)and\\s*");
-		for(String attVal: attVals)
+		// 5. set attributes Values
+		String [] indClause = setClause[1].split(",");
+		for (String indSetClause : indClause)
 		{
-			String[] elements = attVal.split("=");
-			DMLGetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1].trim());
-		}		
+			String[] elements = indSetClause.split("=");
+			elements[1] = elements[1].trim();
+			DMLSetAttributeValues.put(elements[0].trim().toLowerCase(), elements[1]);
+		}	
 	}
 
 	

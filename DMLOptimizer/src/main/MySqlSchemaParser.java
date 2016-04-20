@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,8 +29,12 @@ public class MySqlSchemaParser {
 	public static Map<String,Map<String,String>> AttrInitVal=new HashMap<String,Map<String,String>>();
 	public static List<String> TablesInDB = new LinkedList<String>();
 	public static Connection db_conn = null;
+	public static List<String> numericTypes = new LinkedList<String>();
 
 	public static void init_Schema(String username,String password, String db) throws SQLException {
+		String[] numericTypesArray={"int","bigint","tinyint", "mediumint", "decimal", "float", "double", "real", "double precision", "smallint", "integer", "numeric", "dec", "fixed"};
+		numericTypes=Arrays.asList(numericTypesArray);
+		
 		setupConnection( username, password, db);
 		
 		TablesInDB=getAllTables(db);

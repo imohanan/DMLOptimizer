@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.Main;
 import main.MySqlSchemaParser;
 import util.Stats;
 
@@ -25,7 +26,7 @@ public abstract class DML {
 	
 	public DML() {
 		id = counter;
-		Stats.DMLTotal++;
+		Main.batcher.DMLTotal++;
 		counter++;
 	}
 	
@@ -103,22 +104,26 @@ public abstract class DML {
 		    String key = entry.getKey();
 		    String value = entry.getValue().toString();
 		    String origValue = DMLSetAttributeValues.get(key);
-		    String newNumber= value.replaceAll("[^0-9]", "");
+		    //String newNumber= value.replaceAll("[^.0-9]", "");
+		    double newNumber = Double.valueOf(value.replaceAll("[^\\d.]+|\\.(?!\\d)", ""));
 		    
-		    if (origValue == null || !value.toLowerCase().contains(key.toLowerCase())) {
+		    if (origValue == null 
+		    		|| !value.toLowerCase().contains(key.toLowerCase())
+		    		|| !MySqlSchemaParser.numericTypes.contains(MySqlSchemaParser.AttrTypes.get(table).get(key)) ) {
 		    	DMLSetAttributeValues.put(key, value);
 		    }
 		    else if (value.toLowerCase().contains(key.toLowerCase()) && origValue.toLowerCase().contains(key.toLowerCase())){
 		    	pendcountDmlSeen = true;
-		    	String origNumber = origValue.replaceAll("[^0-9]", "");	   
+		    	double origNumber = Double.valueOf(origValue.replaceAll("[^\\d.]+|\\.(?!\\d)", ""));	   
 		    	String newValue = key;
 		    	if (value.indexOf("+") != -1 && origValue.indexOf("+") != -1) {
-		    		int ans = Integer.parseInt(newNumber) + Integer.parseInt(origNumber);
+		    		double ans = newNumber + origNumber;
+		    		// TODO check SQL type and convert accordingly
 		    		newValue = newValue + "+" + ans;
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
 		    	else if (value.indexOf("+") != -1 && origValue.indexOf("-") != -1) {
-		    		int ans = ((-1) * Integer.parseInt(origNumber)) + Integer.parseInt(newNumber);
+		    		double ans = ((-1) * origNumber + newNumber);
 		    		if (ans < 0) {
 		    			newValue = newValue + "-" + Math.abs(ans);
 		    		}
@@ -128,7 +133,7 @@ public abstract class DML {
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
 		    	else if (value.indexOf("-") != -1 && origValue.indexOf("+") != -1) {
-		    		int ans = ((-1) * Integer.parseInt(newNumber)) + Integer.parseInt(origNumber);
+		    		double ans = ((-1) * newNumber) + origNumber;
 		    		if (ans < 0) {
 		    			newValue = newValue + "-" + Math.abs(ans);
 		    		}
@@ -138,7 +143,7 @@ public abstract class DML {
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
 		    	else if (value.indexOf("-") != -1 && origValue.indexOf("-") != -1) {
-		    		int ans = Integer.parseInt(newNumber) + Integer.parseInt(origNumber);
+		    		double ans = newNumber + origNumber;
 		    		newValue = newValue + "-" + ans;
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
@@ -149,10 +154,10 @@ public abstract class DML {
 		    }
 		    else {
 		    	pendcountDmlSeen = true;
-		    	String origNumber = origValue;
+		    	double origNumber = Double.valueOf(origValue.replaceAll("[^\\d.]+|\\.(?!\\d)", ""));
 		    	String newValue = "";
 		    	if (value.indexOf("+") != -1) {
-		    		int ans = Integer.parseInt(origNumber) + Integer.parseInt(newNumber);
+		    		double ans = origNumber + newNumber;
 		    		if (ans < 0){
 		    			newValue = newValue + "-" + Math.abs(ans);
 		    		}
@@ -162,7 +167,7 @@ public abstract class DML {
 		    		DMLSetAttributeValues.put(key, newValue);
 		    	}
 		    	else if (value.indexOf("-") != -1) {
-		    		int ans = Integer.parseInt(origNumber) + ((-1)*Integer.parseInt(newNumber));
+		    		double ans = origNumber + ((-1)*newNumber);
 		    		if (ans < 0){
 		    			newValue = newValue + "-" + Math.abs(ans);
 		    		}
@@ -178,7 +183,7 @@ public abstract class DML {
 		    
 		}
 		if (pendcountDmlSeen) {
-			Stats.pendcountDML++;
+			Main.batcher.pendcountDML++;
 		}
 		toDMLString();
 	}

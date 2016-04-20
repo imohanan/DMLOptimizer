@@ -21,7 +21,7 @@ public class Combiner
 	
 	public static void addDML(DML dml)
 	{
-		Stats.DMLAfterCombining++;
+		Main.batcher.DMLAfterCombining++;
 		// 1.add to PKValuesMap 
     	// 1a. get table
     	Map<String, List<DML>> tableHashMap = PKValuesMap.get(dml.table);
@@ -82,22 +82,22 @@ public class Combiner
 		
 		if(OptimizerRules.checkInsertUpdateRule(dml, recordDMLs))
 		{
-			Stats.insertUpdateCount++;
+			Main.batcher.insertUpdateCount++;
 			OptimizerRules.applyInsertUpdateRule(dml, recordDMLs);
 		}
 		else if(OptimizerRules.checkInsertDeleteRule(dml, recordDMLs))
 		{
-			Stats.insertDeleteCount++;
+			Main.batcher.insertDeleteCount++;
 			OptimizerRules.applyInsertDeleteRule(dml, recordDMLs, fkDMLs); 
 		}
 		else if(OptimizerRules.checkUpdateDeleteRule(dml, recordDMLs))
 		{
-			Stats.updateDeleteCount++;
+			Main.batcher.updateDeleteCount++;
 			OptimizerRules.applyUpdateDeleteRule(dml, recordDMLs, fkDMLs); 
 		}
 		else if(OptimizerRules.checkUpdateUpdateRule(dml, recordDMLs))
 		{
-			Stats.updateUpdateCount++;
+			Main.batcher.updateUpdateCount++;
 			OptimizerRules.applyUpdateUpdateRule(dml, recordDMLs); 
 		}
 		
@@ -105,7 +105,6 @@ public class Combiner
 
 	
 	public static void removeDML(DML dml) {
-		Stats.DMLAfterCombining--;
 		Map<String, List<DML>> tableMap = PKValuesMap.get(dml.table);
 		List<DML> recordDMLs = tableMap.get(dml.PKValue);
 		recordDMLs.remove(dml); //TEST: test if this is reflected in PKValuesMap
