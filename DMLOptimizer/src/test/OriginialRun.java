@@ -3,6 +3,8 @@ package test;
 import java.io.BufferedReader;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.Statement;
+import com.sun.management.OperatingSystemMXBean;
 
 
 
@@ -25,6 +28,11 @@ public class OriginialRun {
 	
 	private static Connection db_conn = null;
 	public static void main(String[] args) throws IOException, SQLException{
+		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
+	    long prevUpTime = runtimeMXBean.getUptime();
+	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
 		long startTime = System.currentTimeMillis();
 		if (args.length<3){
 			System.out.println("Wrong number of arguments.Exiting.");
@@ -63,6 +71,16 @@ public class OriginialRun {
 	    // Calculate the used memory
 	    long memory = runtime.totalMemory() - runtime.freeMemory();
 	    System.out.println("Used memory is bytes: " + memory);
+	    double cpuUsage;
+	    operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+	    long upTime = runtimeMXBean.getUptime();
+	    long processCpuTime = operatingSystemMXBean.getProcessCpuTime();
+	    long elapsedCpu = processCpuTime - prevProcessCpuTime;
+	    long elapsedTime = upTime - prevUpTime;
+
+	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
+	    System.out.println("Java CPU: " + cpuUsage);
+	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
 		}
 	
 	public static void setupConnection(String username,String password, String db) {

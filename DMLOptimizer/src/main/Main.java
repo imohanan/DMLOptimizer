@@ -1,5 +1,7 @@
 package main;
 import java.io.BufferedReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.sun.management.OperatingSystemMXBean;
 
 import model.DML;
 import model.DMLQueue;
@@ -35,6 +38,11 @@ public class Main {
 
 		// 1. Init
 		Runtime runtime = Runtime.getRuntime();
+		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
+	    long prevUpTime = runtimeMXBean.getUptime();
+	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
 		if (blind)
 			batcher = new BlindBatcher();
 		else if (prepared)
@@ -89,6 +97,19 @@ public class Main {
 		    	}	        
 		    }
 		    batcher.BatchAndPush();
+		    runtime.gc();
+		    // Calculate the used memory
+		    long memory = runtime.totalMemory() - runtime.freeMemory();
+		    System.out.println("Used memory is bytes: " + memory);
+		    operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		    long upTime = runtimeMXBean.getUptime();
+		    long processCpuTime = operatingSystemMXBean.getProcessCpuTime();
+		    long elapsedCpu = processCpuTime - prevProcessCpuTime;
+		    long elapsedTime = upTime - prevUpTime;
+
+		    double cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
+		    System.out.println("Java CPU: " + cpuUsage);
+		    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
 		} 
 		catch(Exception x)
 		{
@@ -96,10 +117,7 @@ public class Main {
 		}
 		finally
 		{
-			runtime.gc();
-		    // Calculate the used memory
-		    long memory = runtime.totalMemory() - runtime.freeMemory();
-		    System.out.println("Used memory is bytes: " + memory);
+			
 			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 
