@@ -25,10 +25,16 @@ public class Main {
 	public static boolean blind=false;
 	public static boolean prepared=true;
 	public static Batcher batcher;
+	private static final long MEGABYTE = 1024L * 1024L;
+	 
+	public static long bytesToMegabytes(long bytes) {
+		return bytes / MEGABYTE;
+	}
 
 	public static void main(String[] args) throws SQLException {
 
 		// 1. Init
+		Runtime runtime = Runtime.getRuntime();
 		if (blind)
 			batcher = new BlindBatcher();
 		else if (prepared)
@@ -90,6 +96,10 @@ public class Main {
 		}
 		finally
 		{
+			runtime.gc();
+		    // Calculate the used memory
+		    long memory = runtime.totalMemory() - runtime.freeMemory();
+		    System.out.println("Used memory is bytes: " + memory);
 			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 

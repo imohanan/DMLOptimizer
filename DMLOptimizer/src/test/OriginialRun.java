@@ -1,6 +1,7 @@
 package test;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -13,7 +14,14 @@ import java.sql.SQLException;
 
 import com.mysql.jdbc.Statement;
 
+
+
 public class OriginialRun {
+	public static final long MEGABYTE = 1024L * 1024L;
+
+	public static long bytesToMegabytes(long bytes) {
+		return bytes / MEGABYTE;
+	}
 	
 	private static Connection db_conn = null;
 	public static void main(String[] args) throws IOException, SQLException{
@@ -50,6 +58,11 @@ public class OriginialRun {
 				    System.out.println("Exeception");
 				}
 		}
+		Runtime runtime = Runtime.getRuntime();
+		runtime.gc();
+	    // Calculate the used memory
+	    long memory = runtime.totalMemory() - runtime.freeMemory();
+	    System.out.println("Used memory is bytes: " + memory);
 		}
 	
 	public static void setupConnection(String username,String password, String db) {
