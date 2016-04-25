@@ -120,6 +120,11 @@ public class Main {
 		    	}	        
 		    }
 		    batcher.BatchAndPush();
+		    osThread.setEnd();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		    runtime.gc();
 		    // Calculate the used memory
 		    long memory = runtime.totalMemory() - runtime.freeMemory();
@@ -144,11 +149,7 @@ public class Main {
 			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 
-		osThread.setEnd();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 		
 	}
