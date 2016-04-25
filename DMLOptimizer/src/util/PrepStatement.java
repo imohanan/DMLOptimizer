@@ -42,8 +42,9 @@ public class PrepStatement {
 		if (pkeys.isEmpty())
 			return null;
 		statement="DELETE FROM "+table+" WHERE ";
-		for (String pk:pkeys){
-			statement=statement+pk+"=? and ";
+		for (String pk:MySqlSchemaParser.getAttributes(table)){
+			if(pkeys.contains(pk))
+				statement=statement+pk+"=? and ";
 		}
 		statement=statement.substring(0, statement.length()-4);
 		return statement;

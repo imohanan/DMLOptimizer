@@ -1,5 +1,8 @@
 package main;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
@@ -7,11 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 
-import com.mysql.jdbc.PreparedStatement;
 import com.sun.management.OperatingSystemMXBean;
 
 import model.DML;
@@ -19,8 +19,8 @@ import model.DMLQueue;
 import model.DeleteDML;
 import model.InsertDML;
 import model.UpdateDML;
+import test.OriginialRun;
 import util.PrepStatement;
-import util.Stats;
 import util.Util;
 
 public class Main {
@@ -28,13 +28,34 @@ public class Main {
 	public static boolean blind=false;
 	public static boolean prepared=true;
 	public static Batcher batcher;
+	public static String db=null;
+
 	private static final long MEGABYTE = 1024L * 1024L;
 	 
 	public static long bytesToMegabytes(long bytes) {
 		return bytes / MEGABYTE;
 	}
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, IOException {
+		OriginialRun.orig=false;
+		PrintWriter fw;
+		File f=new File("stats.txt");
+		if (!f.exists()){
+			f.createNewFile();
+		}
+		else{
+			f.delete();
+		}
+		try {
+			fw = new PrintWriter(f);
+			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
+
+			System.out.println("Starting listener");
+			osThread.start();
+			
+			System.out.println("Computing");
+			
+	
 
 		// 1. Init
 		Runtime runtime = Runtime.getRuntime();
@@ -51,6 +72,8 @@ public class Main {
 			batcher = new ManualBatcher();
 		
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		db=args[2];
+		util.AutomatedAccuracy.countStarAllTables();
 		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
 		batcher.startTime = System.currentTimeMillis();
@@ -121,6 +144,12 @@ public class Main {
 			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 
+		osThread.setEnd();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 }

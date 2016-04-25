@@ -188,7 +188,7 @@ public class PreparedBatcher extends Batcher {
 
 	public void fillPreparedStatement(String table, DML dml) throws SQLException, ParseException {
 		int attrCount = 1;
-		for (String attr : MySqlSchemaParser.TableAttrs.get(table)) {// List of
+		for (String attr : MySqlSchemaParser.getAttributes(table)) {// List of
 																		// attributes
 																		// in
 																		// the
