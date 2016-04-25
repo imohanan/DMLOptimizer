@@ -208,44 +208,14 @@ public class PreparedBatcher extends Batcher {
 			if (attrVal != null && attrVal.startsWith("'") && attrVal.endsWith("'")) {
 				attrVal = attrVal.substring(1, attrVal.length() - 1);
 			}
-			if (attrVal == null && !attrType.equalsIgnoreCase("array") && !attrType.equalsIgnoreCase("BLOB")
-					&& !attrType.equalsIgnoreCase("CLOB") && !attrType.equalsIgnoreCase("DATALINK")
-					&& !attrType.equalsIgnoreCase("JAVA_OBJECT") && !attrType.equalsIgnoreCase("NCHAR")
-					&& !attrType.equalsIgnoreCase("NCLOB") && !attrType.equalsIgnoreCase("NVARCHAR")
-					&& !attrType.equalsIgnoreCase("LONGNVARCHAR") && !attrType.equalsIgnoreCase("REF")
-					&& !attrType.equalsIgnoreCase("ROWID") && !attrType.equalsIgnoreCase("SQLXML")
-					&& !attrType.equalsIgnoreCase("STRUCT")) {
-				if (attrType.equalsIgnoreCase("VARCHAR"))
-					preparedStatement.setNull(attrCount, java.sql.Types.VARCHAR);
-				else if (attrType.equalsIgnoreCase("timestamp"))
-					preparedStatement.setNull(attrCount, java.sql.Types.TIMESTAMP);
-				else if (attrType.equalsIgnoreCase("time"))
-					preparedStatement.setNull(attrCount, java.sql.Types.TIME);
-				else if (attrType.equalsIgnoreCase("int"))
-					preparedStatement.setNull(attrCount, java.sql.Types.INTEGER);
-				else if (attrType.equalsIgnoreCase("double"))
-					preparedStatement.setNull(attrCount, java.sql.Types.DOUBLE);
-				else if (attrType.equalsIgnoreCase("boolean"))
-					preparedStatement.setNull(attrCount, java.sql.Types.BOOLEAN);
-				else if (attrType.equalsIgnoreCase("float"))
-					preparedStatement.setNull(attrCount, java.sql.Types.FLOAT);
-				else if (attrType.equalsIgnoreCase("SMALLINT "))
-					preparedStatement.setNull(attrCount, java.sql.Types.SMALLINT);
-				else if (attrType.equalsIgnoreCase("TINYINT"))
-					preparedStatement.setNull(attrCount, java.sql.Types.TINYINT);
-				else if (attrType.equalsIgnoreCase("BIGINT"))
-					preparedStatement.setNull(attrCount, java.sql.Types.BIGINT);
-				else if (attrType.equalsIgnoreCase("DECIMAL"))
-					preparedStatement.setNull(attrCount, java.sql.Types.DECIMAL);
-				else if (attrType.equalsIgnoreCase("char"))
-					preparedStatement.setNull(attrCount, java.sql.Types.CHAR);
-
-			} else {
-				if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR")
+			
+			if(attrVal != null)
+			{
+				if (attrType.equalsIgnoreCase("int"))
+					preparedStatement.setInt(attrCount, Integer.parseInt(attrVal));
+				else if (attrType.equalsIgnoreCase("VARCHAR") || attrType.equalsIgnoreCase("LONGVARCHAR")
 						|| attrType.equalsIgnoreCase("CHAR"))
 					preparedStatement.setString(attrCount, attrVal);
-				else if (attrType.equalsIgnoreCase("int"))
-					preparedStatement.setInt(attrCount, Integer.parseInt(attrVal));
 				else if (attrType.equalsIgnoreCase("double"))
 					preparedStatement.setDouble(attrCount, Double.parseDouble(attrVal));
 				else if (attrType.equalsIgnoreCase("boolean"))
@@ -275,6 +245,42 @@ public class PreparedBatcher extends Batcher {
 				}
 
 			}
+			else if (attrVal == null 
+					/*&& !attrType.equalsIgnoreCase("array") 
+					&& !attrType.equalsIgnoreCase("BLOB")
+					&& !attrType.equalsIgnoreCase("CLOB") && !attrType.equalsIgnoreCase("DATALINK")
+					&& !attrType.equalsIgnoreCase("JAVA_OBJECT") && !attrType.equalsIgnoreCase("NCHAR")
+					&& !attrType.equalsIgnoreCase("NCLOB") && !attrType.equalsIgnoreCase("NVARCHAR")
+					&& !attrType.equalsIgnoreCase("LONGNVARCHAR") && !attrType.equalsIgnoreCase("REF")
+					&& !attrType.equalsIgnoreCase("ROWID") && !attrType.equalsIgnoreCase("SQLXML")
+					&& !attrType.equalsIgnoreCase("STRUCT")*/ // READ:Removed to reduce time taken by prepared statement 
+					) {
+				if (attrType.equalsIgnoreCase("int"))
+					preparedStatement.setNull(attrCount, java.sql.Types.INTEGER);
+				else if (attrType.equalsIgnoreCase("VARCHAR"))
+					preparedStatement.setNull(attrCount, java.sql.Types.VARCHAR);
+				else if (attrType.equalsIgnoreCase("timestamp"))
+					preparedStatement.setNull(attrCount, java.sql.Types.TIMESTAMP);
+				else if (attrType.equalsIgnoreCase("time"))
+					preparedStatement.setNull(attrCount, java.sql.Types.TIME);
+				else if (attrType.equalsIgnoreCase("double"))
+					preparedStatement.setNull(attrCount, java.sql.Types.DOUBLE);
+				else if (attrType.equalsIgnoreCase("boolean"))
+					preparedStatement.setNull(attrCount, java.sql.Types.BOOLEAN);
+				else if (attrType.equalsIgnoreCase("float"))
+					preparedStatement.setNull(attrCount, java.sql.Types.FLOAT);
+				else if (attrType.equalsIgnoreCase("SMALLINT "))
+					preparedStatement.setNull(attrCount, java.sql.Types.SMALLINT);
+				else if (attrType.equalsIgnoreCase("TINYINT"))
+					preparedStatement.setNull(attrCount, java.sql.Types.TINYINT);
+				else if (attrType.equalsIgnoreCase("BIGINT"))
+					preparedStatement.setNull(attrCount, java.sql.Types.BIGINT);
+				else if (attrType.equalsIgnoreCase("DECIMAL"))
+					preparedStatement.setNull(attrCount, java.sql.Types.DECIMAL);
+				else if (attrType.equalsIgnoreCase("char"))
+					preparedStatement.setNull(attrCount, java.sql.Types.CHAR);
+
+			} 
 
 			attrCount++;
 		}
