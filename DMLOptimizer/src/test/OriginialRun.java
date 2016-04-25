@@ -1,6 +1,11 @@
 package test;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -11,12 +16,17 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.mysql.jdbc.ResultSetMetaData;
 import com.mysql.jdbc.Statement;
 
+import main.Main;
+import main.MySqlSchemaParser;
+
 public class OriginialRun {
-	
+	public static boolean orig=false;
 	private static Connection db_conn = null;
 	public static void main(String[] args) throws IOException, SQLException{
+		orig=true;
 		long startTime = System.currentTimeMillis();
 		if (args.length<3){
 			System.out.println("Wrong number of arguments.Exiting.");
@@ -38,7 +48,6 @@ public class OriginialRun {
 			    	statement.close();
 			    	}
 			    System.out.println("Number of executed dmls in Original way: "+ count);
-			    db_conn.close();
 			    long stopTime = System.currentTimeMillis();
 			    double elapsedTime = (((stopTime - startTime)*1.67)/100000);
 			    System.out.println("Time taken for original run: " + elapsedTime +" minutes");
@@ -50,6 +59,8 @@ public class OriginialRun {
 				    System.out.println("Exeception");
 				}
 		}
+		runUtilization();
+		 db_conn.close();
 		}
 	
 	public static void setupConnection(String username,String password, String db) {
@@ -104,6 +115,47 @@ public class OriginialRun {
 		}
 		return false;
 	}
+public static void runUtilization() throws IOException, SQLException{
+	File file=new File("Original_accuracy_"+Main.db+".txt");
+	if (!file.exists()) {
+		file.createNewFile();
+	}
+	else{
+		file.delete();
+	}
+	FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	BufferedWriter bw = new BufferedWriter(fw);
+	String fileName = "queries.txt";
+	String line = null;
+	 Statement st=(Statement) db_conn.createStatement();
+		ResultSet rs=null;
+	FileReader fileReader = 
+            new FileReader(fileName);
+	BufferedReader bufferedReader = 
+            new BufferedReader(fileReader);
+	 while((line = bufferedReader.readLine()) != null) {
+			 rs=null;
+			 rs=(ResultSet) st.executeQuery(line.trim());
+			 ResultSetMetaData rsmd = (ResultSetMetaData) rs.getMetaData();
+			 int numberOfColumns = rsmd.getColumnCount();
+			 bw.append(line.trim()+"\n");
+			 while(rs.next()){
+				 for (int i = 1; i <= numberOfColumns; i++) {
+			          if (i > 1) bw.append(",  ");
+			          String columnValue = rs.getString(i);
+			          bw.append(columnValue);
+			        }
+			 }
+			 bw.append("\n");
+			 
+     }   
 
+     // Always close files.
+     bufferedReader.close(); 
+     bw.close();
+ }
 
 }
+
+
+

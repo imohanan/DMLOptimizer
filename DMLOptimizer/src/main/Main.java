@@ -1,5 +1,6 @@
 package main;
 import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import model.DMLQueue;
 import model.DeleteDML;
 import model.InsertDML;
 import model.UpdateDML;
+import test.OriginialRun;
 import util.PrepStatement;
 import util.Stats;
 import util.Util;
@@ -24,8 +26,21 @@ public class Main {
 	public static boolean blind=false;
 	public static boolean prepared=false;
 	public static Batcher batcher;
+	public static String db=null;
 	
 	public static void main(String[] args) throws SQLException {
+		OriginialRun.orig=false;
+		PrintWriter fw;
+		try {
+			fw = new PrintWriter("./LogFiles/stats.txt");
+			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
+
+			System.out.println("Starting listener");
+			osThread.start();
+			
+			System.out.println("Computing");
+			
+	
 
 		// 1. Init
 		if (blind)
@@ -36,6 +51,8 @@ public class Main {
 			batcher = new ManualBatcher();
 		
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		db=args[2];
+		util.AutomatedAccuracy.countStarAllTables();
 		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
 		batcher.startTime = System.currentTimeMillis();
@@ -92,6 +109,12 @@ public class Main {
 			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 
+		osThread.setEnd();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 }
