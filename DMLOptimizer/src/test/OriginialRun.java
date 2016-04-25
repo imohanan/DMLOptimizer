@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
@@ -42,7 +43,22 @@ public class OriginialRun {
 	public static void main(String[] args) throws IOException, SQLException{
 
 		orig=true;
+		PrintWriter fw;
+		File f=new File("stats_orig.txt");
+		if (!f.exists()){
+			f.createNewFile();
+		}
+		else{
+			f.delete();
+		}
+		try {
+			fw = new PrintWriter(f);
+			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
 
+			System.out.println("Starting listener");
+			osThread.start();
+			
+			System.out.println("Computing");
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
@@ -100,6 +116,12 @@ public class OriginialRun {
 	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 	    System.out.println("Java CPU: " + cpuUsage);
 	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
+	    osThread.setEnd();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		}
 	

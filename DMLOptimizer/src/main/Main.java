@@ -1,20 +1,17 @@
 package main;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 
-import com.mysql.jdbc.PreparedStatement;
 import com.sun.management.OperatingSystemMXBean;
 
 import model.DML;
@@ -24,7 +21,6 @@ import model.InsertDML;
 import model.UpdateDML;
 import test.OriginialRun;
 import util.PrepStatement;
-import util.Stats;
 import util.Util;
 
 public class Main {
@@ -40,11 +36,18 @@ public class Main {
 		return bytes / MEGABYTE;
 	}
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, IOException {
 		OriginialRun.orig=false;
 		PrintWriter fw;
+		File f=new File("stats.txt");
+		if (!f.exists()){
+			f.createNewFile();
+		}
+		else{
+			f.delete();
+		}
 		try {
-			fw = new PrintWriter("./LogFiles/stats.txt");
+			fw = new PrintWriter(f);
 			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
 
 			System.out.println("Starting listener");
