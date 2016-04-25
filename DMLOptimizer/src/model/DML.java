@@ -105,7 +105,12 @@ public abstract class DML {
 		    String value = entry.getValue().toString();
 		    String origValue = DMLSetAttributeValues.get(key);
 		    //String newNumber= value.replaceAll("[^.0-9]", "");
-		    double newNumber = Double.valueOf(value.replaceAll("[^\\d.]+|\\.(?!\\d)", ""));
+		    double newNumber;
+		    String test2 = value.replaceAll("[^\\d.]+|\\.(?!\\d)", "");
+		    if (test2 == "")
+		    	newNumber = 0;
+		    else 
+		    	newNumber = Double.valueOf(test2);
 		    
 		    if (origValue == null 
 		    		|| !value.toLowerCase().contains(key.toLowerCase())
