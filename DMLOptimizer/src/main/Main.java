@@ -26,7 +26,7 @@ import util.Util;
 public class Main {
 
 	public static boolean blind=false;
-	public static boolean prepared=true;
+	public static boolean prepared=false;
 	public static Batcher batcher;
 	public static String db=null;
 
@@ -73,7 +73,7 @@ public class Main {
 		
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
 		db=args[2];
-		util.AutomatedAccuracy.countStarAllTables();
+		
 		PrepStatement.initPreparedStatementMap();
 		Combiner combiner = new Combiner();
 		batcher.startTime = System.currentTimeMillis();
@@ -121,6 +121,7 @@ public class Main {
 		    }
 		    batcher.BatchAndPush();
 		    osThread.setEnd();
+		    util.AutomatedAccuracy.countStarAllTables();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
