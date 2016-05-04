@@ -31,7 +31,7 @@ import main.MySqlSchemaParser;
 public class OriginialRun {
 
 	public static boolean orig=false;
-
+	public static String db=null;
 	public static final long MEGABYTE = 1024L * 1024L;
 
 	public static long bytesToMegabytes(long bytes) {
@@ -41,8 +41,9 @@ public class OriginialRun {
 
 	private static Connection db_conn = null;
 	public static void main(String[] args) throws IOException, SQLException{
-
+		db = args[2];
 		orig=true;
+		
 		PrintWriter fw;
 		File f=new File("stats_orig.txt");
 		if (!f.exists()){
@@ -53,10 +54,10 @@ public class OriginialRun {
 		}
 		try {
 			fw = new PrintWriter(f);
-			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
+			//util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
 
 			System.out.println("Starting listener");
-			osThread.start();
+			//osThread.start();
 			
 			System.out.println("Computing");
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
@@ -74,16 +75,20 @@ public class OriginialRun {
 			int count=0;
 			String line = null;
 			setupConnection(args[0], args[1], args[2]);
+			db=args[2];
 			Path filePath = Paths.get(args[3]);
 			Charset charset = Charset.forName("US-ASCII");
 			BufferedReader reader = Files.newBufferedReader(filePath, charset);
 			    try
 			    {
 			    	while ((line = reader.readLine()) != null) {
-			    	Statement statement=(Statement) db_conn.createStatement();
-			    	statement.execute(line);
-			    	count++;
-			    	statement.close();
+			    		Statement statement=(Statement) db_conn.createStatement();
+			    		if (line.toLowerCase().contains("insert") ||line.toLowerCase().contains("delete") ||line.toLowerCase().contains("update"))
+				    	{
+				    		statement.execute(line);
+				    		count++;
+				    		statement.close();
+				    	}
 			    	}
 			    System.out.println("Number of executed dmls in Original way: "+ count);
 			    long stopTime = System.currentTimeMillis();
@@ -97,8 +102,7 @@ public class OriginialRun {
 				    System.out.println("Exeception");
 				}
 		}
-
-		runUtilization();
+		runAccuracy();
 		 db_conn.close();
 
 		Runtime runtime = Runtime.getRuntime();
@@ -116,7 +120,7 @@ public class OriginialRun {
 	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 	    System.out.println("Java CPU: " + cpuUsage);
 	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
-	    osThread.setEnd();
+	   // osThread.setEnd();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -177,8 +181,8 @@ public class OriginialRun {
 		}
 		return false;
 	}
-public static void runUtilization() throws IOException, SQLException{
-	File file=new File("Original_accuracy_"+Main.db+".txt");
+public static void runAccuracy() throws IOException, SQLException{
+	File file=new File("original_accuracy_"+db+".txt");
 	if (!file.exists()) {
 		file.createNewFile();
 	}
@@ -200,7 +204,8 @@ public static void runUtilization() throws IOException, SQLException{
 			 rs=(ResultSet) st.executeQuery(line.trim());
 			 ResultSetMetaData rsmd = (ResultSetMetaData) rs.getMetaData();
 			 int numberOfColumns = rsmd.getColumnCount();
-			 bw.append(line.trim()+"\n");
+			 bw.append(line.trim());
+			 bw.newLine();
 			 while(rs.next()){
 				 for (int i = 1; i <= numberOfColumns; i++) {
 			          if (i > 1) bw.append(",  ");
@@ -208,7 +213,7 @@ public static void runUtilization() throws IOException, SQLException{
 			          bw.append(columnValue);
 			        }
 			 }
-			 bw.append("\n");
+			 bw.newLine();
 			 
      }   
 
