@@ -162,6 +162,7 @@ public class PreparedBatcher extends Batcher {
 		System.out.println("Total Number of DMLs: " + DMLTotal);
 		System.out.println("Number of DMLs after combining: " + DMLAfterCombining);
 
+		System.out.println("1.Combiner Stats");
 		System.out.println("Table Level Fence count is: " + tableFenceCount);
 		System.out.println("Record Level Fence count is: " + recordFenceCount);
 
@@ -169,8 +170,9 @@ public class PreparedBatcher extends Batcher {
 		System.out.println("Rule InsertDelete count is : " + insertDeleteCount);
 		System.out.println("Rule UpdateDelete count is : " + updateDeleteCount);
 		System.out.println("Rule UpdateUpdate count is : " + updateUpdateCount);
-		System.out.println("Number of  PendCount type DMLs observed and combined is : " + pendcountDML);
+		System.out.println("Number of Mathematical Operation type DMLs observed and combined is : " + pendcountDML);
 
+		System.out.println("2. Batcher Stats");
 		System.out.println("Number of times batcher gets called: " + Integer.toString(batchCalls));
 		System.out.println("Minimum number of DMLs passed from Combiner -> Batcher in one call: "
 				+ Integer.toString(minCombinerToBatchSize));
