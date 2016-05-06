@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.PriorityQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -39,6 +40,7 @@ public class Main {
 	public static void main(String[] args) throws SQLException, IOException {
 		OriginialRun.orig=false;
 		PrintWriter fw;
+		
 		File f=new File("stats.txt");
 		if (!f.exists()){
 			f.createNewFile();
@@ -121,6 +123,7 @@ public class Main {
 		    }
 		    batcher.BatchAndPush();
 		    osThread.setEnd();
+		    
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

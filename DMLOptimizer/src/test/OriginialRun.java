@@ -97,7 +97,7 @@ public class OriginialRun {
 				    System.out.println("Exeception");
 				}
 		}
-
+		osThread.setEnd();
 		runUtilization();
 		 db_conn.close();
 
@@ -116,7 +116,7 @@ public class OriginialRun {
 	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 	    System.out.println("Java CPU: " + cpuUsage);
 	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
-	    osThread.setEnd();
+	    
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
