@@ -11,7 +11,6 @@ import model.DML;
 import model.DMLQueue;
 import model.DMLType;
 import util.ManualBatching;
-import util.Stats;
 
 public class ManualBatcher extends Batcher{
 

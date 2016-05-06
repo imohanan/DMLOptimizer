@@ -5,7 +5,6 @@ import java.util.List;
 import model.DML;
 import model.DMLQueue;
 import model.DMLType;
-import util.Stats;
 
 public class OptimizerRules {
 

@@ -84,7 +84,6 @@ public class MySqlSchemaParser {
 			return;
 		}
 
-		System.out.println("MySQL JDBC Driver Registered!");
 
 		try {
 			db_conn = DriverManager.getConnection(
@@ -103,7 +102,6 @@ public class MySqlSchemaParser {
 					db_conn = DriverManager.getConnection(
 							"jdbc:mysql://localhost:3306/"+db+
 							        "?rewriteBatchedStatements=true", username, password);
-				System.out.println("You made it, take control your database now!");
 				}
 				else{System.out.println("Failed to make connection! Check if database "+db+" exists.");
 				System.exit(-1);

@@ -12,7 +12,6 @@ import model.DML;
 import model.DMLComparator;
 import model.DMLQueue;
 import model.FKValue;
-import util.Stats;
 
 public class Combiner 
 {
