@@ -25,8 +25,6 @@ import com.sun.management.OperatingSystemMXBean;
 
 
 
-import main.Main;
-import main.MySqlSchemaParser;
 
 public class OriginialRun {
 
@@ -46,18 +44,14 @@ public class OriginialRun {
 		
 		PrintWriter fw;
 		File f=new File("stats_orig.txt");
-		if (!f.exists()){
-			f.createNewFile();
-		}
-		else{
-			f.delete();
-		}
+		f.delete();
+		f.createNewFile();
 		try {
 			fw = new PrintWriter(f);
-			//util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
+			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
 
 			System.out.println("Starting listener");
-			//osThread.start();
+			osThread.start();
 			
 			System.out.println("Computing");
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
@@ -120,7 +114,7 @@ public class OriginialRun {
 	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 	    System.out.println("Java CPU: " + cpuUsage);
 	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
-	   // osThread.setEnd();
+	   osThread.setEnd();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

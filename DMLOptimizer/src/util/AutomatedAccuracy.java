@@ -21,11 +21,9 @@ public class AutomatedAccuracy {
 		String fileName=null;
 		if(Main.prepared)
 			fileName="prepared_accuracy_"+Main.db+".txt";
-		else if(Main.blind)
-			fileName="blind_accuracy_"+Main.db+".txt";
 		else if(OriginialRun.orig)
 			fileName="Original_accuracy_"+Main.db+".txt";
-		else
+		else if(Main.manual)
 			fileName="manual_accuracy_"+Main.db+".txt";
 		File file = new File(fileName);
 		File queries=new File("queries.txt");

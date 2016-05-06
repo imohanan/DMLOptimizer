@@ -21,66 +21,33 @@ import model.InsertDML;
 import model.UpdateDML;
 import test.OriginialRun;
 import util.PrepStatement;
+import util.SystemStats;
 import util.Util;
 
 public class Main {
 
-	public static boolean blind=false;
 	public static boolean prepared=false;
+	public static boolean manual=false;
 	public static Batcher batcher;
 	public static String db=null;
 
-	private static final long MEGABYTE = 1024L * 1024L;
-	 
-	public static long bytesToMegabytes(long bytes) {
-		return bytes / MEGABYTE;
-	}
-
 	public static void main(String[] args) throws SQLException, IOException {
 		OriginialRun.orig=false;
-		PrintWriter fw;
-		File f=new File("stats.txt");
-		if (!f.exists()){
-			f.createNewFile();
-		}
-		else{
-			f.delete();
-		}
-		try {
-			fw = new PrintWriter(f);
-			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
-
-			System.out.println("Starting listener");
-			osThread.start();
-			
-			System.out.println("Computing");
-			
-	
-
-		// 1. Init
-		Runtime runtime = Runtime.getRuntime();
-		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
-	    long prevUpTime = runtimeMXBean.getUptime();
-	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
-		if (blind)
-			batcher = new BlindBatcher();
-		else if (prepared)
-			batcher = new PreparedBatcher();
-		else
-			batcher = new ManualBatcher();
 		
-		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
-		db=args[2];
-		
-		PrepStatement.initPreparedStatementMap();
+		// 1. Init		
+		SystemStats systemStats = new SystemStats();
 		Combiner combiner = new Combiner();
-		batcher.startTime = System.currentTimeMillis();
+		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		prepared = Boolean.parseBoolean(args[4]);
+		manual = !prepared;
+		db=args[2];
+		if (prepared)
+			batcher = new PreparedBatcher();
+		else if(manual)
+			batcher = new ManualBatcher();
+
 		// 2. For each log line
-		Path filePath = Paths.get(args[3]);
-		Charset charset = Charset.forName("US-ASCII");
-		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get(args[3]), Charset.forName("US-ASCII"))) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
@@ -120,25 +87,9 @@ public class Main {
 		    	}	        
 		    }
 		    batcher.BatchAndPush();
-		    osThread.setEnd();
+			batcher.stopTime = System.currentTimeMillis();
+		    systemStats.stop();
 		    util.AutomatedAccuracy.countStarAllTables();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		    runtime.gc();
-		    // Calculate the used memory
-		    long memory = runtime.totalMemory() - runtime.freeMemory();
-		    System.out.println("Used memory is bytes: " + memory);
-		    operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-		    long upTime = runtimeMXBean.getUptime();
-		    long processCpuTime = operatingSystemMXBean.getProcessCpuTime();
-		    long elapsedCpu = processCpuTime - prevProcessCpuTime;
-		    long elapsedTime = upTime - prevUpTime;
-
-		    double cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
-		    System.out.println("Java CPU: " + cpuUsage);
-		    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
 		} 
 		catch(Exception x)
 		{
@@ -146,12 +97,8 @@ public class Main {
 		}
 		finally
 		{
-			
-			batcher.stopTime = System.currentTimeMillis();
 			batcher.printStats();			
 		} 
-		
-		
 		
 	}
 }

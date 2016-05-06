@@ -15,6 +15,11 @@ import util.Stats;
 
 public class ManualBatcher extends Batcher{
 
+	public ManualBatcher(){
+		startTime = System.currentTimeMillis();
+	}
+	
+	
 	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException {
 		batchCalls ++;
 		if (minCombinerToBatchSize > affectedDMLs.size())
@@ -153,7 +158,7 @@ public class ManualBatcher extends Batcher{
 		System.out.println("Maximum number of DMLS in a batch: "+Integer.toString(maxBatched));
 		avgbatch = (float)DMLAfterCombining/(float)countManualBatcher;	
 		System.out.println("Average number of DMLs per batch:" + Float.toString(avgbatch));
-
+		System.out.println("Number of DBMS Access:" + Float.toString(dbmsAccess));
 		
 	}
 

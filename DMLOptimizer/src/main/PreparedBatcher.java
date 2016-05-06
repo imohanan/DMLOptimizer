@@ -23,6 +23,11 @@ public class PreparedBatcher extends Batcher {
 	private DML currDML = null;
 	private String currTable = null;
 
+	public PreparedBatcher(){
+		startTime = System.currentTimeMillis();
+		PrepStatement.initPreparedStatementMap();
+	}
+	
 	@Override
 	public void BatchAndPush(PriorityQueue<DML> affectedDMLs) throws SQLException, ParseException {
 		batchSize = 0;
@@ -150,7 +155,7 @@ public class PreparedBatcher extends Batcher {
 	@Override
 	public void printStats() {
 		float avgbatch;
-		double elapsedTime = (((stopTime - startTime) * 1.67) / 100000);
+		double elapsedTime = (((stopTime - startTime) /(1000*60)));
 		System.out.println("Prepared Batching");
 		System.out.println("Time taken in Optimized algorithm: " + elapsedTime + " minutes");
 
@@ -181,6 +186,7 @@ public class PreparedBatcher extends Batcher {
 		System.out.println("Maximum number of DMLS in a batch: " + Integer.toString(maxBatched));
 		avgbatch = (float) DMLAfterCombining / (float) dbmsAccess;
 		System.out.println("Average number of DMLs per batch:" + Float.toString(avgbatch));
+		System.out.println("Number of DBMS Access:" + Float.toString(dbmsAccess)); 
 		// System.out.println("Average number of DMLS in each batch:
 		// "+Float.toString(DMLAfterCombining/totalBatched));
 
