@@ -7,7 +7,7 @@ import java.io.FileReader;
 public class VerifyAccuracy {
 	//Add the path of the folder where your accuracy results are getting stored.
 	//This ones windows path
-	public static String folderpath = "C:\\Users\\nidhirsh\\git\\DMLOptimizer\\DMLOptimizer\\";
+	public static String folderpath = "C:\\Users\\imohanan\\git\\DMLOptimizer\\DMLOptimizer\\";
 	//This ones linux path
 	//public static String folderpath = "/home/nidhi/Spring2016/Database/project/DMLOptimizer/DMLOptimizer/";
 	

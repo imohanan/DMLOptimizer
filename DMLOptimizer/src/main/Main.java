@@ -35,9 +35,9 @@ public class Main {
 		OriginialRun.orig=false;
 		
 		// 1. Init		
-		SystemStats systemStats = new SystemStats();
 		Combiner combiner = new Combiner();
 		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		SystemStats systemStats = new SystemStats();
 		prepared = Boolean.parseBoolean(args[4]);
 		manual = !prepared;
 		db=args[2];
@@ -88,7 +88,6 @@ public class Main {
 		    }
 		    batcher.BatchAndPush();
 			batcher.stopTime = System.currentTimeMillis();
-		    systemStats.stop();
 		    util.AutomatedAccuracy.countStarAllTables();
 		} 
 		catch(Exception x)
@@ -97,6 +96,7 @@ public class Main {
 		}
 		finally
 		{
+			systemStats.stop();
 			batcher.printStats();			
 		} 
 		
