@@ -22,20 +22,15 @@ import model.InsertDML;
 import model.UpdateDML;
 import test.OriginialRun;
 import util.PrepStatement;
+import util.SystemStats;
 import util.Util;
 
 public class Main {
 
-	public static boolean blind=false;
-	public static boolean prepared=true;
+	public static boolean prepared=false;
+	public static boolean manual=false;
 	public static Batcher batcher;
 	public static String db=null;
-
-	private static final long MEGABYTE = 1024L * 1024L;
-	 
-	public static long bytesToMegabytes(long bytes) {
-		return bytes / MEGABYTE;
-	}
 
 	public static void main(String[] args) throws SQLException, IOException {
 		OriginialRun.orig=false;
@@ -66,23 +61,27 @@ public class Main {
 	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
 	    long prevUpTime = runtimeMXBean.getUptime();
 	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
-		if (blind)
-			batcher = new BlindBatcher();
-		else if (prepared)
+		
+		if (prepared)
 			batcher = new PreparedBatcher();
 		else
 			batcher = new ManualBatcher();
+
 		
-		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
-		db=args[2];
-		util.AutomatedAccuracy.countStarAllTables();
-		PrepStatement.initPreparedStatementMap();
+		// 1. Init		
 		Combiner combiner = new Combiner();
-		batcher.startTime = System.currentTimeMillis();
+		MySqlSchemaParser.init_Schema(args[0],args[1],args[2]);
+		SystemStats systemStats = new SystemStats();
+		prepared = Boolean.parseBoolean(args[4]);
+		manual = !prepared;
+		db=args[2];
+		if (prepared)
+			batcher = new PreparedBatcher();
+		else if(manual)
+			batcher = new ManualBatcher();
+
 		// 2. For each log line
-		Path filePath = Paths.get(args[3]);
-		Charset charset = Charset.forName("US-ASCII");
-		try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get(args[3]), Charset.forName("US-ASCII"))) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {		    	
 		    	String[] splitDMLLines = Util.splitDMLsByOR(line);
@@ -122,6 +121,7 @@ public class Main {
 		    	}	        
 		    }
 		    batcher.BatchAndPush();
+
 		    osThread.setEnd();
 		    
 		} catch (Exception e) {
@@ -141,6 +141,10 @@ public class Main {
 		    double cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 		    System.out.println("Java CPU: " + cpuUsage);
 		    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
+
+			batcher.stopTime = System.currentTimeMillis();
+		    util.AutomatedAccuracy.countStarAllTables();
+
 		} 
 		catch(Exception x)
 		{
@@ -148,12 +152,9 @@ public class Main {
 		}
 		finally
 		{
-			
-			batcher.stopTime = System.currentTimeMillis();
+//			systemStats.stop();
 			batcher.printStats();			
 		} 
-		
-		
 		
 	}
 }

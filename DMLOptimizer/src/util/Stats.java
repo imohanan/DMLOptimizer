@@ -63,7 +63,7 @@ public class Stats {
 //		System.out.println("Total number of access to dbms: "+dbmsAccess);
 		System.out.println("Minimum number of DMLS in a batch: "+Integer.toString(minBatched));
 		System.out.println("Maximum number of DMLS in a batch: "+Integer.toString(maxBatched));
-		if (Main.prepared == false && Main.blind == false)
+		if (Main.prepared == true)
 		{
 			avgbatch = (float)DMLAfterCombining/(float)dbmsAccess;
 		}
