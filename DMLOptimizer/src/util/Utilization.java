@@ -71,7 +71,7 @@ public static class OSStatThread extends Thread {
 				osStats.waitFor();
 				if (osStats != null)
 					osStats.destroy();
-				Thread.sleep(10000);
+				Thread.sleep(8900);
 			} catch (IOException e) {
 				e.printStackTrace(System.out);
 			} catch (InterruptedException e) {
