@@ -38,7 +38,7 @@ The _DML Optimizer_ can be run in 3 modes - Original Run mode, Prepared Statemen
 2. queries.txt
   * This contains a list of all queries to be fired against the database, at the end of the run, in order to check accuracy of the system.
 3. prepared_accuracy_[dbName].txt / manual_accuracy_[dbName].txt / orig_accuracy_[dbName].txt 
-  * This file contains the queries from queries.txt and associated output form dbms. To check if the system is correct, we   run **util/VerifyAccuracy.java** with arguments [dbName, original, prepared, manual]. See the comments in           util/VerifyAccuracy.java to understand argument list. <br/>
+  * This file contains the queries from queries.txt and associated output form dbms. To check if the system is correct, we   run **util/VerifyAccuracy.java** with arguments [dbName, original, prepared, manual]. See the comments in           util/VerifyAccuracy.java to understand argument list and also to set the path where the files to be checked are stored. <br/>
   
 
 **C] To make DML Optimizer work on Unix based Machine**
