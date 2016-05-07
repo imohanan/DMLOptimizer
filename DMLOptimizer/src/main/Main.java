@@ -34,39 +34,6 @@ public class Main {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		OriginialRun.orig=false;
-		PrintWriter fw;
-		
-		File f=new File("stats.txt");
-		if (!f.exists()){
-			f.createNewFile();
-		}
-		else{
-			f.delete();
-		}
-		try {
-			fw = new PrintWriter(f);
-			util.Utilization.OSStatThread osThread = new util.Utilization.OSStatThread(fw);
-
-			System.out.println("Starting listener");
-			osThread.start();
-			
-			System.out.println("Computing");
-			
-	
-
-		// 1. Init
-		Runtime runtime = Runtime.getRuntime();
-		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
-	    long prevUpTime = runtimeMXBean.getUptime();
-	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
-		
-		if (prepared)
-			batcher = new PreparedBatcher();
-		else
-			batcher = new ManualBatcher();
-
 		
 		// 1. Init		
 		Combiner combiner = new Combiner();
@@ -121,32 +88,6 @@ public class Main {
 		    	}	        
 		    }
 		    batcher.BatchAndPush();
-
-
-		    osThread.setEnd();
-		    
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		    runtime.gc();
-		    // Calculate the used memory
-		    long memory = runtime.totalMemory() - runtime.freeMemory();
-		    System.out.println("Used memory is bytes: " + memory);
-		    operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-		    long upTime = runtimeMXBean.getUptime();
-		    long processCpuTime = operatingSystemMXBean.getProcessCpuTime();
-		    long elapsedCpu = processCpuTime - prevProcessCpuTime;
-		    long elapsedTime = upTime - prevUpTime;
-
-		    double cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
-		    System.out.println("Java CPU: " + cpuUsage);
-		    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
-
-			batcher.stopTime = System.currentTimeMillis();
-		    util.AutomatedAccuracy.countStarAllTables();
-
-
 			batcher.stopTime = System.currentTimeMillis();
 		    util.AutomatedAccuracy.countStarAllTables();
 		} 
@@ -156,10 +97,10 @@ public class Main {
 		}
 		finally
 		{
-
-//			systemStats.stop();
+			systemStats.stop();
 			batcher.printStats();			
 		} 
 		
 	}
 }
+
