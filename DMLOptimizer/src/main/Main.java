@@ -122,6 +122,7 @@ public class Main {
 		    }
 		    batcher.BatchAndPush();
 
+
 		    osThread.setEnd();
 		    
 		} catch (Exception e) {
@@ -145,6 +146,9 @@ public class Main {
 			batcher.stopTime = System.currentTimeMillis();
 		    util.AutomatedAccuracy.countStarAllTables();
 
+
+			batcher.stopTime = System.currentTimeMillis();
+		    util.AutomatedAccuracy.countStarAllTables();
 		} 
 		catch(Exception x)
 		{
@@ -152,6 +156,7 @@ public class Main {
 		}
 		finally
 		{
+
 //			systemStats.stop();
 			batcher.printStats();			
 		} 

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import main.Main;
 import main.MySqlSchemaParser;
-import util.Stats;
 
 public abstract class DML {
 

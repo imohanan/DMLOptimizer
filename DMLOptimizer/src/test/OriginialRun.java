@@ -97,8 +97,6 @@ public class OriginialRun {
 				}
 		}
 
-		osThread.setEnd();
-
 		runAccuracy();
 
 		 db_conn.close();
@@ -119,6 +117,7 @@ public class OriginialRun {
 	    System.out.println("Java CPU: " + cpuUsage);
 	    System.out.println(operatingSystemMXBean.getSystemCpuLoad());
 
+	   osThread.setEnd();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

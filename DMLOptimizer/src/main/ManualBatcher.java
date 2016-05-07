@@ -11,7 +11,6 @@ import model.DML;
 import model.DMLQueue;
 import model.DMLType;
 import util.ManualBatching;
-import util.Stats;
 
 public class ManualBatcher extends Batcher{
 
@@ -140,6 +139,7 @@ public class ManualBatcher extends Batcher{
 		System.out.println("Total Number of DMLs: " + DMLTotal);
 		System.out.println("Number of DMLs after combining: " + DMLAfterCombining);
 		
+		System.out.println("1. Combiner Stats");
 		System.out.println("Table Level Fence count is: " + tableFenceCount);
     	System.out.println("Record Level Fence count is: " + recordFenceCount );
     	
@@ -147,8 +147,9 @@ public class ManualBatcher extends Batcher{
     	System.out.println("Rule InsertDelete count is : " + insertDeleteCount);
     	System.out.println("Rule UpdateDelete count is : " + updateDeleteCount);
     	System.out.println("Rule UpdateUpdate count is : " + updateUpdateCount);
-    	System.out.println("Number of  PendCount type DMLs observed and combined is : " + pendcountDML);
+    	System.out.println("Number of  Mathematical Operation type DMLs observed and combined is : " + pendcountDML);
     	
+    	System.out.println("2. Batcher Stats");
     	System.out.println("Number of times batcher gets called = Number of times DBMS gets accessed = : " +Integer.toString(batchCalls));
     	System.out.println("Minimum number of DMLs passed from Combiner -> Batcher in one call: "+Integer.toString(minCombinerToBatchSize));
     	System.out.println("maximum number of DMLs passed from Combiner -> Batcher in one call: "+Integer.toString(maxCombinerToBatchSize));
